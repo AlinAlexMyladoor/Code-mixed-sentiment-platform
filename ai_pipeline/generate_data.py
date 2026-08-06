@@ -1,51 +1,80 @@
 import pandas as pd
 import random
-from deep_translator import GoogleTranslator
-from transliterate import translit
 
-# Sample base phrases (In a real scenario, you would load thousands of these from a CSV)
+# Expanded seed phrases for MVP synthetic corpora (English seed → code-mixed Roman output)
 english_phrases = [
     {"text": "The food was terrible and the service was slow.", "sentiment": "negative"},
     {"text": "I absolutely love this new product, it is amazing!", "sentiment": "positive"},
-    {"text": "Wow, what a brilliant idea to increase the price.", "sentiment": "sarcastic"}
+    {"text": "Wow, what a brilliant idea to increase the price.", "sentiment": "sarcastic"},
+    {"text": "Delivery was fast and packaging nalla irundhuchu.", "sentiment": "positive"},
+    {"text": "Never buying again, total waste of money.", "sentiment": "negative"},
+    {"text": "Yeah sure, best customer support ever.", "sentiment": "sarcastic"},
+    {"text": "Quality is okay but price romba high.", "sentiment": "neutral"},
+    {"text": "Thank you team, you made my day!", "sentiment": "positive"},
 ]
 
-def generate_code_mixed_text(phrase, target_lang='ml'):
-    """
-    Simulates code-mixing by translating half the sentence into a regional language 
-    (e.g., Malayalam - 'ml') and transliterating it into Roman script.
-    """
+# Romanized regional fragments for offline code-mixing (Tamil/Malayalam/Hindi style)
+REGIONAL_FRAGMENTS = [
+    "romba nalla",
+    "illa da",
+    "entha problem",
+    "super ah iruku",
+    "njan happy",
+    "pinne engane",
+    "bahut kharab",
+    "accha nahi",
+    "enna da idhu",
+    "kollam",
+]
+
+
+def offline_code_mix(phrase: str) -> str:
     words = phrase.split()
-    # Randomly select a split point to switch languages
+    if len(words) < 3:
+        return f"{phrase} {random.choice(REGIONAL_FRAGMENTS)}"
+    split_idx = random.randint(1, len(words) - 1)
+    return " ".join(words[:split_idx] + [random.choice(REGIONAL_FRAGMENTS)] + words[split_idx:])
+
+
+def generate_code_mixed_text(phrase: str, use_online: bool = False, target_lang: str = "ml") -> str:
+    if not use_online:
+        return offline_code_mix(phrase)
+
+    from deep_translator import GoogleTranslator
+    from transliterate import translit
+
+    words = phrase.split()
     split_idx = random.randint(1, len(words) - 1) if len(words) > 1 else 1
-    
     english_part = " ".join(words[:split_idx])
     regional_part = " ".join(words[split_idx:])
-    
     try:
-        # Translate the second half using deep-translator
-        translated = GoogleTranslator(source='auto', target=target_lang).translate(regional_part)
-        
-        # Transliterate the regional script back to Roman characters
-        romanized_regional = translit(translated, 'ru', reversed=True) # using 'ru' as a placeholder fallback
-        
-        return f"{english_part} {romanized_regional}"
-    except Exception as e:
-        print(f"Translation failed for chunk: {regional_part} - Error: {e}")
-        return phrase
+        translated = GoogleTranslator(source="auto", target=target_lang).translate(regional_part)
+        romanized = translit(translated, "ru", reversed=True)
+        return f"{english_part} {romanized}"
+    except Exception:
+        return offline_code_mix(phrase)
 
-print("Generating synthetic code-mixed dataset...")
-synthetic_data = []
 
-for item in english_phrases:
-    mixed_text = generate_code_mixed_text(item["text"])
-    synthetic_data.append({
-        "original": item["text"],
-        "code_mixed": mixed_text,
-        "sentiment": item["sentiment"]
-    })
+def main():
+    use_online = False
+    print("Generating synthetic code-mixed dataset (offline mix by default)...")
+    rows = []
+    for item in english_phrases:
+        for _ in range(5):
+            mixed = generate_code_mixed_text(item["text"], use_online=use_online)
+            rows.append(
+                {
+                    "original": item["text"],
+                    "code_mixed": mixed,
+                    "sentiment": item["sentiment"],
+                }
+            )
 
-# Save to a dataset file for the fine-tuning script
-df = pd.DataFrame(synthetic_data)
-df.to_csv("synthetic_training_data.csv", index=False)
-print("Dataset generated and saved to synthetic_training_data.csv")
+    df = pd.DataFrame(rows)
+    out = "synthetic_training_data.csv"
+    df.to_csv(out, index=False)
+    print(f"Saved {len(df)} rows to {out}")
+
+
+if __name__ == "__main__":
+    main()

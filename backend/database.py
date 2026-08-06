@@ -1,15 +1,15 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, DateTime, Float, Integer, String, JSON, create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+import datetime
 
-# In a production environment, this URI must be hidden in a .env file.
-# We are using a local PostgreSQL setup for the MVP.
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost/sentiment_db"
+from config import get_settings
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+settings = get_settings()
+engine = create_engine(settings.database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()
