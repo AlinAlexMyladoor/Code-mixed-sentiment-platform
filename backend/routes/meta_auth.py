@@ -6,9 +6,10 @@ from datetime import datetime
 from urllib.parse import urlencode
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+import logging
 
 from config import get_settings
 from database import SessionLocal
@@ -28,6 +29,48 @@ def get_db():
         yield db
     finally:
         db.close()
+
+logger = logging.getLogger("sentiment_platform")
+
+async def fetch_historical_comments(page_id: str, access_token: str):
+    """Fetch the latest comments from a page and push them to the worker queue."""
+    from main import push_to_queue  # Import here to avoid circular dependencies
+    
+    url = f"{META_GRAPH_URL}/{page_id}/feed"
+    params = {
+        "access_token": access_token,
+        "fields": "comments{id,message,created_time}",
+        "limit": 10
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, params=params)
+            resp.raise_for_status()
+            data = resp.json().get("data", [])
+            
+            # Format as a standard webhook payload for the worker
+            for post in data:
+                comments = post.get("comments", {}).get("data", [])
+                for comment in comments:
+                    payload = {
+                        "entry": [{
+                            "id": page_id,
+                            "changes": [{
+                                "value": {
+                                    "message": comment.get("message"),
+                                    "comment_id": comment.get("id"),
+                                    "id": comment.get("id")
+                                }
+                            }]
+                        }]
+                    }
+                    push_to_queue(payload)
+                    
+            logger.info(f"Fetched historical comments for page {page_id}")
+    except Exception as exc:
+        logger.error(f"Failed to fetch historical comments for {page_id}: {exc}")
+
 
 
 @router.get("/login")
@@ -49,7 +92,7 @@ async def meta_login():
 
 
 @router.get("/callback")
-async def meta_callback(request: Request, db: Session = Depends(get_db)):
+async def meta_callback(request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     settings = get_settings()
     code = request.query_params.get("code")
     if not code:
@@ -106,6 +149,10 @@ async def meta_callback(request: Request, db: Session = Depends(get_db)):
                 )
                 db.add(new_page)
             pages_saved.append(page.get("name"))
+            
+            # Trigger background fetch for historical data
+            background_tasks.add_task(fetch_historical_comments, str(page["id"]), page.get("access_token", ""))
+            
         db.commit()
 
     return {

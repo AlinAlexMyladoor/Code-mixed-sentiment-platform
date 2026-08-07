@@ -21,6 +21,7 @@ from mongodb_store import store_raw_webhook
 from routes.meta_auth import router as meta_auth_router
 from routes.auth import router as auth_router
 from routes.analytics import router as analytics_router
+from routes.auth import decode_token
 from schemas import DashboardMetrics, MetricsSummary, ProcessedCommentOut
 from ws_manager import manager
 from stripe_integration import router as billing_router
@@ -267,9 +268,59 @@ async def list_comments(
         db.close()
 
 
+# ─── Dead Letter Queue (DLQ) ───────────────────────────────────────────────
+@app.get("/api/dlq")
+async def get_dlq_items():
+    client = get_sync_redis()
+    try:
+        items = client.lrange("meta_webhook_dlq", 0, -1)
+        parsed = []
+        for i, item in enumerate(items):
+            try:
+                parsed.append({"index": i, "data": json.loads(item)})
+            except:
+                pass
+        return {"status": "success", "items": parsed}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/dlq/retry")
+async def retry_dlq_items(background_tasks: BackgroundTasks):
+    client = get_sync_redis()
+    try:
+        items = client.lrange("meta_webhook_dlq", 0, -1)
+        client.delete("meta_webhook_dlq")
+        retried = 0
+        for item in items:
+            try:
+                data = json.loads(item)
+                payload_str = data.get("payload")
+                if payload_str:
+                    payload_dict = json.loads(payload_str)
+                    background_tasks.add_task(push_to_queue, payload_dict)
+                    retried += 1
+            except:
+                continue
+        return {"status": "success", "message": f"Re-queued {retried} items from DLQ."}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 # ─── WebSocket ─────────────────────────────────────────────────────────────
 @app.websocket("/ws/dashboard")
-async def dashboard_ws(websocket: WebSocket):
+async def dashboard_ws(websocket: WebSocket, token: str = None):
+    if not token:
+        await websocket.close(code=1008)
+        return
+    try:
+        token_data = decode_token(token)
+        if not token_data or not token_data.user_id:
+            raise Exception("Invalid token")
+    except Exception:
+        await websocket.close(code=1008)
+        return
+
     await manager.connect(websocket)
     try:
         while True:

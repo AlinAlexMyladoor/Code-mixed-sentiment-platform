@@ -66,5 +66,8 @@ export const api = {
   refreshPageToken: (pageId) => request('POST', `/auth/meta/pages/${pageId}/refresh-token`),
 };
 
-export const WS_URL =
-  import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/dashboard';
+export const getWsUrl = () => {
+  const base = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/dashboard';
+  const token = getToken();
+  return token ? `${base}?token=${token}` : base;
+};

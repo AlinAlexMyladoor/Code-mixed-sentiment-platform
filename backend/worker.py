@@ -113,6 +113,15 @@ def process_webhook_payload(payload_str: str) -> None:
     except Exception as exc:
         db.rollback()
         logger.error(f"Error processing payload: {exc}")
+        try:
+            dlq_item = {
+                "payload": payload_str,
+                "error": str(exc),
+                "failed_at": time.time()
+            }
+            redis_client.lpush("meta_webhook_dlq", json.dumps(dlq_item))
+        except Exception as dlq_exc:
+            logger.error(f"Failed to push to DLQ: {dlq_exc}")
     finally:
         db.close()
 

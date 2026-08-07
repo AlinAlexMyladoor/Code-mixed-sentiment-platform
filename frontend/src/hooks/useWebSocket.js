@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { WS_URL } from '../api/client';
+import { getWsUrl } from '../api/client';
 
 export function useWebSocket(onMessage) {
   const [status, setStatus] = useState('connecting');
@@ -7,7 +7,7 @@ export function useWebSocket(onMessage) {
   const reconnectRef = useRef(null);
 
   const connect = useCallback(() => {
-    const ws = new WebSocket(WS_URL);
+    const ws = new WebSocket(getWsUrl());
     wsRef.current = ws;
 
     ws.onopen = () => setStatus('live');
