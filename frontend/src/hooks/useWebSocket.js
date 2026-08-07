@@ -30,7 +30,14 @@ export function useWebSocket(onMessage) {
     connect();
     return () => {
       clearTimeout(reconnectRef.current);
-      wsRef.current?.close();
+      const ws = wsRef.current;
+      if (ws) {
+        if (ws.readyState === WebSocket.CONNECTING) {
+          ws.onopen = () => ws.close();
+        } else {
+          ws.close();
+        }
+      }
     };
   }, [connect]);
 

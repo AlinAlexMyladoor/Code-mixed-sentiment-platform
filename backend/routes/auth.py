@@ -8,8 +8,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import bcrypt as _bcrypt
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from limiter import limiter
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
@@ -101,7 +102,8 @@ async def get_current_user(
 
 # ─── Routes ────────────────────────────────────────────────────────────────
 @router.post("/register", response_model=UserOut, status_code=201)
-async def register(payload: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+async def register(request: Request, payload: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=409, detail="Email already registered")
@@ -118,7 +120,8 @@ async def register(payload: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-async def login(payload: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+async def login(request: Request, payload: UserCreate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
@@ -132,7 +135,9 @@ async def login(payload: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login/form", response_model=Token)
+@limiter.limit("10/minute")
 async def login_form(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
@@ -148,7 +153,8 @@ async def login_form(
 
 
 @router.post("/refresh", response_model=Token)
-async def refresh_token(refresh_tok: str, db: Session = Depends(get_db)):
+@limiter.limit("20/minute")
+async def refresh_token(request: Request, refresh_tok: str, db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(refresh_tok, SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("type") != "refresh":

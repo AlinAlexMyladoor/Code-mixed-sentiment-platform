@@ -73,11 +73,12 @@ export default function Dashboard() {
       />
 
       <div className="page-body">
-        {/* Hero gradient bar */}
+        {/* Hero header */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 50%, rgba(236,72,153,0.08) 100%)',
-          border: '1px solid var(--border-accent)',
-          borderRadius: 'var(--r-xl)',
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--r-lg)',
+          boxShadow: 'var(--shadow-sm)',
           padding: '20px 28px',
           marginBottom: 24,
           display: 'flex',

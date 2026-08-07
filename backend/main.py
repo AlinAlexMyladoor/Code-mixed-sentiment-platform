@@ -9,9 +9,8 @@ import redis.asyncio as aioredis
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 from sqlalchemy import func
 import uvicorn
 
@@ -24,6 +23,7 @@ from routes.auth import router as auth_router
 from routes.analytics import router as analytics_router
 from schemas import DashboardMetrics, MetricsSummary, ProcessedCommentOut
 from ws_manager import manager
+from stripe_integration import router as billing_router
 
 # ─── Logging ───────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -35,7 +35,7 @@ logger = logging.getLogger("sentiment_platform")
 settings = get_settings()
 
 # ─── Rate Limiter ──────────────────────────────────────────────────────────
-limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
+from limiter import limiter
 
 # ─── App ───────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -87,6 +87,7 @@ async def security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
     return response
 
 
@@ -94,6 +95,7 @@ async def security_headers(request: Request, call_next):
 app.include_router(auth_router)
 app.include_router(meta_auth_router)
 app.include_router(analytics_router)
+app.include_router(billing_router)
 
 
 # ─── Redis helpers ─────────────────────────────────────────────────────────

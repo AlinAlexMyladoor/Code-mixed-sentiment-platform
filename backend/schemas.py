@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 # ─── Comment Schemas ────────────────────────────────────────────────────────
@@ -48,13 +48,13 @@ class DashboardMetrics(BaseModel):
 
 class UserCreate(BaseModel):
     email:     EmailStr
-    password:  str
-    full_name: Optional[str] = None
+    password:  str = Field(..., min_length=8, max_length=128)
+    full_name: Optional[str] = Field(None, max_length=255)
 
 
 class UserLogin(BaseModel):
     email:    EmailStr
-    password: str
+    password: str = Field(..., max_length=128)
 
 
 class UserOut(BaseModel):
