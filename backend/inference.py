@@ -115,6 +115,7 @@ class AnalysisResult:
     extracted_entities: dict
     confidence: float
     source: str
+    sarcasm_score: float = 0.0              # NEW: continuous sarcasm confidence 0.0–1.0
     sarcasm_signals: list[str] = field(default_factory=list)
     regional_tokens_found: list[str] = field(default_factory=list)
 
@@ -189,20 +190,98 @@ def find_regional_tokens(text: str) -> list[str]:
 # Entity extraction with boundary logic
 # ─────────────────────────────────────────────
 
+# ─────────────────────────────────────────────
+# Boundary Extraction with Quality Scoring
+# ─────────────────────────────────────────────
+
+def score_entity_boundary(candidate: str, tokens: list[tuple[str, str]]) -> float:
+    """
+    Score a candidate entity span 0.0–1.0 for boundary quality.
+    Penalises spans that cut mid-code-mix phrase or start/end with regional tokens.
+    """
+    if not candidate:
+        return 0.0
+    words = candidate.split()
+    if not words:
+        return 0.0
+
+    # Build a token-language lookup from the full tokenised text
+    lang_map = {t.lower(): l for t, l in tokens}
+
+    first_lang = lang_map.get(words[0].lower(), "english")
+    last_lang  = lang_map.get(words[-1].lower(), "english")
+
+    score = 1.0
+    # Penalise if boundary starts/ends inside regional token run
+    if first_lang == "regional_roman":
+        score -= 0.3
+    if last_lang == "regional_roman":
+        score -= 0.3
+    # Penalise very short spans (likely noise)
+    if len(candidate) < 3:
+        score -= 0.5
+    # Boost multi-word spans (more specific)
+    if len(words) >= 2:
+        score += 0.1
+    return max(0.0, min(1.0, score))
+
+
+def detect_phantom_boundaries(candidate: str, original_text: str) -> bool:
+    """
+    Detect if the extracted entity string was silently split from its
+    code-mixed context — i.e., it appears mid-word in the original.
+    Returns True if the boundary is 'phantom' (corrupted).
+    """
+    if not candidate or len(candidate) < 3:
+        return False
+    idx = original_text.lower().find(candidate.lower())
+    if idx == -1:
+        return True  # not found at all — extraction hallucinated
+    # Check character before the match
+    if idx > 0 and original_text[idx - 1].isalpha():
+        return True  # mid-word split
+    # Check character after the match
+    end = idx + len(candidate)
+    if end < len(original_text) and original_text[end].isalpha():
+        return True  # truncated
+    return False
+
+
 def extract_entities_with_boundary_logic(text: str) -> dict:
     """
-    Boundary-optimized extraction: normalize spans before entity detection
-    to reduce LLM-style boundary corruption on messy Romanized input.
+    Boundary-optimised extraction with quality scoring and phantom-boundary detection.
+    Low-quality extractions are flagged rather than silently discarded.
     """
     cleaned = normalize_text(text)
     tokens  = tokenize_mixed(cleaned)
 
     # Brand-like: Title-cased multi-word sequences ≥3 chars
-    brands: list[str] = []
+    raw_brands: list[str] = []
     for match in re.finditer(r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\b", cleaned):
         candidate = match.group(1).strip()
         if len(candidate) > 2:
-            brands.append(candidate)
+            raw_brands.append(candidate)
+
+    # Score each brand and filter out phantom/low-quality boundaries
+    quality_brands: list[dict] = []
+    seen_brands: set[str] = set()
+    for brand in raw_brands:
+        if brand in seen_brands:
+            continue
+        seen_brands.add(brand)
+        bq = score_entity_boundary(brand, tokens)
+        phantom = detect_phantom_boundaries(brand, cleaned)
+        quality_brands.append({
+            "name":    brand,
+            "quality": round(bq, 2),
+            "phantom": phantom,
+        })
+
+    # Only expose reliable brands to downstream analytics
+    reliable_brands = [
+        b["name"] for b in quality_brands
+        if not b["phantom"] and b["quality"] >= 0.5
+    ][:10]
 
     key_phrases: list[str] = []
     for cue in POSITIVE_CUES + NEGATIVE_CUES + SARCASM_CUES:
@@ -212,29 +291,119 @@ def extract_entities_with_boundary_logic(text: str) -> dict:
     regional_found = find_regional_tokens(cleaned)
 
     return {
-        "brands_mentioned":   sorted(set(brands))[:10],
-        "key_phrases":        sorted(set(key_phrases))[:15],
-        "regional_tokens":    sorted(set(regional_found))[:15],
+        "brands_mentioned":    reliable_brands,
+        "key_phrases":         sorted(set(key_phrases))[:15],
+        "regional_tokens":     sorted(set(regional_found))[:15],
         "token_language_tags": [{"token": t, "lang": l} for t, l in tokens[:60]],
+        "boundary_quality":    [
+            {k: v for k, v in b.items()} for b in quality_brands[:10]
+        ],
     }
 
 
 # ─────────────────────────────────────────────
-# Heuristic sentiment classifier
+# Deep Sarcasm Detection — 4-Signal Float Scorer
 # ─────────────────────────────────────────────
 
-def _heuristic_sentiment(text: str) -> tuple[str, float, list[str]]:
-    lower   = text.lower()
+INTENSIFIERS = (
+    "very", "so", "absolutely", "totally", "completely", "utterly", "incredibly",
+    "extremely", "truly", "really", "such a", "what a",
+)
+
+CONTRADICTION_PAIRS = [
+    (POSITIVE_CUES, ("but", "however", "yet", "though", "although", "except")),
+]
+
+
+def _tonal_incongruity_score(text: str, pos_score: float, neg_score: float) -> float:
+    """High positive lexical load in a context with negative framing signals sarcasm."""
+    if pos_score <= 0:
+        return 0.0
+    lower = text.lower()
+    # Positive words + negative tone markers together
+    neg_markers = sum(1 for m in ("terrible", "worst", "broken", "failed", "late", "wrong") if m in lower)
+    if pos_score >= 2 and neg_markers >= 1:
+        return min(0.6, 0.25 * pos_score + 0.15 * neg_markers)
+    return 0.0
+
+
+def _intensifier_abuse_score(text: str, neg_score: float) -> float:
+    """Excessive intensifiers in a sentence with negative context → likely sarcastic."""
+    lower = text.lower()
+    intens_count = sum(1 for i in INTENSIFIERS if i in lower)
+    if intens_count >= 2 and neg_score >= 1:
+        return min(0.5, 0.2 * intens_count)
+    return 0.0
+
+
+def _contradiction_score(text: str) -> float:
+    """Praise followed by a contradiction marker signals irony."""
+    lower = text.lower()
+    pos_hit = any(c in lower for c in POSITIVE_CUES)
+    contr_hit = any(c in lower for c in ("but", "however", "yet", "though", "although", "except", "still"))
+    neg_hit = any(c in lower for c in NEGATIVE_CUES)
+    if pos_hit and contr_hit and neg_hit:
+        return 0.55
+    if pos_hit and contr_hit:
+        return 0.25
+    return 0.0
+
+
+def _pattern_sarcasm_score(text: str) -> tuple[float, list[str]]:
+    """Original keyword/emoji pattern detection, returned as float + signals."""
+    lower = text.lower()
     signals: list[str] = []
+    cue_hits   = sum(1 for c in SARCASM_CUES if c in lower)
+    emoji_hits = len(SARCASM_EMOJI.findall(text))
+    # Trailing '...' after praise
+    ellipsis_after_praise = bool(
+        any(c in lower for c in POSITIVE_CUES) and re.search(r"\.{2,}\s*$", text)
+    )
+    if ellipsis_after_praise:
+        cue_hits += 1
+        signals.append("trailing-ellipsis-after-praise")
+    if cue_hits > 0:
+        signals.append(f"sarcasm-cues({cue_hits})")
+    if emoji_hits > 0:
+        signals.append(f"sarcasm-emoji({emoji_hits})")
+    score = min(0.7, cue_hits * 0.20 + emoji_hits * 0.25)
+    return score, signals
+
+
+def compute_sarcasm_score(text: str, pos_score: float, neg_score: float) -> tuple[float, list[str]]:
+    """
+    Combine all 4 signals into a single sarcasm confidence float (0.0–1.0).
+    Returns (score, signals_list).
+    """
+    pattern_sc, signals = _pattern_sarcasm_score(text)
+    tonal_sc    = _tonal_incongruity_score(text, pos_score, neg_score)
+    intens_sc   = _intensifier_abuse_score(text, neg_score)
+    contradict  = _contradiction_score(text)
+
+    if tonal_sc > 0:
+        signals.append(f"tonal-incongruity({tonal_sc:.2f})")
+    if intens_sc > 0:
+        signals.append(f"intensifier-abuse({intens_sc:.2f})")
+    if contradict > 0:
+        signals.append(f"contradiction({contradict:.2f})")
+
+    combined = min(1.0, pattern_sc + tonal_sc * 0.5 + intens_sc * 0.4 + contradict * 0.6)
+    return combined, signals
+
+
+def _heuristic_sentiment(text: str) -> tuple[str, float, list[str], float]:
+    """Returns (sentiment, confidence, signals, sarcasm_score)."""
+    lower   = text.lower()
 
     # Emoji signals
     pos_emoji_count  = len(POSITIVE_EMOJI.findall(text))
     neg_emoji_count  = len(NEGATIVE_EMOJI.findall(text))
-    sarc_emoji_count = len(SARCASM_EMOJI.findall(text))
 
-    sarcasm_score = sum(1 for c in SARCASM_CUES  if c in lower) + sarc_emoji_count
-    neg_score     = sum(1 for c in NEGATIVE_CUES  if c in lower) + neg_emoji_count
-    pos_score     = sum(1 for c in POSITIVE_CUES  if c in lower) + pos_emoji_count
+    sarcasm_pattern_raw = len(SARCASM_EMOJI.findall(text))
+    neg_score = sum(1 for c in NEGATIVE_CUES  if c in lower) + neg_emoji_count
+    pos_score = sum(1 for c in POSITIVE_CUES  if c in lower) + pos_emoji_count
+
+    signals: list[str] = []
 
     # Caps frustration signal
     caps_words = CAPS_RE.findall(text)
@@ -247,21 +416,24 @@ def _heuristic_sentiment(text: str) -> tuple[str, float, list[str]]:
         neg_score += 0.5
         signals.append("multiple-question-marks")
 
-    # Sarcasm: positive cues + sarcasm marker OR exclamation after obvious praise
-    if sarcasm_score > 0 and (pos_score > 0 or "!" in text):
-        signals.append("sarcasm-cue-detected")
-        conf = min(0.95, 0.55 + sarcasm_score * 0.1)
-        return "sarcastic", conf, signals
+    # 4-signal sarcasm scorer
+    sarcasm_score, sarc_signals = compute_sarcasm_score(text, pos_score, neg_score)
+    signals.extend(sarc_signals)
+
+    # Threshold: sarcasm_score >= 0.35 triggers sarcastic label
+    if sarcasm_score >= 0.35 and (pos_score > 0 or "!" in text):
+        conf = min(0.95, 0.50 + sarcasm_score * 0.45)
+        return "sarcastic", conf, signals, sarcasm_score
 
     if neg_score > pos_score:
         conf = min(0.95, 0.50 + (neg_score - pos_score) * 0.08)
-        return "negative", conf, signals
+        return "negative", conf, signals, sarcasm_score
 
     if pos_score > neg_score:
         conf = min(0.95, 0.50 + (pos_score - neg_score) * 0.08)
-        return "positive", conf, signals
+        return "positive", conf, signals, sarcasm_score
 
-    return "neutral", 0.45, signals
+    return "neutral", 0.45, signals, sarcasm_score
 
 
 # ─────────────────────────────────────────────
@@ -295,26 +467,30 @@ _ROBERTA_LABEL_MAP = {
 }
 
 
-def _roberta_sentiment(text: str) -> tuple[str, float]:
+def _roberta_sentiment(text: str) -> tuple[str, float, float]:
+    """Returns (sentiment, confidence, sarcasm_score)."""
     pipe = _load_roberta()
     if pipe is None:
-        return _heuristic_sentiment(text)[:2]
+        sent, conf, _, sarc = _heuristic_sentiment(text)
+        return sent, conf, sarc
     try:
-        # RoBERTa max 512 tokens; clip text
         result = pipe(text[:512], truncation=True)[0]
-        label = _ROBERTA_LABEL_MAP.get(result["label"].lower(), "neutral")
-        score = float(result["score"])
+        label  = _ROBERTA_LABEL_MAP.get(result["label"].lower(), "neutral")
+        score  = float(result["score"])
 
-        # Check for sarcasm on top of roberta neutral/positive
-        lower = text.lower()
-        sarc  = sum(1 for c in SARCASM_CUES if c in lower)
-        sarc += len(SARCASM_EMOJI.findall(text))
-        if sarc > 0 and label in ("positive", "neutral"):
-            return "sarcastic", min(0.92, score * 0.8 + sarc * 0.05)
+        # Apply deep sarcasm scorer on top of RoBERTa
+        lower     = text.lower()
+        pos_score = sum(1 for c in POSITIVE_CUES if c in lower)
+        neg_score = sum(1 for c in NEGATIVE_CUES if c in lower)
+        sarc_sc, _ = compute_sarcasm_score(text, pos_score, neg_score)
 
-        return label, score
+        if sarc_sc >= 0.35 and label in ("positive", "neutral"):
+            return "sarcastic", min(0.92, score * 0.7 + sarc_sc * 0.3), sarc_sc
+
+        return label, score, sarc_sc
     except Exception:
-        return _heuristic_sentiment(text)[:2]
+        sent, conf, _, sarc = _heuristic_sentiment(text)
+        return sent, conf, sarc
 
 
 # ─────────────────────────────────────────────
@@ -338,9 +514,9 @@ def _llama_sentiment(text: str, url: str) -> tuple[str, float]:
 # Main dispatch
 # ─────────────────────────────────────────────
 
-def classify_sarcasm_and_sentiment(text: str) -> tuple[str, float, str, list[str]]:
+def classify_sarcasm_and_sentiment(text: str) -> tuple[str, float, str, list[str], float]:
     """
-    Returns (sentiment, confidence, source, sarcasm_signals).
+    Returns (sentiment, confidence, source, sarcasm_signals, sarcasm_score).
     """
     mode = os.getenv("INFERENCE_MODE", "heuristic").lower()
 
@@ -348,21 +524,26 @@ def classify_sarcasm_and_sentiment(text: str) -> tuple[str, float, str, list[str
         url = os.getenv("INFERENCE_URL", "")
         if url:
             sentiment, conf = _llama_sentiment(text, url)
-            return sentiment, conf, "llama_lora", []
+            # Compute sarcasm score even for Llama mode
+            lower = text.lower()
+            ps = sum(1 for c in POSITIVE_CUES if c in lower)
+            ns = sum(1 for c in NEGATIVE_CUES if c in lower)
+            sarc_sc, sarc_sigs = compute_sarcasm_score(text, ps, ns)
+            return sentiment, conf, "llama_lora", sarc_sigs, sarc_sc
 
     if mode == "roberta":
-        sentiment, conf = _roberta_sentiment(text)
-        return sentiment, conf, "roberta_cpu", []
+        sentiment, conf, sarc_sc = _roberta_sentiment(text)
+        return sentiment, conf, "roberta_cpu", [], sarc_sc
 
     # Default heuristic
-    sentiment, conf, signals = _heuristic_sentiment(text)
-    return sentiment, conf, "heuristic_mvp", signals
+    sentiment, conf, signals, sarc_sc = _heuristic_sentiment(text)
+    return sentiment, conf, "heuristic_mvp", signals, sarc_sc
 
 
 def analyze_comment(text: str) -> AnalysisResult:
     cleaned   = normalize_text(text)
     entities  = extract_entities_with_boundary_logic(cleaned)
-    sentiment, confidence, source, signals = classify_sarcasm_and_sentiment(cleaned)
+    sentiment, confidence, source, signals, sarc_score = classify_sarcasm_and_sentiment(cleaned)
     english_ratio, switch_count = detect_language_switching(cleaned)
     regional  = find_regional_tokens(cleaned)
 
@@ -373,6 +554,7 @@ def analyze_comment(text: str) -> AnalysisResult:
         extracted_entities=entities,
         confidence=confidence,
         source=source,
+        sarcasm_score=round(sarc_score, 3),
         sarcasm_signals=signals,
         regional_tokens_found=regional,
     )

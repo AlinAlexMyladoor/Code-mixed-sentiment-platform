@@ -137,27 +137,108 @@ SENTIMENT_FRAGMENTS = {
 
 MIX_STYLES = ["prefix", "suffix", "middle", "interleaved"]
 
+# ─── Mixing intensity profiles ───────────────────────────────────────────────
+MIXING_PROFILES = {
+    "low":    {"regional_prob": 0.20, "n_fragments": 1},   # 20% regional, 1 fragment
+    "medium": {"regional_prob": 0.50, "n_fragments": 2},   # 50% regional, 2 fragments
+    "high":   {"regional_prob": 0.80, "n_fragments": 3},   # 80% regional, 3 fragments
+}
 
-def offline_code_mix(phrase: str, sentiment: str) -> str:
-    """Inject regional Romanized fragments into English phrase."""
-    fragments = SENTIMENT_FRAGMENTS.get(sentiment, TAMIL_NEUTRAL)
-    frag = random.choice(fragments)
+# ─── Synonym substitution bank ───────────────────────────────────────────────
+SYNONYM_MAP: dict[str, list[str]] = {
+    "great":      ["excellent", "wonderful", "superb", "outstanding", "brilliant"],
+    "terrible":   ["awful", "horrible", "dreadful", "atrocious", "ghastly"],
+    "love":       ["adore", "cherish", "appreciate", "enjoy"],
+    "hate":       ["despise", "detest", "cannot stand"],
+    "amazing":    ["incredible", "fantastic", "extraordinary", "phenomenal"],
+    "fast":       ["quick", "speedy", "rapid", "swift"],
+    "slow":       ["sluggish", "delayed", "lazy", "tardy"],
+    "quality":    ["standard", "grade", "caliber", "build"],
+    "product":    ["item", "package", "order", "purchase"],
+    "service":    ["support", "assistance", "help", "team"],
+    "delivery":   ["shipping", "courier", "dispatch", "logistics"],
+    "experience": ["journey", "encounter", "interaction", "visit"],
+}
+
+# ─── Sarcasm injection templates ─────────────────────────────────────────────
+SARCASM_PREFIXES = [
+    "Oh wow, ", "Sure, ", "Yeah right, ", "Oh of course, ", "How wonderful, ",
+    "Fantastic, ", "Amazing that ", "Love how ", "Great news, ",
+]
+SARCASM_SUFFIXES = [
+    " ...definitely NOT.", " Totally worth it! 🙄", " Best experience EVER 😒",
+    " as if that is acceptable.", " oh sure.", "... wow.", " great job. 😑",
+    ". So helpful. Really.",
+]
+
+
+def mutate_template(phrase: str) -> str:
+    """Apply synonym substitution + optional sentence reordering for diversity."""
     words = phrase.split()
-    style = random.choice(MIX_STYLES)
+    mutated = []
+    for w in words:
+        clean = w.lower().strip(".,!?")  
+        if clean in SYNONYM_MAP and random.random() < 0.4:
+            sub = random.choice(SYNONYM_MAP[clean])
+            # preserve original capitalisation
+            if w[0].isupper():
+                sub = sub.capitalize()
+            mutated.append(sub)
+        else:
+            mutated.append(w)
+    result = " ".join(mutated)
+    # 30% chance: split sentence at comma/period and reverse clause order
+    if random.random() < 0.3 and "," in result:
+        parts = result.split(",", 1)
+        if len(parts) == 2:
+            result = parts[1].strip().capitalize() + ", " + parts[0].lower()
+    return result
+
+
+def inject_sarcasm(positive_phrase: str) -> str:
+    """Transform a positive seed into a sarcastic sample."""
+    style = random.choice(["prefix", "suffix", "both"])
+    phrase = positive_phrase.rstrip(".!")
+    if style == "prefix":
+        prefix = random.choice(SARCASM_PREFIXES)
+        return f"{prefix}{phrase.lower()}"
+    elif style == "suffix":
+        suffix = random.choice(SARCASM_SUFFIXES)
+        return f"{phrase}{suffix}"
+    else:
+        prefix = random.choice(SARCASM_PREFIXES)
+        suffix = random.choice(SARCASM_SUFFIXES)
+        return f"{prefix}{phrase.lower()}{suffix}"
+
+
+def offline_code_mix(phrase: str, sentiment: str, profile: str = "medium") -> str:
+    """Inject regional Romanized fragments using a mixing intensity profile."""
+    cfg = MIXING_PROFILES.get(profile, MIXING_PROFILES["medium"])
+    fragments = SENTIMENT_FRAGMENTS.get(sentiment, TAMIL_NEUTRAL)
+    words  = phrase.split()
+    style  = random.choice(MIX_STYLES)
+    n_frag = cfg["n_fragments"]
+
+    # Collect fragments to inject
+    chosen_frags = [random.choice(fragments) for _ in range(n_frag)]
+    frag_str = ", ".join(chosen_frags)
+
+    if random.random() > cfg["regional_prob"]:
+        return phrase  # skip mixing based on profile
 
     if style == "prefix":
-        return f"{frag}, {phrase.lower()}"
+        return f"{frag_str}, {phrase.lower()}"
     elif style == "suffix":
-        return f"{phrase} {frag}"
+        return f"{phrase} {frag_str}"
     elif style == "middle" and len(words) > 3:
         mid = len(words) // 2
-        return " ".join(words[:mid]) + f" {frag} " + " ".join(words[mid:])
-    else:  # interleaved - replace a word
+        return " ".join(words[:mid]) + f" {chosen_frags[0]} " + " ".join(words[mid:])
+    else:  # interleaved
         if len(words) > 4:
             idx = random.randint(1, len(words) - 2)
-            words[idx] = frag
+            words[idx] = chosen_frags[0]
             return " ".join(words)
-        return f"{phrase} {frag}"
+        return f"{phrase} {frag_str}"
 
 
 def generate_online(phrase: str, target_lang: str = "ta") -> str:
@@ -177,38 +258,59 @@ def generate_online(phrase: str, target_lang: str = "ta") -> str:
         return phrase
 
 
-def generate_variations(seed: SeedPhrase, n_per_seed: int = 10, use_online: bool = False) -> list[dict]:
+def generate_variations(seed: SeedPhrase, n_per_seed: int = 20, use_online: bool = False) -> list[dict]:
     rows = []
-    langs = ["ta", "ml", "hi", "bn"]
+    langs    = ["ta", "ml", "hi", "bn"]
+    profiles = ["low", "medium", "high"]
 
     for i in range(n_per_seed):
-        if use_online and i % 3 == 0:
-            lang  = random.choice(langs)
-            mixed = generate_online(seed.text, target_lang=lang)
-        else:
-            mixed = offline_code_mix(seed.text, seed.sentiment)
+        profile = random.choice(profiles)
 
-        # Vary mixing ratio
-        mix_ratio = round(random.uniform(0.3, 0.9), 2)
+        # Base phrase: mutate for variety
+        mutated_phrase = mutate_template(seed.text)
+
+        if use_online and i % 4 == 0:
+            lang  = random.choice(langs)
+            mixed = generate_online(mutated_phrase, target_lang=lang)
+        else:
+            mixed = offline_code_mix(mutated_phrase, seed.sentiment, profile)
+
         rows.append({
-            "original":    seed.text,
-            "code_mixed":  mixed,
-            "sentiment":   seed.sentiment,
-            "mix_ratio":   mix_ratio,
-            "base_lang":   random.choice(["tamil", "malayalam", "hindi", "bengali"]),
+            "original":   seed.text,
+            "code_mixed": mixed,
+            "sentiment":  seed.sentiment,
+            "mix_ratio":  MIXING_PROFILES[profile]["regional_prob"],
+            "base_lang":  random.choice(["tamil", "malayalam", "hindi", "bengali"]),
+            "mix_profile": profile,
         })
+
+    # Inject sarcastic variants from positive seeds (up to 5 per positive seed)
+    if seed.sentiment == "positive":
+        for _ in range(5):
+            sarcastic_text = inject_sarcasm(seed.text)
+            mixed = offline_code_mix(sarcastic_text, "sarcastic", random.choice(profiles))
+            rows.append({
+                "original":   seed.text,
+                "code_mixed": mixed,
+                "sentiment":  "sarcastic",
+                "mix_ratio":  0.5,
+                "base_lang":  random.choice(["tamil", "malayalam", "hindi", "bengali"]),
+                "mix_profile": "injected_sarcasm",
+            })
+
     return rows
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--online",  action="store_true", help="Use Google Translate")
-    parser.add_argument("--n",       type=int, default=15, help="Variations per seed phrase")
+    parser.add_argument("--n",       type=int, default=20, help="Variations per seed phrase")
     parser.add_argument("--out",     default="synthetic_training_data.csv", help="Output CSV path")
-    parser.add_argument("--val-split", type=float, default=0.2, help="Validation split ratio")
+    parser.add_argument("--val-split", type=float, default=0.15, help="Validation split ratio")
     args = parser.parse_args()
 
-    print(f"Generating synthetic dataset ({len(SEED_CORPUS)} seeds × {args.n} = ~{len(SEED_CORPUS)*args.n} rows)...")
+    est = len(SEED_CORPUS) * (args.n + 5)  # +5 for sarcasm injection on positive seeds
+    print(f"Generating synthetic dataset ({len(SEED_CORPUS)} seeds × ~{args.n + 5} variants = ~{est} rows)...")
 
     all_rows = []
     for seed in SEED_CORPUS:
@@ -228,7 +330,7 @@ def main():
 
     def write_csv(rows, path):
         with open(path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=["original", "code_mixed", "sentiment", "mix_ratio", "base_lang"])
+            writer = csv.DictWriter(f, fieldnames=["original", "code_mixed", "sentiment", "mix_ratio", "base_lang", "mix_profile"])
             writer.writeheader()
             writer.writerows(rows)
 

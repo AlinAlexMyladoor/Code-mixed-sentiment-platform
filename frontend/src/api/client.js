@@ -52,6 +52,7 @@ export const api = {
   brandMentions: (limit = 15) => request('GET', '/api/analytics/brand-mentions', null, { limit }),
   inferenceSources: () => request('GET', '/api/analytics/inference-sources'),
   englishRatioBands: () => request('GET', '/api/analytics/english-ratio-bands'),
+  sentimentLangCorrelation: () => request('GET', '/api/analytics/sentiment-lang-correlation'),
   exportComments: (params) => {
     const query = new URLSearchParams(
       Object.fromEntries(Object.entries(params || {}).filter(([, v]) => v != null))
