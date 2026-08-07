@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+ai_env/
+env/
+.env
+!.env.example
+
+# Database
+*.sqlite
+*.db
+test_db.sqlite
+test.db
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# LoRA model weights (too large for git)
+ai_pipeline/llama3-code-mixed-lora/
+ai_pipeline/*.bin
+ai_pipeline/*.safetensors
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# Coverage
+coverage/
+.nyc_output/

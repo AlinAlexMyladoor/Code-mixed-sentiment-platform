@@ -1,0 +1,170 @@
+"""
+JWT-based authentication.
+Endpoints: /auth/register  /auth/login  /auth/refresh  /auth/me
+"""
+
+import os
+from datetime import datetime, timedelta, timezone
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+
+from database import SessionLocal
+from models import User
+from schemas import Token, TokenData, UserCreate, UserOut
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+# ─── Config ────────────────────────────────────────────────────────────────
+SECRET_KEY         = os.getenv("JWT_SECRET_KEY", "change-me-in-production-use-a-long-random-string")
+ALGORITHM          = "HS256"
+ACCESS_TOKEN_MINS  = int(os.getenv("ACCESS_TOKEN_MINUTES", "60"))
+REFRESH_TOKEN_DAYS = int(os.getenv("REFRESH_TOKEN_DAYS", "30"))
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/form", auto_error=False)
+
+
+# ─── DB helper ─────────────────────────────────────────────────────────────
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# ─── Password helpers ───────────────────────────────────────────────────────
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    return pwd_context.verify(plain, hashed)
+
+
+# ─── JWT helpers ────────────────────────────────────────────────────────────
+def _create_token(data: dict, expires_delta: timedelta) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + expires_delta
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def create_access_token(user_id: int, email: str) -> str:
+    return _create_token(
+        {"sub": str(user_id), "email": email, "type": "access"},
+        timedelta(minutes=ACCESS_TOKEN_MINS),
+    )
+
+
+def create_refresh_token(user_id: int) -> str:
+    return _create_token(
+        {"sub": str(user_id), "type": "refresh"},
+        timedelta(days=REFRESH_TOKEN_DAYS),
+    )
+
+
+def decode_token(token: str) -> TokenData:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: Optional[int] = int(payload.get("sub")) if payload.get("sub") else None
+        email: Optional[str]   = payload.get("email")
+        return TokenData(user_id=user_id, email=email)
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+# ─── Current user dependency ────────────────────────────────────────────────
+async def get_current_user(
+    token: Optional[str] = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> User:
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token_data = decode_token(token)
+    user = db.query(User).filter(User.id == token_data.user_id).first()
+    if not user or not user.is_active:
+        raise HTTPException(status_code=401, detail="User not found or inactive")
+    return user
+
+
+# ─── Routes ────────────────────────────────────────────────────────────────
+@router.post("/register", response_model=UserOut, status_code=201)
+async def register(payload: UserCreate, db: Session = Depends(get_db)):
+    existing = db.query(User).filter(User.email == payload.email).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Email already registered")
+
+    user = User(
+        email=payload.email,
+        hashed_password=hash_password(payload.password),
+        full_name=payload.full_name,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@router.post("/login", response_model=Token)
+async def login(payload: UserCreate, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user or not verify_password(payload.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
+    if not user.is_active:
+        raise HTTPException(status_code=403, detail="Account is disabled")
+
+    return Token(
+        access_token=create_access_token(user.id, user.email),
+        refresh_token=create_refresh_token(user.id),
+    )
+
+
+@router.post("/login/form", response_model=Token)
+async def login_form(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+):
+    """OAuth2 compatible form-based login (for Swagger UI /docs)."""
+    user = db.query(User).filter(User.email == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
+
+    return Token(
+        access_token=create_access_token(user.id, user.email),
+        refresh_token=create_refresh_token(user.id),
+    )
+
+
+@router.post("/refresh", response_model=Token)
+async def refresh_token(refresh_tok: str, db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(refresh_tok, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "refresh":
+            raise ValueError("Not a refresh token")
+        user_id = int(payload["sub"])
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.is_active:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    return Token(
+        access_token=create_access_token(user.id, user.email),
+        refresh_token=create_refresh_token(user.id),
+    )
+
+
+@router.get("/me", response_model=UserOut)
+async def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
