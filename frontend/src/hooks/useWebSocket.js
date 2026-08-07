@@ -7,13 +7,24 @@ export function useWebSocket(onMessage) {
   const reconnectRef = useRef(null);
 
   const connect = useCallback(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setStatus('disconnected');
+      return;
+    }
+
     const ws = new WebSocket(getWsUrl());
     wsRef.current = ws;
 
     ws.onopen = () => setStatus('live');
-    ws.onclose = () => {
+    ws.onclose = (event) => {
       setStatus('reconnecting');
-      reconnectRef.current = setTimeout(connect, 3000);
+      if (event.code === 1008) {
+        // Auth failed, stop trying
+        setStatus('disconnected');
+      } else {
+        reconnectRef.current = setTimeout(connect, 3000);
+      }
     };
     ws.onerror = () => {
       setStatus('reconnecting');
