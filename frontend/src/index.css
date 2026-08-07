@@ -316,7 +316,11 @@ body::before {
 
 /* Metric card */
 .metric-card {
-  composes: card;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(20px);
+  transition: var(--transition);
   padding: 20px 24px;
   position: relative;
   overflow: hidden;
