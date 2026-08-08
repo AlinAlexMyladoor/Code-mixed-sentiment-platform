@@ -330,6 +330,77 @@ async def dashboard_ws(websocket: WebSocket, token: str = None):
 
 
 # ─── Health & root ─────────────────────────────────────────────────────────
+
+@app.get("/api/health/db")
+async def db_health():
+    """
+    Persistence health-check.
+    Runs a live COUNT(*) on processed_comments to confirm:
+      1. The PostgreSQL connection is healthy.
+      2. Data is actually being written (row_count > 0 after events flow).
+    Use this endpoint to verify that WebSocket-streamed data is also durable.
+    """
+    db = SessionLocal()
+    try:
+        row_count = db.query(func.count(ProcessedComment.id)).scalar() or 0
+        return {
+            "status":    "healthy",
+            "db":        "postgresql",
+            "row_count": row_count,
+            "message":   (
+                "PostgreSQL is reachable and storing data."
+                if row_count > 0
+                else "Connected but no comments persisted yet."
+            ),
+        }
+    except Exception as exc:
+        logger.error(f"DB health check failed: {exc}")
+        raise HTTPException(status_code=503, detail=f"Database unreachable: {exc}")
+    finally:
+        db.close()
+
+
+@app.get("/api/inference/status")
+async def inference_status():
+    """
+    Reports the current AI inference mode and, for llama mode, pings the
+    GPU inference server to check whether it is online and ready.
+
+    Upgrade path:
+      1. Deploy ai_pipeline/inference_server.py on a GPU host.
+      2. Set INFERENCE_MODE=llama and INFERENCE_URL=http://<gpu-host>:8001/analyze
+      3. This endpoint will then show llama_server: 'healthy'.
+    """
+    import os as _os
+    mode = _os.getenv("INFERENCE_MODE", "heuristic").lower()
+    inference_url = settings.inference_url
+
+    llama_status: str = "not_configured"
+    if mode == "llama" and inference_url:
+        health_url = inference_url.replace("/analyze", "/health").replace("/predict", "/health")
+        try:
+            import httpx as _httpx
+            async with _httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(health_url)
+                llama_status = "healthy" if resp.status_code == 200 else f"degraded (HTTP {resp.status_code})"
+        except Exception as exc:
+            llama_status = f"unreachable ({exc})"
+    elif mode == "llama":
+        llama_status = "mode=llama but INFERENCE_URL not set"
+
+    return {
+        "inference_mode":  mode,
+        "llama_server":    llama_status,
+        "inference_url":   inference_url or "(not set)",
+        "upgrade_note": (
+            "To activate Llama 3: set INFERENCE_MODE=llama and "
+            "INFERENCE_URL=http://<gpu-host>:8001/analyze after deploying "
+            "ai_pipeline/inference_server.py on a GPU instance."
+            if mode != "llama"
+            else None
+        ),
+    }
+
 @app.get("/health")
 async def health():
     return {"status": "healthy", "service": "Code-Mixed Sentiment Intelligence Platform"}

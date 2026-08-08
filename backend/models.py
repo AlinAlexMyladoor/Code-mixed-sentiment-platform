@@ -57,6 +57,9 @@ class ConnectedPage(Base):
     user_id      = Column(Integer, nullable=True)
     created_at   = Column(DateTime, default=datetime.datetime.utcnow)
     token_expires_at = Column(DateTime, nullable=True)
+    # Tracks whether the one-time historical backfill has already run for this page.
+    # Prevents duplicate ingestion when the page is reconnected or its token is refreshed.
+    historical_fetch_done = Column(Boolean, default=False, nullable=False)
 
 
 class ProcessedComment(Base):
@@ -73,6 +76,7 @@ class ProcessedComment(Base):
     language_switch_count = Column(Integer, default=0)
     confidence            = Column(Float, nullable=True)
     inference_source      = Column(String, nullable=True)  # heuristic_mvp | roberta_cpu | llama_lora
+    sarcasm_score         = Column(Float, nullable=True)   # continuous 0.0–1.0 sarcasm confidence
     sarcasm_signals       = Column(JSON, nullable=True)
     regional_tokens_found = Column(JSON, nullable=True)
     raw_payload           = Column(JSON)

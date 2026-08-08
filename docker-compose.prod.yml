@@ -49,6 +49,8 @@ services:
       META_APP_SECRET: ${META_APP_SECRET:-}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       INFERENCE_MODE: ${INFERENCE_MODE:-heuristic}
+      # Uncomment when gpu-inference service is running:
+      # INFERENCE_URL: ${INFERENCE_URL:-http://gpu-inference:8001/analyze}
     depends_on:
       postgres:
         condition: service_healthy
@@ -68,12 +70,48 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       MONGODB_URL: mongodb://mongo:27017
       INFERENCE_MODE: ${INFERENCE_MODE:-heuristic}
+      # Uncomment when gpu-inference service is running:
+      # INFERENCE_URL: ${INFERENCE_URL:-http://gpu-inference:8001/analyze}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     restart: unless-stopped
+
+  # ─── Llama 3 GPU Inference Server ──────────────────────────────────────────
+  # NEXT SPRINT: Uncomment this entire block to replace the heuristic engine
+  # with the fine-tuned Llama 3 8B LoRA model for deeper linguistic accuracy.
+  #
+  # Prerequisites:
+  #   1. Train / download the LoRA adapter: run ai_pipeline/train_lora.py
+  #   2. Place adapter weights in ./ai_pipeline/llama3-code-mixed-lora/
+  #   3. Set INFERENCE_MODE=llama and INFERENCE_URL=http://gpu-inference:8001/analyze in .env
+  #   4. Uncomment the block below and run: docker-compose -f docker-compose.prod.yml up --build gpu-inference
+  #
+  # gpu-inference:
+  #   build:
+  #     context: ./ai_pipeline
+  #     dockerfile: Dockerfile.gpu          # Create this from the README instructions
+  #   command: python inference_server.py --model ./llama3-code-mixed-lora
+  #   environment:
+  #     - NVIDIA_VISIBLE_DEVICES=all
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+  #   ports:
+  #     - "8001:8001"                       # Internal only; not exposed to nginx
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 120s                  # Allow 2 min for model loading
 
   frontend:
     build:

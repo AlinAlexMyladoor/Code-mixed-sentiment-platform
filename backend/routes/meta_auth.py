@@ -33,43 +33,134 @@ def get_db():
 logger = logging.getLogger("sentiment_platform")
 
 async def fetch_historical_comments(page_id: str, access_token: str):
-    """Fetch the latest comments from a page and push them to the worker queue."""
-    from main import push_to_queue  # Import here to avoid circular dependencies
-    
-    url = f"{META_GRAPH_URL}/{page_id}/feed"
+    """
+    Fetch the last 100 comments from a newly connected page via the Graph API and
+    push them through the existing Redis worker queue so they are analyzed and
+    persisted identically to live webhook events.
+
+    Design decisions:
+    - This function is gated by ConnectedPage.historical_fetch_done, so it only
+      ever runs once per page (not on token refreshes or reconnects).
+    - Deduplication: before queuing a comment we check whether its platform_id
+      already exists in processed_comments, skipping any that were previously seen.
+    - Pagination: we walk the Graph API cursor until we have collected up to
+      TARGET_COMMENTS comments or there are no more pages.
+    - On transient API errors we log and exit gracefully; the dashboard will still
+      populate from any comments collected before the error.
+    """
+    from main import push_to_queue  # deferred to avoid circular import
+
+    TARGET_COMMENTS = 100
+    collected: list[dict] = []
+
+    # ── 1. Collect comments via paginated feed endpoint ──────────────────────
+    # We fetch post-level feed with nested comments expanded. Each page of results
+    # may have multiple posts; we walk the cursor until we hit the target count.
+    feed_url = f"{META_GRAPH_URL}/{page_id}/feed"
     params = {
         "access_token": access_token,
-        "fields": "comments{id,message,created_time}",
-        "limit": 10
+        # Fetch up to 100 comments per post in one call; limit=25 posts per page.
+        "fields": "comments.limit(100){id,message,created_time,from}",
+        "limit": 25,
     }
-    
+
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url, params=params)
-            resp.raise_for_status()
-            data = resp.json().get("data", [])
-            
-            # Format as a standard webhook payload for the worker
-            for post in data:
-                comments = post.get("comments", {}).get("data", [])
-                for comment in comments:
-                    payload = {
-                        "entry": [{
-                            "id": page_id,
-                            "changes": [{
-                                "value": {
-                                    "message": comment.get("message"),
-                                    "comment_id": comment.get("id"),
-                                    "id": comment.get("id")
-                                }
-                            }]
-                        }]
-                    }
-                    push_to_queue(payload)
-                    
-            logger.info(f"Fetched historical comments for page {page_id}")
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            next_url: str | None = feed_url
+            next_params: dict | None = params
+
+            while next_url and len(collected) < TARGET_COMMENTS:
+                if next_params:
+                    resp = await client.get(next_url, params=next_params)
+                else:
+                    resp = await client.get(next_url)
+
+                if resp.status_code != 200:
+                    logger.warning(
+                        f"[historical] Graph API returned {resp.status_code} for page {page_id}: {resp.text[:200]}"
+                    )
+                    break
+
+                body = resp.json()
+                posts = body.get("data", [])
+
+                for post in posts:
+                    for comment in post.get("comments", {}).get("data", []):
+                        if len(collected) >= TARGET_COMMENTS:
+                            break
+                        msg = comment.get("message", "").strip()
+                        if msg:
+                            collected.append({
+                                "comment_id": str(comment.get("id", "unknown")),
+                                "message":    msg,
+                                "created_time": comment.get("created_time"),
+                            })
+                    if len(collected) >= TARGET_COMMENTS:
+                        break
+
+                # Follow the pagination cursor if more posts exist
+                paging = body.get("paging", {})
+                next_url = paging.get("next")    # Graph API absolute URL
+                next_params = None               # cursor is baked into next_url
+
+    except httpx.HTTPError as exc:
+        logger.error(f"[historical] HTTP error fetching history for page {page_id}: {exc}")
+        return
     except Exception as exc:
-        logger.error(f"Failed to fetch historical comments for {page_id}: {exc}")
+        logger.error(f"[historical] Unexpected error for page {page_id}: {exc}")
+        return
+
+    if not collected:
+        logger.info(f"[historical] No comments found for page {page_id}; skipping backfill.")
+        return
+
+    # ── 2. Deduplicate against existing DB records ────────────────────────────
+    # Import here to avoid pulling heavy DB deps at module load time.
+    from database import SessionLocal
+    from models import ProcessedComment as PC
+
+    db = SessionLocal()
+    try:
+        incoming_ids = [c["comment_id"] for c in collected]
+        already_stored = {
+            row[0]
+            for row in db.query(PC.platform_id)
+            .filter(PC.platform_id.in_(incoming_ids))
+            .all()
+        }
+    finally:
+        db.close()
+
+    new_comments = [c for c in collected if c["comment_id"] not in already_stored]
+    skipped = len(collected) - len(new_comments)
+    logger.info(
+        f"[historical] Page {page_id}: {len(collected)} fetched, "
+        f"{skipped} already in DB, {len(new_comments)} will be queued."
+    )
+
+    # ── 3. Push new comments to the Redis worker queue ────────────────────────
+    # We format each comment as a standard Meta webhook payload so the worker
+    # processes it identically to a live event (same analysis, same DB schema).
+    for comment in new_comments:
+        payload = {
+            "entry": [{
+                "id": page_id,
+                "changes": [{
+                    "field": "feed",
+                    "value": {
+                        "message":    comment["message"],
+                        "comment_id": comment["comment_id"],
+                        "id":         comment["comment_id"],
+                        # Tag as historical so the worker/DB can distinguish origin
+                        "item":       "comment",
+                        "historical": True,
+                    },
+                }],
+            }]
+        }
+        push_to_queue(payload)
+
+    logger.info(f"[historical] Backfill queued for page {page_id}.")
 
 
 
@@ -129,15 +220,16 @@ async def meta_callback(request: Request, background_tasks: BackgroundTasks, db:
     if accounts_resp.status_code == 200:
         accounts_data = accounts_resp.json().get("data", [])
         for page in accounts_data:
+            is_new_page = False
             existing = db.query(ConnectedPage).filter(
                 ConnectedPage.page_id == str(page["id"])
             ).first()
             if existing:
-                existing.access_token = page.get("access_token", "")
-                existing.page_name    = page.get("name", "")
-                existing.category     = page.get("category")
+                existing.access_token   = page.get("access_token", "")
+                existing.page_name      = page.get("name", "")
+                existing.category       = page.get("category")
                 existing.follower_count = page.get("fan_count")
-                existing.is_active    = True
+                existing.is_active      = True
             else:
                 new_page = ConnectedPage(
                     page_id=str(page["id"]),
@@ -146,13 +238,29 @@ async def meta_callback(request: Request, background_tasks: BackgroundTasks, db:
                     platform="facebook",
                     category=page.get("category"),
                     follower_count=page.get("fan_count"),
+                    historical_fetch_done=False,  # gate starts closed
                 )
                 db.add(new_page)
+                is_new_page = True
+
             pages_saved.append(page.get("name"))
-            
-            # Trigger background fetch for historical data
-            background_tasks.add_task(fetch_historical_comments, str(page["id"]), page.get("access_token", ""))
-            
+
+            # Only trigger the 100-comment historical backfill on the very first
+            # connect. Token refreshes and reconnects do NOT re-run the backfill
+            # (the historical_fetch_done flag guards this). We flush first so that
+            # the flag write is visible to the background task.
+            page_record = existing if not is_new_page else new_page
+            if not page_record.historical_fetch_done:
+                page_record.historical_fetch_done = True  # mark before committing
+                background_tasks.add_task(
+                    fetch_historical_comments,
+                    str(page["id"]),
+                    page.get("access_token", ""),
+                )
+                logger.info(
+                    f"[historical] Scheduled backfill for new page: {page.get('name')} ({page['id']})"
+                )
+
         db.commit()
 
     return {

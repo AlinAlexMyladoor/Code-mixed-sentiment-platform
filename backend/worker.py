@@ -49,6 +49,9 @@ def extract_comments_from_payload(payload: dict) -> list[dict]:
 def publish_processed_event(record: ProcessedComment) -> None:
     event = {
         "type": "comment_processed",
+        # persisted=True signals the frontend that this comment is already durably
+        # committed to PostgreSQL — safe to trust for chart rendering without a re-poll.
+        "persisted": True,
         "data": {
             "id":                    record.id,
             "platform_id":           record.platform_id,
@@ -59,6 +62,7 @@ def publish_processed_event(record: ProcessedComment) -> None:
             "language_switch_count": record.language_switch_count,
             "confidence":            record.confidence,
             "inference_source":      record.inference_source,
+            "sarcasm_score":         record.sarcasm_score,
             "sarcasm_signals":       record.sarcasm_signals,
             "regional_tokens_found": record.regional_tokens_found,
             "created_at":            record.created_at.isoformat() if record.created_at else None,
@@ -95,6 +99,7 @@ def process_webhook_payload(payload_str: str) -> None:
                 language_switch_count=analysis.language_switch_count,
                 confidence=analysis.confidence,
                 inference_source=analysis.source,
+                sarcasm_score=round(analysis.sarcasm_score, 4),
                 sarcasm_signals=analysis.sarcasm_signals,
                 regional_tokens_found=analysis.regional_tokens_found,
                 raw_payload=payload,

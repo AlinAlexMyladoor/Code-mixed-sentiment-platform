@@ -64,6 +64,12 @@ export const api = {
   connectedPages: () => request('GET', '/auth/meta/pages'),
   disconnectPage: (pageId) => request('DELETE', `/auth/meta/pages/${pageId}`),
   refreshPageToken: (pageId) => request('POST', `/auth/meta/pages/${pageId}/refresh-token`),
+
+  // ─── Diagnostics ───────────────────────────────────────────────────────
+  // Confirms PostgreSQL is healthy and returns live row_count of persisted comments.
+  dbHealth: () => request('GET', '/api/health/db'),
+  // Returns the active inference mode and (for llama mode) GPU server status.
+  inferenceStatus: () => request('GET', '/api/inference/status'),
 };
 
 export const getWsUrl = () => {
