@@ -1,0 +1,87 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# render.yaml  —  Render Blueprint for SwaraSense (Sentiment Intelligence Platform)
+#
+# Services defined here:
+#   1. swara-backend   → FastAPI web service  (free tier)
+#   2. swara-worker    → Redis queue worker   (free tier background worker)
+#   3. swara-frontend  → React Vite static site (free tier, no cold-start)
+#
+# Databases (create manually in Render Dashboard — see DEPLOY.md):
+#   • PostgreSQL  → copy the Internal Database URL → DATABASE_URL env var
+#   • Key Value   → copy the internal Redis URL    → REDIS_URL env var
+#
+# MongoDB is NOT available on Render free tier.
+# The backend mongodb_store.py already handles MongoDB failures gracefully
+# (prints a warning and returns None) so raw-webhook archiving is simply
+# disabled on Render; all processed data is still persisted in PostgreSQL.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── 1. FastAPI Backend ──────────────────────────────────────────────────────
+  - type: web
+    name: swara-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # set manually in dashboard after DB is provisioned
+      - key: REDIS_URL
+        sync: false          # set manually in dashboard after Key Value is provisioned
+      - key: META_VERIFY_TOKEN
+        sync: false
+      - key: META_APP_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: META_REDIRECT_URI
+        sync: false          # set to: https://swara-backend.onrender.com/auth/meta/callback
+      - key: JWT_SECRET_KEY
+        generateValue: true  # Render auto-generates a secure random value
+      - key: CORS_ORIGINS
+        sync: false          # set to your frontend URL: https://swara-frontend.onrender.com
+      - key: INFERENCE_MODE
+        value: heuristic
+      - key: MONGODB_URL
+        value: ""            # intentionally empty — MongoDB not used on free tier
+      - key: PYTHON_VERSION
+        value: "3.11"
+
+  # ── 2. Background Worker (Redis queue consumer) ──────────────────────────────
+  - type: worker
+    name: swara-worker
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    startCommand: python worker.py
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: INFERENCE_MODE
+        value: heuristic
+      - key: MONGODB_URL
+        value: ""
+
+  # ── 3. React Frontend (Static Site — always-on, no cold-start) ──────────────
+  - type: web
+    name: swara-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    rootDir: ./frontend
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # set to: https://swara-backend.onrender.com
+      - key: VITE_WS_URL
+        sync: false          # set to: wss://swara-backend.onrender.com/ws/dashboard
