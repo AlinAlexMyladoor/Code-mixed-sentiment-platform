@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { CheckCircle, Copy, Key, Save, Settings2, Shield, User } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
+import { API_BASE } from '../api/client';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function Settings() {
   const [saved, setSaved] = useState(false);
