@@ -29,7 +29,17 @@ export default function ConnectPages() {
     }
   };
 
-  useEffect(() => { loadPages(); }, []);
+  useEffect(() => {
+    loadPages();
+    
+    // Check if we just returned from a successful Meta OAuth flow
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === 'true') {
+      showToast('Successfully connected to Meta!', 'success');
+      // Clean up the URL so refresh doesn't trigger the toast again
+      window.history.replaceState({}, '', '/connect');
+    }
+  }, []);
 
   const handleConnect = () => {
     window.location.href = `${API_BASE}/auth/meta/login`;
