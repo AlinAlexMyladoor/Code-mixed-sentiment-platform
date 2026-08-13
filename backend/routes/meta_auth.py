@@ -263,11 +263,7 @@ async def meta_callback(request: Request, background_tasks: BackgroundTasks, db:
 
         db.commit()
 
-    return {
-        "status":      "success",
-        "message":     f"Connected {len(pages_saved)} page(s) successfully",
-        "pages":       pages_saved,
-    }
+    return RedirectResponse(f"{settings.frontend_url}/connect-pages?success=true")
 
 
 @router.get("/pages", response_model=list[ConnectedPageOut])

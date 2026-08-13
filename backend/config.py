@@ -15,9 +15,13 @@ class Settings:
     meta_verify_token: str = os.getenv("META_VERIFY_TOKEN", "your_secure_verify_token_here")
     meta_app_id: str = os.getenv("META_APP_ID", "")
     meta_app_secret: str = os.getenv("META_APP_SECRET", "")
+    _backend_url = os.getenv("RENDER_EXTERNAL_URL", os.getenv("BACKEND_URL", "http://localhost:8000"))
     meta_redirect_uri: str = os.getenv(
-        "META_REDIRECT_URI", "http://localhost:8000/auth/meta/callback"
+        "META_REDIRECT_URI", f"{_backend_url}/auth/meta/callback"
     )
+    # Default to localhost if running locally, otherwise use Render UI URL
+    _default_frontend = "http://localhost:5173" if "localhost" in _backend_url else "https://swarasense-ui.onrender.com"
+    frontend_url: str = os.getenv("FRONTEND_URL", _default_frontend)
 
     database_url: str = os.getenv(
         "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/sentiment_db"
