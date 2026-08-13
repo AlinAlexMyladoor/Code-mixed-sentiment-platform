@@ -27,21 +27,34 @@ class Settings:
     mongodb_db: str = os.getenv("MONGODB_DB", "sentiment_platform")
 
     inference_url: str | None = os.getenv("INFERENCE_URL") or None
-    # Always allow local dev origins plus any URLs declared in CORS_ORIGINS.
-    # On Render: set CORS_ORIGINS=https://swarasense-ui.onrender.com
-    # Both local dev AND the live frontend will be allowed simultaneously.
+
+    # ── CORS Origins ──────────────────────────────────────────────────────────
+    # Rules:
+    #   1. Localhost dev URLs are always allowed (hardcoded baseline).
+    #   2. The live Render frontend is hardcoded — no env var needed for it.
+    #   3. Any extra origins can be injected via CORS_ORIGINS (comma-separated).
+    #   4. All origins are stripped of trailing slashes — a trailing slash causes
+    #      a 100% match failure that looks identical to a missing CORS rule.
     _dev_origins: list[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
+    # Exact Render production frontend URL — no trailing slash.
+    _prod_origins: list[str] = [
+        "https://swarasense-ui.onrender.com",
+    ]
     _env_origins: list[str] = [
-        o.strip()
+        o.strip().rstrip("/")
         for o in os.getenv("CORS_ORIGINS", "").split(",")
         if o.strip()
     ]
-    cors_origins: list[str] = list(dict.fromkeys(_dev_origins + _env_origins))
+    cors_origins: list[str] = list(
+        dict.fromkeys(
+            [o.rstrip("/") for o in _dev_origins + _prod_origins + _env_origins]
+        )
+    )
 
     redis_queue_key: str = "meta_webhook_queue"
     redis_pubsub_channel: str = "comment_processed"
