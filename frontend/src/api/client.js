@@ -73,11 +73,11 @@ export const api = {
 };
 
 export const getWsUrl = () => {
-  // Auto-derive WebSocket URL from the HTTP API base:
-  //   http://localhost:8000  → ws://localhost:8000/ws/dashboard  (local dev)
-  //   https://xyz.onrender.com → wss://xyz.onrender.com/ws/dashboard  (production)
-  // This avoids a separate VITE_WS_URL env var and always picks the right protocol.
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  // Use Render backend URL dynamically in production
+  const apiBase = import.meta.env.PROD 
+    ? (import.meta.env.VITE_API_URL || 'https://swarasense.onrender.com')
+    : (import.meta.env.VITE_API_URL || 'http://localhost:8000');
+    
   const wsBase = apiBase.replace(/^http/, 'ws');
   const token = getToken();
   return token ? `${wsBase}/ws/dashboard?token=${token}` : `${wsBase}/ws/dashboard`;
