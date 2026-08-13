@@ -27,13 +27,21 @@ class Settings:
     mongodb_db: str = os.getenv("MONGODB_DB", "sentiment_platform")
 
     inference_url: str | None = os.getenv("INFERENCE_URL") or None
-    cors_origins: list[str] = [
+    # Always allow local dev origins plus any URLs declared in CORS_ORIGINS.
+    # On Render: set CORS_ORIGINS=https://swarasense-ui.onrender.com
+    # Both local dev AND the live frontend will be allowed simultaneously.
+    _dev_origins: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+    _env_origins: list[str] = [
         o.strip()
-        for o in os.getenv(
-            "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-        ).split(",")
+        for o in os.getenv("CORS_ORIGINS", "").split(",")
         if o.strip()
     ]
+    cors_origins: list[str] = list(dict.fromkeys(_dev_origins + _env_origins))
 
     redis_queue_key: str = "meta_webhook_queue"
     redis_pubsub_channel: str = "comment_processed"

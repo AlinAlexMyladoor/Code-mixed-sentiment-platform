@@ -73,7 +73,12 @@ export const api = {
 };
 
 export const getWsUrl = () => {
-  const base = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/dashboard';
+  // Auto-derive WebSocket URL from the HTTP API base:
+  //   http://localhost:8000  → ws://localhost:8000/ws/dashboard  (local dev)
+  //   https://xyz.onrender.com → wss://xyz.onrender.com/ws/dashboard  (production)
+  // This avoids a separate VITE_WS_URL env var and always picks the right protocol.
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const wsBase = apiBase.replace(/^http/, 'ws');
   const token = getToken();
-  return token ? `${base}?token=${token}` : base;
+  return token ? `${wsBase}/ws/dashboard?token=${token}` : `${wsBase}/ws/dashboard`;
 };
