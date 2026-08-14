@@ -9,6 +9,7 @@ export function useWebSocket(onMessage) {
   const connect = useCallback(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
+      console.warn('[WebSocket] No access_token found in localStorage. Aborting connection.');
       setStatus('disconnected');
       return;
     }
