@@ -89,17 +89,17 @@ export default function Dashboard() {
         }}>
           <div>
             <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              Social Listening{' '}
-              <span className="gradient-text">Command Center</span>
+              Real-Time{' '}
+              <span className="gradient-text">Social Listening Command Center</span>
             </h1>
             <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
-              Boundary-optimized extraction · Sarcasm detection · Language-switch analytics
+              AI-powered sentiment analysis · Sarcasm detection · Multilingual code-mixed intelligence
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div className={`live-indicator`}>
               <span className={`status-dot ${wsStatus}`} />
-              {wsStatus === 'live' ? 'Stream Live' : wsStatus}
+              {wsStatus === 'live' ? 'Live Stream' : wsStatus === 'connecting' ? 'Connecting…' : wsStatus}
             </div>
           </div>
         </div>

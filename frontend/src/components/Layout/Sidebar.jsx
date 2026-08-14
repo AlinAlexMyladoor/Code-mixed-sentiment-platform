@@ -4,12 +4,12 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { label: 'Dashboard',        icon: Home,           to: '/' },
-  { label: 'Analytics',        icon: BarChart2,       to: '/analytics' },
-  { label: 'Comments',         icon: MessageSquare,   to: '/comments' },
-  { label: 'AI Insights',      icon: Brain,           to: '/ai-insights' },
-  { label: 'Connect Pages',    icon: Link2,           to: '/connect' },
-  { label: 'Settings',         icon: Settings,        to: '/settings' },
+  { label: 'Dashboard',     icon: Home,          to: '/' },
+  { label: 'Analytics',     icon: BarChart2,      to: '/analytics' },
+  { label: 'Comments',      icon: MessageSquare,  to: '/comments' },
+  { label: 'AI Insights',   icon: Brain,          to: '/ai-insights' },
+  { label: 'Connect Pages', icon: Link2,          to: '/connect' },
+  { label: 'Settings',      icon: Settings,       to: '/settings' },
 ];
 
 export default function Sidebar({ wsStatus }) {
@@ -21,7 +21,7 @@ export default function Sidebar({ wsStatus }) {
           <Zap size={18} color="white" strokeWidth={2.5} />
         </div>
         <div className="sidebar-logo-text">
-          <div className="sidebar-logo-title">SentinelAI</div>
+          <div className="sidebar-logo-title">SwaraSense</div>
           <div className="sidebar-logo-subtitle">Sentiment Intelligence</div>
         </div>
       </div>
@@ -50,7 +50,7 @@ export default function Sidebar({ wsStatus }) {
             <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
               {wsStatus === 'live' ? 'Stream Live' : wsStatus === 'connecting' ? 'Connecting…' : 'Reconnecting…'}
             </div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>WebSocket</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Live Stream</div>
           </div>
           <Globe size={14} color="var(--text-muted)" />
         </div>

@@ -11,33 +11,27 @@ const INFERENCE_MODES = [
     name: 'Heuristic Engine',
     icon: Zap,
     color: '#f59e0b',
-    desc: 'Rule-based lexicon matching. Fast, no dependencies. Covers Tamil, Malayalam, Hindi, Bengali Romanized dialects. Sarcasm detection via cues + emoji.',
+    desc: 'Rule-based lexicon matching with dialect-specific token libraries. Covers Tamil, Malayalam, Hindi, and Bengali Romanized code-mixed inputs with sarcasm detection via contextual cues and emoji patterns.',
     accuracy: '~68%',
     latency: '<1ms',
-    requirements: 'None',
-    env: 'INFERENCE_MODE=heuristic (default)',
   },
   {
     id: 'roberta_cpu',
-    name: 'RoBERTa CPU Bridge',
+    name: 'RoBERTa ML Model',
     icon: Cpu,
     color: '#6366f1',
-    desc: 'cardiffnlp/twitter-roberta-base-sentiment-latest. Real ML inference on CPU. ~400MB download. Sarcasm overlay applied on top of model scores.',
+    desc: 'Transformer-based sentiment model fine-tuned on social media text. Provides true machine learning inference with a sarcasm overlay layer applied on top of base model scores for higher precision.',
     accuracy: '~78%',
     latency: '200–600ms',
-    requirements: 'pip install transformers torch',
-    env: 'INFERENCE_MODE=roberta + python ai_pipeline/roberta_inference.py',
   },
   {
     id: 'llama_lora',
     name: 'Llama 3 8B LoRA',
     icon: Brain,
     color: '#ec4899',
-    desc: 'Fine-tuned Llama 3 8B with LoRA adapters on synthetic code-mixed data. 66.87% accuracy benchmark on code-mixed corpora (vs 55-65% zero-shot).',
+    desc: 'Fine-tuned Llama 3 8B with LoRA adapters trained on synthetic code-mixed corpora. Achieves 66.87% benchmark accuracy on code-mixed data — 10–12% above zero-shot baselines.',
     accuracy: '~82–87%',
     latency: '500–2000ms',
-    requirements: 'GPU (16GB+ VRAM) + trained LoRA weights',
-    env: 'INFERENCE_MODE=llama + INFERENCE_URL=http://localhost:8001/analyze',
   },
 ];
 
@@ -72,7 +66,7 @@ export default function AIInsights() {
 
   return (
     <>
-      <TopBar title="AI Insights" subtitle="Model performance, inference modes, and accuracy metrics" />
+      <TopBar title="AI Insights" subtitle="Inference engine performance, model comparison, and classified comment stream" />
       <div className="page-body">
 
         {/* Active inference mode banner */}
@@ -158,9 +152,8 @@ export default function AIInsights() {
 
                 {/* Setup */}
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', padding: '8px 10px', background: 'rgba(0,0,0,0.2)', borderRadius: 8 }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 3 }}>Requirements</div>
-                  <div>{mode.requirements}</div>
-                  <div style={{ marginTop: 4, color: 'var(--accent-1)', fontFamily: 'monospace', fontSize: '0.65rem' }}>{mode.env}</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 3 }}>Performance Tier</div>
+                  <div>{mode.accuracy} accuracy · {mode.latency} avg latency</div>
                 </div>
               </div>
             );

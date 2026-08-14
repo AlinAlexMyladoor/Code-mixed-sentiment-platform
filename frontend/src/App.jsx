@@ -8,6 +8,7 @@ import CommentExplorer from './pages/CommentExplorer';
 import AIInsights from './pages/AIInsights';
 import ConnectPages from './pages/ConnectPages';
 import Settings from './pages/Settings';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import './index.css';
 
 function AppShell() {
@@ -27,12 +28,12 @@ function AppShell() {
       <Sidebar wsStatus={wsStatus} />
       <main className="main-content">
         <Routes>
-          <Route path="/"           element={<Dashboard />} />
-          <Route path="/analytics"  element={<Analytics />} />
-          <Route path="/comments"   element={<CommentExplorer />} />
+          <Route path="/"            element={<Dashboard />} />
+          <Route path="/analytics"   element={<Analytics />} />
+          <Route path="/comments"    element={<CommentExplorer />} />
           <Route path="/ai-insights" element={<AIInsights />} />
-          <Route path="/connect"    element={<ConnectPages />} />
-          <Route path="/settings"   element={<Settings />} />
+          <Route path="/connect"     element={<ConnectPages />} />
+          <Route path="/settings"    element={<Settings />} />
         </Routes>
       </main>
     </div>
@@ -42,7 +43,12 @@ function AppShell() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppShell />
+      <Routes>
+        {/* Privacy Policy is a standalone full-page route (no sidebar) */}
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        {/* All other routes use the main app shell with sidebar */}
+        <Route path="/*" element={<AppShell />} />
+      </Routes>
     </BrowserRouter>
   );
 }
