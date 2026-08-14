@@ -355,29 +355,14 @@ async def retry_dlq_items(background_tasks: BackgroundTasks):
 
 # ─── WebSocket ─────────────────────────────────────────────────────────────
 @app.websocket("/ws/dashboard")
-async def dashboard_ws(websocket: WebSocket, token: str = None):
-    logger.info(f"Incoming WebSocket connection request. Token present: {bool(token)}")
-    if not token:
-        logger.warning("WebSocket connection rejected: Missing token")
-        await websocket.close(code=1008)
-        return
-    try:
-        token_data = decode_token(token)
-        if not token_data or not token_data.user_id:
-            logger.warning("WebSocket connection rejected: Invalid token payload")
-            raise Exception("Invalid token")
-    except Exception as e:
-        logger.error(f"WebSocket authentication error: {e}")
-        await websocket.close(code=1008)
-        return
-
-    logger.info(f"WebSocket authenticated for user ID: {token_data.user_id}")
+async def dashboard_ws(websocket: WebSocket):
+    logger.info(f"Incoming WebSocket connection request. (Authentication disabled for open access)")
     await manager.connect(websocket)
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        logger.info(f"WebSocket disconnected for user ID: {token_data.user_id}")
+        logger.info(f"WebSocket disconnected")
         manager.disconnect(websocket)
 
 

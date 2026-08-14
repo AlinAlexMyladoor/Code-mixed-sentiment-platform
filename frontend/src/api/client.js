@@ -79,6 +79,5 @@ export const getWsUrl = () => {
     : (import.meta.env.VITE_API_URL || 'http://localhost:8000');
     
   const wsBase = apiBase.replace(/^http/, 'ws');
-  const token = getToken();
-  return token ? `${wsBase}/ws/dashboard?token=${token}` : `${wsBase}/ws/dashboard`;
+  return `${wsBase}/ws/dashboard`;
 };

@@ -7,13 +7,6 @@ export function useWebSocket(onMessage) {
   const reconnectRef = useRef(null);
 
   const connect = useCallback(() => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      console.warn('[WebSocket] No access_token found in localStorage. Aborting connection.');
-      setStatus('disconnected');
-      return;
-    }
-
     const wsUrl = getWsUrl();
     console.log('[WebSocket] Attempting to connect to:', wsUrl);
     const ws = new WebSocket(wsUrl);
