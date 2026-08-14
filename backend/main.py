@@ -3,6 +3,7 @@ import json
 import logging
 import time
 import uuid
+from contextlib import asynccontextmanager
 
 import redis
 import redis.asyncio as aioredis
@@ -25,6 +26,7 @@ from routes.auth import decode_token
 from schemas import DashboardMetrics, MetricsSummary, ProcessedCommentOut
 from ws_manager import manager
 from stripe_integration import router as billing_router
+from worker import run_worker
 
 # ─── Logging ───────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -38,6 +40,88 @@ settings = get_settings()
 # ─── Rate Limiter ──────────────────────────────────────────────────────────
 from limiter import limiter
 
+
+# ─── Redis helpers ─────────────────────────────────────────────────────────
+def get_sync_redis():
+    import redis as sync_redis
+    return sync_redis.from_url(settings.redis_url, decode_responses=True)
+
+
+def push_to_queue(payload: dict):
+    client = get_sync_redis()
+    try:
+        client.lpush(settings.redis_queue_key, json.dumps(payload))
+    except redis.RedisError as exc:
+        logger.error(f"Redis queue push failed: {exc}")
+
+
+async def redis_pubsub_listener():
+    """Forward worker events to dashboard WebSocket clients, with retry on disconnect."""
+    retry_delay = 2
+    while True:
+        try:
+            r = aioredis.from_url(settings.redis_url, decode_responses=True)
+            pubsub = r.pubsub()
+            await pubsub.subscribe(settings.redis_pubsub_channel)
+            logger.info("Redis pub/sub listener started.")
+            retry_delay = 2  # reset on successful connect
+            try:
+                # Use get_message with asyncio.sleep to avoid generator blocking issues
+                while True:
+                    message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
+                    if message and message.get("type") == "message":
+                        try:
+                            data = json.loads(message["data"])
+                            await manager.broadcast(data)
+                        except json.JSONDecodeError:
+                            continue
+                    await asyncio.sleep(0.01)
+            except asyncio.CancelledError:
+                logger.info("Redis Pub/Sub listener stopping gracefully...")
+                raise
+            finally:
+                try:
+                    await pubsub.unsubscribe(settings.redis_pubsub_channel)
+                    await pubsub.close()
+                except Exception:
+                    pass
+                try:
+                    await r.aclose()
+                except Exception:
+                    pass
+        except asyncio.CancelledError:
+            break
+        except Exception as exc:
+            logger.warning(
+                f"Redis pub/sub connection failed ({exc}). "
+                f"Retrying in {retry_delay}s…"
+            )
+            await asyncio.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, 60)  # exponential back-off, cap at 60s
+
+
+# ─── Lifespan ──────────────────────────────────────────────────────────────
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup and shutdown logic using the modern lifespan pattern."""
+    Base.metadata.create_all(bind=engine)
+    listener_task = asyncio.create_task(redis_pubsub_listener())
+    worker_task = asyncio.create_task(asyncio.to_thread(run_worker))
+    logger.info("Platform started. Tables created.")
+    yield
+    listener_task.cancel()
+    worker_task.cancel()
+    try:
+        await listener_task
+    except asyncio.CancelledError:
+        pass
+    try:
+        await worker_task
+    except asyncio.CancelledError:
+        pass
+    logger.info("Platform shutting down.")
+
+
 # ─── App ───────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="Code-Mixed Sentiment Intelligence Platform",
@@ -48,6 +132,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.state.limiter = limiter
@@ -97,48 +182,6 @@ app.include_router(auth_router)
 app.include_router(meta_auth_router)
 app.include_router(analytics_router)
 app.include_router(billing_router)
-
-
-# ─── Redis helpers ─────────────────────────────────────────────────────────
-def get_sync_redis():
-    import redis as sync_redis
-    return sync_redis.from_url(settings.redis_url, decode_responses=True)
-
-
-def push_to_queue(payload: dict):
-    client = get_sync_redis()
-    try:
-        client.lpush(settings.redis_queue_key, json.dumps(payload))
-    except redis.RedisError as exc:
-        logger.error(f"Redis queue push failed: {exc}")
-
-
-async def redis_pubsub_listener():
-    """Forward worker events to dashboard WebSocket clients."""
-    r = aioredis.from_url(settings.redis_url, decode_responses=True)
-    pubsub = r.pubsub()
-    await pubsub.subscribe(settings.redis_pubsub_channel)
-    logger.info("Redis pub/sub listener started.")
-    try:
-        async for message in pubsub.listen():
-            if message["type"] != "message":
-                continue
-            try:
-                data = json.loads(message["data"])
-                await manager.broadcast(data)
-            except json.JSONDecodeError:
-                continue
-    finally:
-        await pubsub.unsubscribe(settings.redis_pubsub_channel)
-        await r.close()
-
-
-# ─── Startup ───────────────────────────────────────────────────────────────
-@app.on_event("startup")
-async def on_startup():
-    Base.metadata.create_all(bind=engine)
-    asyncio.create_task(redis_pubsub_listener())
-    logger.info("Platform started. Tables created.")
 
 
 # ─── Webhook endpoints ─────────────────────────────────────────────────────
