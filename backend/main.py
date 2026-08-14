@@ -190,11 +190,13 @@ async def verify_webhook(request: Request):
     mode      = request.query_params.get("hub.mode")
     token     = request.query_params.get("hub.verify_token")
     challenge = request.query_params.get("hub.challenge")
+    logger.info(f"Verify Webhook called. Mode: {mode}, Token length: {len(token) if token else 'None'}")
 
     if mode == "subscribe" and token == settings.meta_verify_token:
-        logger.info("Webhook verified successfully.")
+        logger.info("Webhook verified successfully with Meta.")
         return PlainTextResponse(content=challenge)
 
+    logger.warning("Webhook verification failed: Token mismatch or invalid mode.")
     raise HTTPException(status_code=403, detail="Verification token mismatch")
 
 
@@ -203,9 +205,10 @@ async def verify_webhook(request: Request):
 async def receive_webhook(request: Request, background_tasks: BackgroundTasks):
     try:
         payload = await request.json()
+        logger.info(f"Webhook POST received. Payload (first 200 chars): {json.dumps(payload)[:200]}")
         background_tasks.add_task(store_raw_webhook, payload)
         background_tasks.add_task(push_to_queue, payload)
-        logger.info(f"Webhook payload received, queued for processing.")
+        logger.info(f"Webhook payload queued for processing via BackgroundTasks.")
         return {"status": "success", "message": "Payload received"}
     except Exception as exc:
         logger.error(f"Webhook error: {exc}")
@@ -353,22 +356,28 @@ async def retry_dlq_items(background_tasks: BackgroundTasks):
 # ─── WebSocket ─────────────────────────────────────────────────────────────
 @app.websocket("/ws/dashboard")
 async def dashboard_ws(websocket: WebSocket, token: str = None):
+    logger.info(f"Incoming WebSocket connection request. Token present: {bool(token)}")
     if not token:
+        logger.warning("WebSocket connection rejected: Missing token")
         await websocket.close(code=1008)
         return
     try:
         token_data = decode_token(token)
         if not token_data or not token_data.user_id:
+            logger.warning("WebSocket connection rejected: Invalid token payload")
             raise Exception("Invalid token")
-    except Exception:
+    except Exception as e:
+        logger.error(f"WebSocket authentication error: {e}")
         await websocket.close(code=1008)
         return
 
+    logger.info(f"WebSocket authenticated for user ID: {token_data.user_id}")
     await manager.connect(websocket)
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
+        logger.info(f"WebSocket disconnected for user ID: {token_data.user_id}")
         manager.disconnect(websocket)
 
 

@@ -69,7 +69,9 @@ def publish_processed_event(record: ProcessedComment) -> None:
         },
     }
     try:
-        redis_client.publish(settings.redis_pubsub_channel, json.dumps(event))
+        payload = json.dumps(event)
+        logger.info(f"Publishing processed event to Redis pub/sub: {payload[:200]}")
+        redis_client.publish(settings.redis_pubsub_channel, payload)
     except redis.RedisError as exc:
         logger.error(f"Pub/sub publish failed: {exc}")
 
