@@ -101,13 +101,13 @@ const INITIAL_COMMENTS = [
 ];
 
 export const DEMO_LANG_SWITCH = [
-  { hour: '2024-01-01T08:00', avg_switch_count: 1.2, comment_count: 8 },
-  { hour: '2024-01-01T09:00', avg_switch_count: 2.1, comment_count: 14 },
-  { hour: '2024-01-01T10:00', avg_switch_count: 1.8, comment_count: 12 },
-  { hour: '2024-01-01T11:00', avg_switch_count: 2.5, comment_count: 20 },
-  { hour: '2024-01-01T12:00', avg_switch_count: 3.0, comment_count: 18 },
-  { hour: '2024-01-01T13:00', avg_switch_count: 2.3, comment_count: 16 },
-  { hour: '2024-01-01T14:00', avg_switch_count: 1.5, comment_count: 22 },
+  { hour: '2024-01-01T08:00', avg_switches: 1.2, avg_en_ratio: 0.35, comment_count: 8 },
+  { hour: '2024-01-01T09:00', avg_switches: 2.1, avg_en_ratio: 0.42, comment_count: 14 },
+  { hour: '2024-01-01T10:00', avg_switches: 1.8, avg_en_ratio: 0.38, comment_count: 12 },
+  { hour: '2024-01-01T11:00', avg_switches: 2.5, avg_en_ratio: 0.48, comment_count: 20 },
+  { hour: '2024-01-01T12:00', avg_switches: 3.0, avg_en_ratio: 0.55, comment_count: 18 },
+  { hour: '2024-01-01T13:00', avg_switches: 2.3, avg_en_ratio: 0.45, comment_count: 16 },
+  { hour: '2024-01-01T14:00', avg_switches: 1.5, avg_en_ratio: 0.39, comment_count: 22 },
 ];
 
 export const DEMO_BRANDS = [
@@ -177,10 +177,10 @@ export function DemoProvider({ children }) {
       '75-100%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
     };
     const sentLangMap = {
-      positive: { sum: 0, count: 0 },
-      negative: { sum: 0, count: 0 },
-      sarcastic: { sum: 0, count: 0 },
-      neutral: { sum: 0, count: 0 },
+      positive: { sumEng: 0, sumSw: 0, count: 0 },
+      negative: { sumEng: 0, sumSw: 0, count: 0 },
+      sarcastic: { sumEng: 0, sumSw: 0, count: 0 },
+      neutral: { sumEng: 0, sumSw: 0, count: 0 },
     };
     const sources = { heuristic_mvp: 0, roberta: 0, llama: 0 };
 
@@ -207,7 +207,8 @@ export function DemoProvider({ children }) {
 
       // Correlation
       if (sentLangMap[c.sentiment]) {
-        sentLangMap[c.sentiment].sum += ratio;
+        sentLangMap[c.sentiment].sumEng += ratio;
+        sentLangMap[c.sentiment].sumSw += (c.language_switch_count || 0);
         sentLangMap[c.sentiment].count++;
       }
 
@@ -225,7 +226,8 @@ export function DemoProvider({ children }) {
       .filter(([_, data]) => data.count > 0)
       .map(([sentiment, data]) => ({
         sentiment,
-        avg_english_ratio: data.sum / data.count,
+        avg_en_ratio: data.sumEng / data.count,
+        avg_switches: data.sumSw / data.count,
         count: data.count,
       }));
 
