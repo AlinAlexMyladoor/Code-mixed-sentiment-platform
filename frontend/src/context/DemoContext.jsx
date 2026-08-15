@@ -170,7 +170,12 @@ export function DemoProvider({ children }) {
       urgent_alerts: 0,
     };
 
-    const ratioBands = { '0-25%': 0, '25-50%': 0, '50-75%': 0, '75-100%': 0 };
+    const ratioBands = {
+      '0-25%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+      '25-50%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+      '50-75%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+      '75-100%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+    };
     const sentLangMap = {
       positive: { sum: 0, count: 0 },
       negative: { sum: 0, count: 0 },
@@ -191,10 +196,14 @@ export function DemoProvider({ children }) {
       // Ratios
       totalEngRatio += (c.english_ratio || 0);
       const ratio = c.english_ratio || 0;
-      if (ratio <= 0.25) ratioBands['0-25%']++;
-      else if (ratio <= 0.5) ratioBands['25-50%']++;
-      else if (ratio <= 0.75) ratioBands['50-75%']++;
-      else ratioBands['75-100%']++;
+      let bandKey = '75-100%';
+      if (ratio <= 0.25) bandKey = '0-25%';
+      else if (ratio <= 0.5) bandKey = '25-50%';
+      else if (ratio <= 0.75) bandKey = '50-75%';
+      
+      if (ratioBands[bandKey][c.sentiment] !== undefined) {
+        ratioBands[bandKey][c.sentiment]++;
+      }
 
       // Correlation
       if (sentLangMap[c.sentiment]) {

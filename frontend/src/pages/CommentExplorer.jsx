@@ -43,7 +43,7 @@ export default function CommentExplorer() {
     } finally {
       setLoading(false);
     }
-  }, [page, sentiment, search, isDemoMode]);
+  }, [page, sentiment, search, isDemoMode, demoComments]);
 
   useEffect(() => { load(); }, [load]);
 

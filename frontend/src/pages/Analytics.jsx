@@ -77,7 +77,7 @@ export default function Analytics() {
       }
     };
     load();
-  }, [isDemoMode]);
+  }, [isDemoMode, demoMetrics, demoLangSwitch, demoBrands]);
 
   const sourcePieData = Object.entries(sources).map(([name, value]) => ({ name, value }));
   const bandData = Object.entries(ratioBands).map(([band, counts]) => ({ band, ...counts }));

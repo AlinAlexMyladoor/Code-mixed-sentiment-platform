@@ -69,7 +69,7 @@ export default function AIInsights() {
       }
     };
     load();
-  }, [isDemoMode]);
+  }, [isDemoMode, demoMetrics, demoComments]);
 
   const total = Object.values(sources).reduce((a, b) => a + b, 0);
 
