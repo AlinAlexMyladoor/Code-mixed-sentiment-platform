@@ -126,6 +126,15 @@ export default function Dashboard() {
       setAnalyzeResult(result);
       if (isDemoMode) {
         injectCustomComment(result);
+        // Also manually prepend to local liveFeed so it animates in immediately on Dashboard
+        setLiveFeed((prev) => [{
+          ...result,
+          id: `demo-${Date.now()}`,
+          platform_id: 'custom-demo',
+          page_id: 'demo-page',
+          translation: `[Simulated Translation] ${result.original_text}`,
+          created_at: new Date().toISOString(),
+        }, ...prev]);
       }
     } catch (err) {
       setAnalyzeError(err.message || 'Analysis failed. Please try again.');
@@ -138,13 +147,13 @@ export default function Dashboard() {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleAnalyze();
   };
 
-  // Merge live feed with persisted data
+  // Merge live feed with persisted data (or demo comments)
   const displayFeed = useMemo(() => {
-    const base = isDemoMode ? [] : (metrics?.data || []);
+    const base = isDemoMode ? demoComments : (metrics?.data || []);
     const ids = new Set(liveFeed.map((c) => c.id));
     const combined = [...liveFeed, ...base.filter((c) => !ids.has(c.id))];
     return combined.slice(0, 40);
-  }, [liveFeed, metrics, isDemoMode]);
+  }, [liveFeed, metrics, isDemoMode, demoComments]);
 
   const urgentItems = useMemo(
     () => displayFeed.filter((c) => c.sentiment === 'negative' || c.sentiment === 'sarcastic'),
