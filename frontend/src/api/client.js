@@ -42,6 +42,7 @@ export const api = {
 
   // ─── Dashboard ─────────────────────────────────────────────────────────
   metrics: () => request('GET', '/api/metrics'),
+  analyze: (text) => request('POST', '/api/analyze', { text }),
 
   // ─── Comments ──────────────────────────────────────────────────────────
   comments: (params) => request('GET', '/api/comments', null, params),

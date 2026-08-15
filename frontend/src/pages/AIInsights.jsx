@@ -195,7 +195,7 @@ export default function AIInsights() {
               {[1,2,3].map((i) => <Skeleton key={i} height={80} />)}
             </div>
           ) : recentComments.length === 0 ? (
-            <EmptyState icon={Brain} title="No comments yet" desc="Process some webhooks to see classification results here." />
+            <EmptyState icon={Brain} title="No classified comments yet" desc="Connect a Facebook Page to begin receiving real-time data, or use the Demo panel on the Dashboard." />
           ) : (
             <div className="comment-feed" style={{ maxHeight: 400 }}>
               {recentComments.slice(0, 15).map((c) => (

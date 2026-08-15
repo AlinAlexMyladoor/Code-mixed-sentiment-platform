@@ -215,6 +215,44 @@ async def receive_webhook(request: Request, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
+# ─── Live comment analyzer (used by Demo panel) ────────────────────────────
+@app.post("/api/analyze")
+@limiter.limit("60/minute")
+async def analyze_text(request: Request):
+    """
+    Analyze a single comment text in real-time using the active inference engine.
+    Used by the frontend Demo panel to let users try the platform without webhooks.
+    """
+    try:
+        body = await request.json()
+        text = (body.get("text") or "").strip()
+        if not text:
+            raise HTTPException(status_code=422, detail="text field is required")
+        if len(text) > 2000:
+            raise HTTPException(status_code=422, detail="text must be under 2000 characters")
+
+        from inference import analyze_comment
+        result = analyze_comment(text)
+
+        return {
+            "text": text,
+            "sentiment": result.sentiment,
+            "confidence": round(result.confidence, 4),
+            "english_ratio": round(result.english_ratio, 4),
+            "language_switch_count": result.language_switch_count,
+            "sarcasm_score": round(result.sarcasm_score, 4),
+            "sarcasm_signals": result.sarcasm_signals,
+            "extracted_entities": result.extracted_entities,
+            "regional_tokens_found": result.regional_tokens_found,
+            "inference_source": result.source,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(f"Analyze error: {exc}")
+        raise HTTPException(status_code=500, detail="Analysis failed")
+
+
 # ─── Dashboard metrics ─────────────────────────────────────────────────────
 def _build_summary(db) -> MetricsSummary:
     total = db.query(func.count(ProcessedComment.id)).scalar() or 0
