@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import {
   BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings, X,
 } from 'lucide-react';
-import { useDemo } from '../context/DemoContext';
+import { useDemo } from '../../context/DemoContext';
 
 const NAV_ITEMS = [
   { label: 'Dashboard',     icon: Home,          to: '/' },
