@@ -3,12 +3,12 @@ import { Download, Filter, MessageSquare, Search } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, SentimentBadge, Skeleton } from '../components/UI';
 import { api } from '../api/client';
-import { useDemo, DEMO_COMMENTS } from '../context/DemoContext';
+import { useDemo } from '../context/DemoContext';
 
 const SENTIMENTS = ['all', 'positive', 'negative', 'neutral', 'sarcastic'];
 
 export default function CommentExplorer() {
-  const { isDemoMode } = useDemo();
+  const { isDemoMode, demoComments } = useDemo();
   const [comments, setComments] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -24,7 +24,7 @@ export default function CommentExplorer() {
     try {
       if (isDemoMode) {
         // Filter mock data locally
-        let filtered = DEMO_COMMENTS;
+        let filtered = demoComments;
         if (sentiment !== 'all') filtered = filtered.filter(c => c.sentiment === sentiment);
         if (search) filtered = filtered.filter(c => c.original_text.toLowerCase().includes(search.toLowerCase()));
         setComments(filtered);

@@ -11,7 +11,7 @@ import { CommentItem, EmptyState, MetricCard, Skeleton } from '../components/UI'
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useMetrics } from '../hooks/useMetrics';
 import { api } from '../api/client';
-import { useDemo, DEMO_COMMENTS, DEMO_METRICS } from '../context/DemoContext';
+import { useDemo } from '../context/DemoContext';
 
 const CHART_COLORS = {
   positive: '#22c55e',
@@ -85,7 +85,7 @@ const MOCK_TREND = [
 export default function Dashboard() {
   const { metrics, loading, refetch } = useMetrics(15000);
   const [liveFeed, setLiveFeed] = useState([]);
-  const { isDemoMode, activateDemo, clearDemo: clearDemoCtx } = useDemo();
+  const { isDemoMode, activateDemo, clearDemo: clearDemoCtx, injectCustomComment, demoComments, demoMetrics } = useDemo();
 
   // Custom comment analyzer state
   const [analyzeText, setAnalyzeText] = useState('');
@@ -106,8 +106,8 @@ export default function Dashboard() {
   // Activate demo mode — uses global context so all pages see it
   const loadDemo = useCallback(() => {
     activateDemo();
-    setLiveFeed(DEMO_COMMENTS);
-  }, [activateDemo]);
+    setLiveFeed(demoComments); // Initial load
+  }, [activateDemo, demoComments]);
 
   const clearDemo = useCallback(() => {
     clearDemoCtx();
@@ -124,6 +124,9 @@ export default function Dashboard() {
     try {
       const result = await api.analyze(text);
       setAnalyzeResult(result);
+      if (isDemoMode) {
+        injectCustomComment(result);
+      }
     } catch (err) {
       setAnalyzeError(err.message || 'Analysis failed. Please try again.');
     } finally {
@@ -150,9 +153,9 @@ export default function Dashboard() {
 
   // Use real data for metrics; demo summary if in demo mode
   const s = isDemoMode
-    ? { total_comments: 6, positive: 2, negative: 2, neutral: 1, sarcastic: 1, avg_english_ratio: 0.37, urgent_alerts: 3 }
+    ? demoMetrics?.metricsData?.summary
     : metrics?.summary;
-  const trend = isDemoMode ? MOCK_TREND : (metrics?.trend || []);
+  const trend = isDemoMode ? (demoMetrics?.metricsData?.trend || []) : (metrics?.trend || []);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
@@ -430,9 +433,12 @@ export default function Dashboard() {
           {/* Urgent Alerts */}
           <div className="panel">
             <div className="panel-header">
-              <span className="panel-title">
+              <div className="panel-title">
                 <AlertTriangle size={16} color="var(--negative)" /> Urgent Alerts
-              </span>
+                <span style={{ fontSize: '0.65rem', fontWeight: 500, color: 'var(--text-muted)', marginLeft: 8, background: 'var(--bg-elevated)', padding: '2px 6px', borderRadius: 10 }}>
+                  (Negative or Sarcastic)
+                </span>
+              </div>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                 {urgentItems.length} items
               </span>

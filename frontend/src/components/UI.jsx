@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { Languages } from 'lucide-react';
+
 export const sentimentColor = (s) => {
   switch (s) {
     case 'positive':  return 'var(--positive)';
@@ -42,6 +45,8 @@ export function MetricCard({ label, value, sub, icon: Icon, iconColor, iconBg, c
 }
 
 export function CommentItem({ item, showStats = true }) {
+  const [showTranslation, setShowTranslation] = useState(false);
+
   if (!item) return null;
   const time = item.created_at
     ? new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -57,15 +62,46 @@ export function CommentItem({ item, showStats = true }) {
         <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{time}</span>
       </div>
       <p className="comment-text">{item.original_text}</p>
+      
+      {showTranslation && item.translation && (
+        <div style={{
+          marginTop: 8, padding: '8px 12px', background: 'var(--bg-elevated)',
+          borderRadius: 8, fontSize: '0.8rem', color: 'var(--text-secondary)',
+          borderLeft: '2px solid var(--border)',
+        }}>
+          <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 2 }}>ENGLISH TRANSLATION</div>
+          {item.translation}
+        </div>
+      )}
+
       {showStats && (
-        <div className="comment-stats">
-          <span className="stat-chip">EN {((item.english_ratio || 0) * 100).toFixed(0)}%</span>
-          <span className="stat-chip">switches {item.language_switch_count ?? 0}</span>
-          {item.confidence && (
-            <span className="stat-chip">conf {(item.confidence * 100).toFixed(0)}%</span>
-          )}
-          {item.inference_source && (
-            <span className="stat-chip">{item.inference_source}</span>
+        <div className="comment-stats" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <span className="stat-chip">EN {((item.english_ratio || 0) * 100).toFixed(0)}%</span>
+            <span className="stat-chip">switches {item.language_switch_count ?? 0}</span>
+            {item.confidence && (
+              <span className="stat-chip">conf {(item.confidence * 100).toFixed(0)}%</span>
+            )}
+            {item.inference_source && (
+              <span className="stat-chip">{item.inference_source}</span>
+            )}
+          </div>
+          {item.translation && (
+            <button
+              onClick={() => setShowTranslation(!showTranslation)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                fontSize: '0.7rem', color: showTranslation ? 'var(--accent)' : 'var(--text-muted)',
+                padding: '4px 8px', borderRadius: 6,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-elevated)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              <Languages size={12} />
+              {showTranslation ? 'Hide translation' : 'Translate'}
+            </button>
           )}
         </div>
       )}
