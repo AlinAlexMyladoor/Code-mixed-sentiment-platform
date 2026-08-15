@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import {
-  BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings, Zap
+  BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -17,8 +17,12 @@ export default function Sidebar({ wsStatus }) {
     <aside className="sidebar">
       {/* Logo */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          <Zap size={18} color="white" strokeWidth={2.5} />
+        <div className="sidebar-logo-icon" style={{ background: 'transparent', padding: 0, overflow: 'hidden' }}>
+          <img
+            src="/logo.png"
+            alt="SwaraSense logo"
+            style={{ width: 36, height: 36, objectFit: 'contain', borderRadius: 8 }}
+          />
         </div>
         <div className="sidebar-logo-text">
           <div className="sidebar-logo-title">SwaraSense</div>
