@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Layout/Sidebar';
 import { useWebSocket } from './hooks/useWebSocket';
+import { DemoProvider } from './context/DemoContext';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
 import CommentExplorer from './pages/CommentExplorer';
@@ -13,14 +14,8 @@ import './index.css';
 
 function AppShell() {
   const [wsStatus, setWsStatus] = useState('connecting');
-
-  // Track WebSocket status at the shell level for sidebar indicator
   const onWsMessage = useCallback(() => {}, []);
-
-  // We use a simple status-only WS hook here; Dashboard creates its own
   const status = useWebSocket(onWsMessage);
-
-  // Keep sidebar status in sync
   if (status !== wsStatus) setWsStatus(status);
 
   return (
@@ -42,13 +37,13 @@ function AppShell() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Privacy Policy is a standalone full-page route (no sidebar) */}
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        {/* All other routes use the main app shell with sidebar */}
-        <Route path="/*" element={<AppShell />} />
-      </Routes>
-    </BrowserRouter>
+    <DemoProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/*" element={<AppShell />} />
+        </Routes>
+      </BrowserRouter>
+    </DemoProvider>
   );
 }

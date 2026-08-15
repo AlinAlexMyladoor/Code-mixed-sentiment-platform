@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import {
-  BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings,
+  BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings, X,
 } from 'lucide-react';
+import { useDemo } from '../context/DemoContext';
 
 const NAV_ITEMS = [
   { label: 'Dashboard',     icon: Home,          to: '/' },
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
 ];
 
 export default function Sidebar({ wsStatus }) {
+  const { isDemoMode, clearDemo } = useDemo();
   return (
     <aside className="sidebar">
       {/* Logo */}
@@ -50,6 +52,33 @@ export default function Sidebar({ wsStatus }) {
           </NavLink>
         ))}
       </nav>
+
+      {/* Demo mode banner */}
+      {isDemoMode && (
+        <div style={{
+          margin: '0 12px 8px',
+          padding: '8px 12px',
+          borderRadius: 10,
+          background: 'rgba(245,158,11,0.1)',
+          border: '1px solid rgba(245,158,11,0.3)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+        }}>
+          <div>
+            <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#f59e0b', letterSpacing: '0.08em' }}>DEMO MODE</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>Sample data active</div>
+          </div>
+          <button
+            onClick={clearDemo}
+            style={{
+              background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
+              borderRadius: 6, cursor: 'pointer', padding: '3px 6px', display: 'flex',
+            }}
+            title="Exit demo mode"
+          >
+            <X size={12} color="#f59e0b" />
+          </button>
+        </div>
+      )}
 
       {/* Footer — WebSocket status */}
       <div className="sidebar-footer">

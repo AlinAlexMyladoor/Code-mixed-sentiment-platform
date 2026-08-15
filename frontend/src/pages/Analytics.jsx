@@ -7,6 +7,7 @@ import { BarChart2, Globe, Hash, Layers, Activity, TrendingUp } from 'lucide-rea
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, Skeleton } from '../components/UI';
 import { api } from '../api/client';
+import { useDemo, DEMO_LANG_SWITCH, DEMO_BRANDS, DEMO_SOURCES, DEMO_RATIO_BANDS, DEMO_SENT_LANG_CORR } from '../context/DemoContext';
 
 const SENTINEL_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b', '#ef4444', '#38bdf8'];
 
@@ -36,6 +37,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function Analytics() {
+  const { isDemoMode } = useDemo();
   const [langSwitch, setLangSwitch]       = useState([]);
   const [brands, setBrands]               = useState([]);
   const [sources, setSources]             = useState({});
@@ -44,6 +46,15 @@ export default function Analytics() {
   const [loading, setLoading]             = useState(true);
 
   useEffect(() => {
+    if (isDemoMode) {
+      setLangSwitch(DEMO_LANG_SWITCH);
+      setBrands(DEMO_BRANDS);
+      setSources(DEMO_SOURCES);
+      setRatioBands(DEMO_RATIO_BANDS);
+      setSentLangCorr(DEMO_SENT_LANG_CORR);
+      setLoading(false);
+      return;
+    }
     const load = async () => {
       setLoading(true);
       try {
@@ -66,7 +77,7 @@ export default function Analytics() {
       }
     };
     load();
-  }, []);
+  }, [isDemoMode]);
 
   const sourcePieData = Object.entries(sources).map(([name, value]) => ({ name, value }));
   const bandData = Object.entries(ratioBands).map(([band, counts]) => ({ band, ...counts }));

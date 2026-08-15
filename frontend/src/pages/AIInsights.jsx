@@ -4,6 +4,7 @@ import TopBar from '../components/Layout/TopBar';
 import { EmptyState, Skeleton } from '../components/UI';
 import { api } from '../api/client';
 import { CommentItem } from '../components/UI';
+import { useDemo, DEMO_SOURCES, DEMO_COMMENTS } from '../context/DemoContext';
 
 const INFERENCE_MODES = [
   {
@@ -36,6 +37,7 @@ const INFERENCE_MODES = [
 ];
 
 export default function AIInsights() {
+  const { isDemoMode } = useDemo();
   const [sources, setSources] = useState({});
   const [recentComments, setRecentComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,13 @@ export default function AIInsights() {
     const load = async () => {
       setLoading(true);
       try {
+        if (isDemoMode) {
+          setSources(DEMO_SOURCES);
+          setRecentComments(DEMO_COMMENTS);
+          setActiveMode('heuristic_mvp');
+          setLoading(false);
+          return;
+        }
         const [src, metrics] = await Promise.all([
           api.inferenceSources(),
           api.metrics(),
@@ -60,7 +69,7 @@ export default function AIInsights() {
       }
     };
     load();
-  }, []);
+  }, [isDemoMode]);
 
   const total = Object.values(sources).reduce((a, b) => a + b, 0);
 

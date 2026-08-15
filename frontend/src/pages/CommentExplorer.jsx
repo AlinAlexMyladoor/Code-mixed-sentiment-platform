@@ -3,10 +3,12 @@ import { Download, Filter, MessageSquare, Search } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, SentimentBadge, Skeleton } from '../components/UI';
 import { api } from '../api/client';
+import { useDemo, DEMO_COMMENTS } from '../context/DemoContext';
 
 const SENTIMENTS = ['all', 'positive', 'negative', 'neutral', 'sarcastic'];
 
 export default function CommentExplorer() {
+  const { isDemoMode } = useDemo();
   const [comments, setComments] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -20,20 +22,28 @@ export default function CommentExplorer() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await api.comments({
-        page,
-        per_page: perPage,
-        sentiment: sentiment === 'all' ? null : sentiment,
-        search: search || null,
-      });
-      setComments(data.data || []);
-      setTotal(data.total || 0);
+      if (isDemoMode) {
+        // Filter mock data locally
+        let filtered = DEMO_COMMENTS;
+        if (sentiment !== 'all') filtered = filtered.filter(c => c.sentiment === sentiment);
+        if (search) filtered = filtered.filter(c => c.original_text.toLowerCase().includes(search.toLowerCase()));
+        setComments(filtered);
+        setTotal(filtered.length);
+      } else {
+        const data = await api.comments({
+          page, per_page: perPage,
+          sentiment: sentiment === 'all' ? null : sentiment,
+          search: search || null,
+        });
+        setComments(data.data || []);
+        setTotal(data.total || 0);
+      }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [page, sentiment, search]);
+  }, [page, sentiment, search, isDemoMode]);
 
   useEffect(() => { load(); }, [load]);
 

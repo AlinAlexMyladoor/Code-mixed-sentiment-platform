@@ -11,6 +11,7 @@ import { CommentItem, EmptyState, MetricCard, Skeleton } from '../components/UI'
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useMetrics } from '../hooks/useMetrics';
 import { api } from '../api/client';
+import { useDemo, DEMO_COMMENTS, DEMO_METRICS } from '../context/DemoContext';
 
 const CHART_COLORS = {
   positive: '#22c55e',
@@ -84,7 +85,7 @@ const MOCK_TREND = [
 export default function Dashboard() {
   const { metrics, loading, refetch } = useMetrics(15000);
   const [liveFeed, setLiveFeed] = useState([]);
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  const { isDemoMode, activateDemo, clearDemo: clearDemoCtx } = useDemo();
 
   // Custom comment analyzer state
   const [analyzeText, setAnalyzeText] = useState('');
@@ -102,16 +103,16 @@ export default function Dashboard() {
 
   const wsStatus = useWebSocket(onWsMessage);
 
-  // Activate demo mode — inject mock data locally
+  // Activate demo mode — uses global context so all pages see it
   const loadDemo = useCallback(() => {
-    setIsDemoMode(true);
-    setLiveFeed(MOCK_COMMENTS);
-  }, []);
+    activateDemo();
+    setLiveFeed(DEMO_COMMENTS);
+  }, [activateDemo]);
 
   const clearDemo = useCallback(() => {
-    setIsDemoMode(false);
+    clearDemoCtx();
     setLiveFeed([]);
-  }, []);
+  }, [clearDemoCtx]);
 
   // Analyze a custom comment via the backend
   const handleAnalyze = useCallback(async () => {
