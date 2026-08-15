@@ -147,12 +147,14 @@ body {
 }
 
 .sidebar-logo-icon {
-  width: 36px; height: 36px;
-  background: var(--accent-grad);
+  width: 40px; height: 40px;
+  background: white;
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  box-shadow: var(--accent-glow);
+  box-shadow: 0 2px 12px rgba(99,102,241,0.35);
+  overflow: hidden;
+  padding: 4px;
 }
 
 .sidebar-logo-text {

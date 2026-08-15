@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { AlertTriangle, CheckCircle, Mail, Shield, Trash2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Mail, Trash2 } from 'lucide-react';
 
 const EFFECTIVE_DATE = 'August 15, 2025';
 const CONTACT_EMAIL = 'privacy@swarasense.ai';
@@ -66,11 +66,13 @@ export default function PrivacyPolicy() {
       <div style={{ maxWidth: 780, width: '100%', marginBottom: 28 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{
-            width: 42, height: 42, borderRadius: 12,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            width: 48, height: 48, borderRadius: 12,
+            background: 'white',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 6, flexShrink: 0,
+            boxShadow: '0 2px 16px rgba(99,102,241,0.3)',
           }}>
-            <Shield size={20} color="white" />
+            <img src="/logo.png" alt="SwaraSense" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)' }}>SwaraSense</div>

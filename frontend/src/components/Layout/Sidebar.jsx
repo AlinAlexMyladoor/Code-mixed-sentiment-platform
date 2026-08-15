@@ -17,11 +17,16 @@ export default function Sidebar({ wsStatus }) {
     <aside className="sidebar">
       {/* Logo */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon" style={{ background: 'transparent', padding: 0, overflow: 'hidden' }}>
+        <div className="sidebar-logo-icon">
           <img
             src="/logo.png"
-            alt="SwaraSense logo"
-            style={{ width: 36, height: 36, objectFit: 'contain', borderRadius: 8 }}
+            alt="SwaraSense"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+            }}
           />
         </div>
         <div className="sidebar-logo-text">
