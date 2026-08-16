@@ -9,7 +9,7 @@ import { EmptyState, Skeleton } from '../components/UI';
 import { api } from '../api/client';
 import { useDemo } from '../context/DemoContext';
 
-const SENTINEL_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b', '#ef4444', '#38bdf8'];
+const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b', '#ef4444', '#38bdf8'];
 
 const SENTIMENT_COLORS = {
   positive:  '#22c55e',
@@ -38,20 +38,22 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function Analytics() {
   const { isDemoMode, demoMetrics, demoLangSwitch, demoBrands } = useDemo();
-  const [langSwitch, setLangSwitch]       = useState([]);
-  const [brands, setBrands]               = useState([]);
-  const [sources, setSources]             = useState({});
-  const [ratioBands, setRatioBands]       = useState({});
-  const [sentLangCorr, setSentLangCorr]   = useState([]);
-  const [loading, setLoading]             = useState(true);
+  const [langSwitch, setLangSwitch]     = useState([]);
+  const [brands, setBrands]             = useState([]);
+  const [sources, setSources]           = useState({});
+  const [ratioBands, setRatioBands]     = useState({});
+  const [sentLangCorr, setSentLangCorr] = useState([]);
+  const [loading, setLoading]           = useState(true);
+
+  // In demo mode: read directly from context (always up-to-date)
+  const activeLangSwitch  = isDemoMode ? demoLangSwitch : langSwitch;
+  const activeBrands      = isDemoMode ? demoBrands     : brands;
+  const activeSources     = isDemoMode ? demoMetrics.sources     : sources;
+  const activeRatioBands  = isDemoMode ? demoMetrics.ratioBands  : ratioBands;
+  const activeSentLangCorr = isDemoMode ? demoMetrics.sentLangCorr : sentLangCorr;
 
   useEffect(() => {
     if (isDemoMode) {
-      setLangSwitch(demoLangSwitch);
-      setBrands(demoBrands);
-      setSources(demoMetrics.sources);
-      setRatioBands(demoMetrics.ratioBands);
-      setSentLangCorr(demoMetrics.sentLangCorr);
       setLoading(false);
       return;
     }
@@ -77,20 +79,20 @@ export default function Analytics() {
       }
     };
     load();
-  }, [isDemoMode, demoMetrics, demoLangSwitch, demoBrands]);
+  }, [isDemoMode]);
 
-  const sourcePieData = Object.entries(sources).map(([name, value]) => ({ name, value }));
-  const bandData = Object.entries(ratioBands).map(([band, counts]) => ({ band, ...counts }));
+  const sourcePieData = Object.entries(activeSources).map(([name, value]) => ({ name, value })).filter(d => d.value > 0);
+  const bandData = Object.entries(activeRatioBands).map(([band, counts]) => ({ band, ...counts }));
 
-  // Compute overall avg English ratio for the "intensity meter"
-  const overallAvgEn = sentLangCorr.length > 0
-    ? sentLangCorr.reduce((sum, d) => sum + d.avg_en_ratio * d.count, 0) /
-      Math.max(1, sentLangCorr.reduce((sum, d) => sum + d.count, 0))
+  // Compute overall avg English ratio for the intensity meter
+  const overallAvgEn = activeSentLangCorr.length > 0
+    ? activeSentLangCorr.reduce((sum, d) => sum + d.avg_en_ratio * d.count, 0) /
+      Math.max(1, activeSentLangCorr.reduce((sum, d) => sum + d.count, 0))
     : null;
 
   return (
     <>
-      <TopBar title="Analytics" subtitle="Deep sociolinguistic and sentiment insights" />
+      <TopBar title="Analytics" subtitle="Sociolinguistic and sentiment insights" />
 
       <div className="page-body">
 
@@ -128,9 +130,9 @@ export default function Analytics() {
           </div>
 
           {/* Positive ↔ Sarcastic English contrast */}
-          {!loading && sentLangCorr.length > 0 && (() => {
-            const pos  = sentLangCorr.find(d => d.sentiment === 'positive');
-            const sarc = sentLangCorr.find(d => d.sentiment === 'sarcastic');
+          {!loading && activeSentLangCorr.length > 0 && (() => {
+            const pos  = activeSentLangCorr.find(d => d.sentiment === 'positive');
+            const sarc = activeSentLangCorr.find(d => d.sentiment === 'sarcastic');
             if (!pos || !sarc) return null;
             const diff = ((pos.avg_en_ratio - sarc.avg_en_ratio) * 100).toFixed(1);
             return (
@@ -170,11 +172,11 @@ export default function Analytics() {
             and sarcastic comments rely more on regional Romanized language to carry heavier emotional weight.
           </p>
           <div style={{ minHeight: 220 }}>
-            {loading ? <Skeleton height={220} /> : sentLangCorr.length === 0 ? (
+            {loading ? <Skeleton height={220} /> : activeSentLangCorr.length === 0 ? (
               <EmptyState icon={Activity} title="No correlation data yet" desc="Process code-mixed comments to reveal language-sentiment patterns." />
             ) : (
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={sentLangCorr} barGap={4}>
+                <BarChart data={activeSentLangCorr} barGap={4}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     dataKey="sentiment"
@@ -194,7 +196,7 @@ export default function Analytics() {
                   />
                   <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
                   <Bar dataKey="avg_en_ratio" name="Avg English Ratio" radius={[6, 6, 0, 0]}>
-                    {sentLangCorr.map((entry, i) => (
+                    {activeSentLangCorr.map((entry, i) => (
                       <Cell key={i} fill={SENTIMENT_COLORS[entry.sentiment] || '#6366f1'} />
                     ))}
                   </Bar>
@@ -214,11 +216,11 @@ export default function Analytics() {
             Studies show bilingual users use more English for positive sentiments (34%+) and switch to regional language for heavier emotional expression.
           </p>
           <div style={{ minHeight: 260 }}>
-            {loading ? <Skeleton height={260} /> : langSwitch.length === 0 ? (
+            {loading ? <Skeleton height={260} /> : activeLangSwitch.length === 0 ? (
               <EmptyState icon={Globe} title="No language data yet" desc="Process some code-mixed comments to see switching patterns." />
             ) : (
               <ResponsiveContainer width="100%" height={260}>
-                <AreaChart data={langSwitch}>
+                <AreaChart data={activeLangSwitch}>
                   <defs>
                     <linearGradient id="enGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.3} />
@@ -286,7 +288,7 @@ export default function Analytics() {
                   <PieChart>
                     <Pie data={sourcePieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
                       {sourcePieData.map((_, i) => (
-                        <Cell key={i} fill={SENTINEL_COLORS[i % SENTINEL_COLORS.length]} />
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip content={<CustomTooltip />} />
@@ -295,7 +297,7 @@ export default function Analytics() {
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
                   {sourcePieData.map((d, i) => (
                     <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                      <div style={{ width: 10, height: 10, borderRadius: 2, background: SENTINEL_COLORS[i % SENTINEL_COLORS.length] }} />
+                      <div style={{ width: 10, height: 10, borderRadius: 2, background: CHART_COLORS[i % CHART_COLORS.length] }} />
                       {d.name} ({d.value})
                     </div>
                   ))}
@@ -316,8 +318,8 @@ export default function Analytics() {
               Export CSV
             </button>
           </div>
-          {loading ? <Skeleton height={200} /> : brands.length === 0 ? (
-            <EmptyState icon={Hash} title="No brands detected yet" desc="Brand names (title-cased) in comments will appear here." />
+          {loading ? <Skeleton height={200} /> : activeBrands.length === 0 ? (
+            <EmptyState icon={Hash} title="No brands detected yet" desc="Brand names in comments will appear here." />
           ) : (
             <div style={{ overflowX: 'auto' }}>
               <table className="data-table">
@@ -326,22 +328,14 @@ export default function Analytics() {
                     <th>#</th>
                     <th>Brand / Entity</th>
                     <th>Total Mentions</th>
-                    <th>Positive</th>
-                    <th>Negative</th>
-                    <th>Sarcastic</th>
-                    <th>Neutral</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {brands.map((b, i) => (
-                    <tr key={b.brand}>
+                  {activeBrands.map((b, i) => (
+                    <tr key={b.brand || b.entity}>
                       <td style={{ color: 'var(--text-muted)', fontWeight: 600 }}>{i + 1}</td>
-                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{b.brand}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{b.brand || b.entity}</td>
                       <td style={{ fontWeight: 700, color: 'var(--accent-1)' }}>{b.count}</td>
-                      <td style={{ color: 'var(--positive)' }}>{b.sentiment_breakdown?.positive ?? 0}</td>
-                      <td style={{ color: 'var(--negative)' }}>{b.sentiment_breakdown?.negative ?? 0}</td>
-                      <td style={{ color: 'var(--sarcastic)' }}>{b.sentiment_breakdown?.sarcastic ?? 0}</td>
-                      <td style={{ color: 'var(--neutral)' }}>{b.sentiment_breakdown?.neutral ?? 0}</td>
                     </tr>
                   ))}
                 </tbody>

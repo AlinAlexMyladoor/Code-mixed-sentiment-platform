@@ -20,72 +20,14 @@ const CHART_COLORS = {
   neutral: '#64748b',
 };
 
-// ── Hardcoded demo mock comments ─────────────────────────────────────────────
-const MOCK_COMMENTS = [
-  {
-    id: 'mock-1', platform_id: 'demo-1', page_id: 'demo',
-    original_text: 'Bhai yeh product ekdum bakwaas hai, paise waste ho gaye mere!',
-    sentiment: 'negative', confidence: 0.91, english_ratio: 0.28,
-    language_switch_count: 3, sarcasm_score: 0.05,
-    inference_source: 'heuristic_mvp',
-    created_at: new Date(Date.now() - 60000).toISOString(),
-  },
-  {
-    id: 'mock-2', platform_id: 'demo-2', page_id: 'demo',
-    original_text: 'Superb quality da! Romba nalla irukku, next time also buy pannuven.',
-    sentiment: 'positive', confidence: 0.89, english_ratio: 0.22,
-    language_switch_count: 4, sarcasm_score: 0.02,
-    inference_source: 'heuristic_mvp',
-    created_at: new Date(Date.now() - 120000).toISOString(),
-  },
-  {
-    id: 'mock-3', platform_id: 'demo-3', page_id: 'demo',
-    original_text: 'Oh wow, delivery in 10 days for a "same-day" order. Truly impressive service!',
-    sentiment: 'sarcastic', confidence: 0.87, english_ratio: 0.88,
-    language_switch_count: 0, sarcasm_score: 0.82,
-    inference_source: 'heuristic_mvp',
-    created_at: new Date(Date.now() - 180000).toISOString(),
-  },
-  {
-    id: 'mock-4', platform_id: 'demo-4', page_id: 'demo',
-    original_text: 'Ithellam괜찮아 order pandren, packaging okay okay aa irukku.',
-    sentiment: 'neutral', confidence: 0.75, english_ratio: 0.30,
-    language_switch_count: 2, sarcasm_score: 0.08,
-    inference_source: 'heuristic_mvp',
-    created_at: new Date(Date.now() - 240000).toISOString(),
-  },
-  {
-    id: 'mock-5', platform_id: 'demo-5', page_id: 'demo',
-    original_text: 'Yaar yeh fraud company hai! Mera paisa wapas karo, bilkul cheating hai!',
-    sentiment: 'negative', confidence: 0.95, english_ratio: 0.32,
-    language_switch_count: 3, sarcasm_score: 0.10,
-    inference_source: 'heuristic_mvp',
-    created_at: new Date(Date.now() - 300000).toISOString(),
-  },
-  {
-    id: 'mock-6', platform_id: 'demo-6', page_id: 'demo',
-    original_text: 'Kollam da! Price um reasonable, quality um good. Full paisa vasool!',
-    sentiment: 'positive', confidence: 0.88, english_ratio: 0.25,
-    language_switch_count: 3, sarcasm_score: 0.03,
-    inference_source: 'heuristic_mvp',
-    created_at: new Date(Date.now() - 360000).toISOString(),
-  },
-];
-
-const MOCK_TREND = [
-  { hour: '2024-01-01T10:00', positive: 12, negative: 4, sarcastic: 2, neutral: 8 },
-  { hour: '2024-01-01T11:00', positive: 18, negative: 6, sarcastic: 3, neutral: 10 },
-  { hour: '2024-01-01T12:00', positive: 9,  negative: 11, sarcastic: 5, neutral: 7 },
-  { hour: '2024-01-01T13:00', positive: 22, negative: 3, sarcastic: 1, neutral: 14 },
-  { hour: '2024-01-01T14:00', positive: 15, negative: 8, sarcastic: 4, neutral: 9 },
-  { hour: '2024-01-01T15:00', positive: 28, negative: 5, sarcastic: 6, neutral: 11 },
-];
-
-
 export default function Dashboard() {
   const { metrics, loading, refetch } = useMetrics(15000);
-  const [liveFeed, setLiveFeed] = useState([]);
-  const { isDemoMode, activateDemo, clearDemo: clearDemoCtx, injectCustomComment, demoComments, demoMetrics } = useDemo();
+  // wsComments: real-time comments arriving via WebSocket (non-demo only)
+  const [wsComments, setWsComments] = useState([]);
+  const {
+    isDemoMode, activateDemo, clearDemo: clearDemoCtx,
+    injectCustomComment, demoComments, demoMetrics,
+  } = useDemo();
 
   // Custom comment analyzer state
   const [analyzeText, setAnalyzeText] = useState('');
@@ -96,25 +38,24 @@ export default function Dashboard() {
 
   const onWsMessage = useCallback((msg) => {
     if (msg.type === 'comment_processed' && msg.data) {
-      setLiveFeed((prev) => [msg.data, ...prev].slice(0, 60));
+      setWsComments((prev) => [msg.data, ...prev].slice(0, 60));
       refetch();
     }
   }, [refetch]);
 
   const wsStatus = useWebSocket(onWsMessage);
 
-  // Activate demo mode — uses global context so all pages see it
   const loadDemo = useCallback(() => {
     activateDemo();
-    setLiveFeed(demoComments); // Initial load
-  }, [activateDemo, demoComments]);
+  }, [activateDemo]);
 
   const clearDemo = useCallback(() => {
     clearDemoCtx();
-    setLiveFeed([]);
+    setWsComments([]);
   }, [clearDemoCtx]);
 
-  // Analyze a custom comment via the backend
+  // Analyze a custom comment via the backend.
+  // Works in both demo mode and live mode. Always injects into the shared pool.
   const handleAnalyze = useCallback(async () => {
     const text = analyzeText.trim();
     if (!text) return;
@@ -124,46 +65,39 @@ export default function Dashboard() {
     try {
       const result = await api.analyze(text);
       setAnalyzeResult(result);
-      if (isDemoMode) {
-        injectCustomComment(result);
-        // Also manually prepend to local liveFeed so it animates in immediately on Dashboard
-        setLiveFeed((prev) => [{
-          ...result,
-          id: `demo-${Date.now()}`,
-          platform_id: 'custom-demo',
-          page_id: 'demo-page',
-          translation: `[Simulated Translation] ${result.original_text}`,
-          created_at: new Date().toISOString(),
-        }, ...prev]);
-      }
+      // Inject into the shared context so it appears in Comments & Analytics too
+      injectCustomComment(result);
     } catch (err) {
       setAnalyzeError(err.message || 'Analysis failed. Please try again.');
     } finally {
       setAnalyzing(false);
     }
-  }, [analyzeText]);
+  }, [analyzeText, injectCustomComment]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleAnalyze();
   };
 
-  // Merge live feed with persisted data (or demo comments)
+  // ── Derive unified feed ─────────────────────────────────────────────────
+  // In demo mode: use demoComments (includes custom comments)
+  // In live mode: merge wsComments with persisted metrics data
   const displayFeed = useMemo(() => {
-    const base = isDemoMode ? demoComments : (metrics?.data || []);
-    const ids = new Set(liveFeed.map((c) => c.id));
-    const combined = [...liveFeed, ...base.filter((c) => !ids.has(c.id))];
+    if (isDemoMode) {
+      return demoComments.slice(0, 40);
+    }
+    const base = metrics?.data || [];
+    const ids = new Set(wsComments.map((c) => c.id));
+    const combined = [...wsComments, ...base.filter((c) => !ids.has(c.id))];
     return combined.slice(0, 40);
-  }, [liveFeed, metrics, isDemoMode, demoComments]);
+  }, [isDemoMode, demoComments, wsComments, metrics]);
 
   const urgentItems = useMemo(
     () => displayFeed.filter((c) => c.sentiment === 'negative' || c.sentiment === 'sarcastic'),
     [displayFeed],
   );
 
-  // Use real data for metrics; demo summary if in demo mode
-  const s = isDemoMode
-    ? demoMetrics?.metricsData?.summary
-    : metrics?.summary;
+  // ── Derive metrics summary & trend ──────────────────────────────────────
+  const s = isDemoMode ? demoMetrics?.metricsData?.summary : metrics?.summary;
   const trend = isDemoMode ? (demoMetrics?.metricsData?.trend || []) : (metrics?.trend || []);
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -173,17 +107,18 @@ export default function Dashboard() {
         background: 'var(--bg-elevated)', border: '1px solid var(--border-strong)',
         borderRadius: 10, padding: '10px 14px', fontSize: '0.78rem',
       }}>
-        <div style={{ color: 'var(--text-muted)', marginBottom: 6 }}>{label?.slice(11, 16)}</div>
+        <div style={{ color: 'var(--text-muted)', marginBottom: 6 }}>{label}</div>
         {payload.map((entry) => (
           <div key={entry.dataKey} style={{ color: entry.fill, display: 'flex', justifyContent: 'space-between', gap: 16 }}>
-            <span>{entry.dataKey}</span><span style={{ fontWeight: 700 }}>{entry.value}</span>
+            <span style={{ textTransform: 'capitalize' }}>{entry.dataKey}</span>
+            <span style={{ fontWeight: 700 }}>{entry.value}</span>
           </div>
         ))}
       </div>
     );
   };
 
-  const sentimentColor = (s) => {
+  const sentimentColorHex = (s) => {
     switch (s) {
       case 'positive': return '#22c55e';
       case 'negative': return '#ef4444';
@@ -256,12 +191,11 @@ export default function Dashboard() {
                 Try SwaraSense Live
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Analyze any code-mixed comment instantly, or load sample data to explore the dashboard.
+                Analyze any code-mixed comment, or load sample data to explore all pages.
               </div>
             </div>
           </div>
 
-          {/* Two sub-sections: mock loader + custom input */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
 
             {/* Left: Load demo data */}
@@ -274,7 +208,7 @@ export default function Dashboard() {
                 Sample Dataset
               </div>
               <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0 0 14px', lineHeight: 1.6 }}>
-                Load 6 pre-classified Tamil-English, Hindi-English, and English comments representing positive, negative, neutral, and sarcastic sentiments.
+                Load 10 pre-classified Tamil-English, Hindi-English, and English comments covering all sentiment categories. All pages update live.
               </p>
               <div style={{ display: 'flex', gap: 8 }}>
                 {!isDemoMode ? (
@@ -296,14 +230,14 @@ export default function Dashboard() {
             }}>
               <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
                 <Send size={13} style={{ marginRight: 5, verticalAlign: 'middle' }} />
-                Analyze Your Comment
+                Analyze a Comment
               </div>
               <textarea
                 ref={textareaRef}
                 value={analyzeText}
                 onChange={(e) => setAnalyzeText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type a code-mixed comment, e.g. 'Bhai yeh product ekdum bakwaas hai!'"
+                placeholder="Type any comment, e.g. 'Bhai yeh product ekdum bakwaas hai!'"
                 rows={3}
                 style={{
                   width: '100%', boxSizing: 'border-box',
@@ -324,7 +258,7 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Result */}
+              {/* Error */}
               {analyzeError && (
                 <div style={{
                   marginTop: 10, padding: '8px 12px', borderRadius: 8, fontSize: '0.78rem',
@@ -334,11 +268,22 @@ export default function Dashboard() {
                   {analyzeError}
                 </div>
               )}
+
+              {/* Result — show the text + analysis card */}
               {analyzeResult && (
                 <div style={{
                   marginTop: 10, padding: '12px 14px', borderRadius: 10,
-                  background: 'rgba(0,0,0,0.25)', border: `1px solid ${sentimentColor(analyzeResult.sentiment)}44`,
+                  background: 'rgba(0,0,0,0.25)',
+                  border: `1px solid ${sentimentColorHex(analyzeResult.sentiment)}44`,
                 }}>
+                  {/* Comment text */}
+                  <p style={{
+                    margin: '0 0 8px', fontSize: '0.85rem',
+                    color: 'var(--text-primary)', lineHeight: 1.5,
+                    fontStyle: 'italic',
+                  }}>
+                    "{analyzeResult.original_text || analyzeResult.text}"
+                  </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span className={`badge badge-${analyzeResult.sentiment}`} style={{ fontSize: '0.72rem' }}>
                       {analyzeResult.sentiment.toUpperCase()}
@@ -351,17 +296,15 @@ export default function Dashboard() {
                     {[
                       ['EN ratio', `${(analyzeResult.english_ratio * 100).toFixed(0)}%`],
                       ['Lang switches', analyzeResult.language_switch_count],
-                      ['Sarcasm score', analyzeResult.sarcasm_score.toFixed(2)],
+                      ['Sarcasm', analyzeResult.sarcasm_score?.toFixed(2)],
                       ['Engine', analyzeResult.inference_source],
                     ].map(([label, val]) => (
                       <span key={label} className="stat-chip">{label}: {val}</span>
                     ))}
                   </div>
-                  {analyzeResult.extracted_entities?.length > 0 && (
-                    <div style={{ marginTop: 8, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                      Entities: {analyzeResult.extracted_entities.join(', ')}
-                    </div>
-                  )}
+                  <div style={{ marginTop: 8, fontSize: '0.7rem', color: 'var(--positive)' }}>
+                    ✓ Added to Comment Stream and Comments page
+                  </div>
                 </div>
               )}
             </div>
@@ -409,7 +352,7 @@ export default function Dashboard() {
               <EmptyState
                 icon={BarChart2}
                 title="No trend data yet"
-                desc="Connect a Facebook Page or load demo data above to see hourly sentiment trends."
+                desc="Connect a Facebook Page or load demo data to see hourly sentiment trends."
               />
             ) : (
               <ResponsiveContainer width="100%" height={280}>
@@ -423,7 +366,7 @@ export default function Dashboard() {
                     ))}
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                  <XAxis dataKey="hour" tick={{ fill: '#475569', fontSize: 10 }} tickFormatter={(v) => v.slice(11, 16)} />
+                  <XAxis dataKey="hour" tick={{ fill: '#475569', fontSize: 10 }} />
                   <YAxis tick={{ fill: '#475569', fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '0.78rem' }} />
@@ -437,7 +380,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ── Two column: Urgent Alerts + Live Feed ─────────────────── */}
+        {/* ── Two column: Urgent Alerts + Comment Stream ─────────────── */}
         <div className="two-col" style={{ marginTop: 24 }}>
           {/* Urgent Alerts */}
           <div className="panel">
@@ -445,7 +388,7 @@ export default function Dashboard() {
               <div className="panel-title">
                 <AlertTriangle size={16} color="var(--negative)" /> Urgent Alerts
                 <span style={{ fontSize: '0.65rem', fontWeight: 500, color: 'var(--text-muted)', marginLeft: 8, background: 'var(--bg-elevated)', padding: '2px 6px', borderRadius: 10 }}>
-                  (Negative or Sarcastic)
+                  Negative or Sarcastic
                 </span>
               </div>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -461,13 +404,13 @@ export default function Dashboard() {
             ) : (
               <div className="comment-feed">
                 {urgentItems.slice(0, 10).map((item) => (
-                  <CommentItem key={`${item.id}-${item.platform_id}`} item={item} />
+                  <CommentItem key={`${item.id}-urgent`} item={item} />
                 ))}
               </div>
             )}
           </div>
 
-          {/* Live Comment Stream */}
+          {/* Comment Stream */}
           <div className="panel">
             <div className="panel-header">
               <span className="panel-title">
@@ -482,12 +425,12 @@ export default function Dashboard() {
               <EmptyState
                 icon={MessageSquare}
                 title="No comments yet"
-                desc="Load the sample dataset above or connect a Facebook Page to start receiving real-time comments."
+                desc="Load the sample dataset or analyze a comment above to see it here."
               />
             ) : (
               <div className="comment-feed">
                 {displayFeed.slice(0, 20).map((item) => (
-                  <CommentItem key={`${item.id}-${item.platform_id}`} item={item} />
+                  <CommentItem key={`${item.id}-feed`} item={item} />
                 ))}
               </div>
             )}

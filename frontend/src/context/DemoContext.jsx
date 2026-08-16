@@ -1,13 +1,15 @@
 /**
- * DemoContext — global demo mode state shared across all pages.
+ * DemoContext — global, persistent demo mode state shared across all pages.
  *
- * Provides a dynamic demo state. Analyzed custom comments are injected
- * into the mock datasets so they appear across all views.
+ * State is persisted to localStorage so that demo data, custom comments,
+ * and the demo-mode flag all survive page refreshes and navigation.
  */
-import { createContext, useCallback, useContext, useState, useMemo } from 'react';
+import { createContext, useCallback, useContext, useState, useMemo, useEffect } from 'react';
+
+const STORAGE_KEY = 'swarasense_demo';
 
 // ── Initial Mock Data ───────────────────────────────────────────────────────
-const INITIAL_COMMENTS = [
+export const INITIAL_DEMO_COMMENTS = [
   {
     id: 'demo-1', platform_id: 'd1', page_id: 'demo-page',
     original_text: 'Bhai yeh product ekdum bakwaas hai, paise waste ho gaye mere!',
@@ -120,147 +122,164 @@ export const DEMO_BRANDS = [
   { entity: 'packaging', count: 2 },
 ];
 
-export const DEMO_HEATMAP = Array.from({ length: 7 }, (_, day) =>
-  Array.from({ length: 24 }, (_, hour) => ({
-    day, hour, count: Math.floor(Math.random() * 12),
-  }))
-).flat();
+// ── Helper: load from / save to localStorage ────────────────────────────────
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { isDemoMode: false, demoComments: [] };
+    return JSON.parse(raw);
+  } catch {
+    return { isDemoMode: false, demoComments: [] };
+  }
+}
+
+function saveToStorage(isDemoMode, demoComments) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ isDemoMode, demoComments }));
+  } catch { /* ignore */ }
+}
+
+// ── Derived metrics from a list of comments ─────────────────────────────────
+export function computeMetrics(comments) {
+  const summary = {
+    total_comments: comments.length,
+    positive: 0, negative: 0, neutral: 0, sarcastic: 0,
+    avg_english_ratio: 0, urgent_alerts: 0,
+  };
+  const ratioBands = {
+    '0-25%':   { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+    '25-50%':  { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+    '50-75%':  { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+    '75-100%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
+  };
+  const sentLangMap = {
+    positive:  { sumEng: 0, sumSw: 0, count: 0 },
+    negative:  { sumEng: 0, sumSw: 0, count: 0 },
+    sarcastic: { sumEng: 0, sumSw: 0, count: 0 },
+    neutral:   { sumEng: 0, sumSw: 0, count: 0 },
+  };
+  const sources = {};
+  let totalEngRatio = 0;
+
+  comments.forEach((c) => {
+    if (summary[c.sentiment] !== undefined) summary[c.sentiment]++;
+    if (c.sentiment === 'negative' || c.sentiment === 'sarcastic') summary.urgent_alerts++;
+
+    const ratio = c.english_ratio || 0;
+    totalEngRatio += ratio;
+
+    let bandKey = '75-100%';
+    if (ratio <= 0.25) bandKey = '0-25%';
+    else if (ratio <= 0.5) bandKey = '25-50%';
+    else if (ratio <= 0.75) bandKey = '50-75%';
+    if (ratioBands[bandKey]?.[c.sentiment] !== undefined) ratioBands[bandKey][c.sentiment]++;
+
+    if (sentLangMap[c.sentiment]) {
+      sentLangMap[c.sentiment].sumEng += ratio;
+      sentLangMap[c.sentiment].sumSw += (c.language_switch_count || 0);
+      sentLangMap[c.sentiment].count++;
+    }
+
+    const src = c.inference_source || 'heuristic_mvp';
+    sources[src] = (sources[src] || 0) + 1;
+  });
+
+  summary.avg_english_ratio = comments.length > 0 ? totalEngRatio / comments.length : 0;
+
+  const sentLangCorr = Object.entries(sentLangMap)
+    .filter(([, d]) => d.count > 0)
+    .map(([sentiment, d]) => ({
+      sentiment,
+      avg_en_ratio: d.sumEng / d.count,
+      avg_switches: d.sumSw / d.count,
+      count: d.count,
+    }));
+
+  const trend = [
+    { hour: '08:00', positive: 8,  negative: 3, sarcastic: 1, neutral: 5 },
+    { hour: '09:00', positive: 14, negative: 5, sarcastic: 2, neutral: 8 },
+    { hour: '10:00', positive: 10, negative: 9, sarcastic: 4, neutral: 6 },
+    { hour: '11:00', positive: 20, negative: 3, sarcastic: 1, neutral: 11 },
+    { hour: '12:00', positive: 18, negative: 6, sarcastic: 3, neutral: 9 },
+    { hour: '13:00', positive: 25, negative: 4, sarcastic: 5, neutral: 12 },
+    { hour: '14:00', positive: 30, negative: 7, sarcastic: 2, neutral: 14 },
+    { hour: 'Live',  positive: summary.positive, negative: summary.negative, sarcastic: summary.sarcastic, neutral: summary.neutral },
+  ];
+
+  return {
+    metricsData: { summary, trend, data: comments },
+    ratioBands,
+    sentLangCorr,
+    sources,
+  };
+}
 
 // ── Context ────────────────────────────────────────────────────────────────
 const DemoContext = createContext(null);
 
 export function DemoProvider({ children }) {
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [demoComments, setDemoComments] = useState(INITIAL_COMMENTS);
+  const stored = loadFromStorage();
+  const [isDemoMode, setIsDemoMode] = useState(stored.isDemoMode);
+  const [demoComments, setDemoComments] = useState(
+    stored.isDemoMode && stored.demoComments.length > 0
+      ? stored.demoComments
+      : []
+  );
+
+  // Persist to storage whenever state changes
+  useEffect(() => {
+    saveToStorage(isDemoMode, demoComments);
+  }, [isDemoMode, demoComments]);
 
   const activateDemo = useCallback(() => {
     setIsDemoMode(true);
-    setDemoComments(INITIAL_COMMENTS);
+    setDemoComments(INITIAL_DEMO_COMMENTS);
   }, []);
-  
+
   const clearDemo = useCallback(() => {
     setIsDemoMode(false);
+    setDemoComments([]);
+    localStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  const injectCustomComment = useCallback((newComment) => {
-    if (!isDemoMode) return;
-    setDemoComments((prev) => {
-      // Create a mock record extending the analysis result
-      const mockRecord = {
-        ...newComment,
-        id: `demo-${Date.now()}`,
-        platform_id: 'custom-demo',
-        page_id: 'demo-page',
-        translation: `[Simulated Translation] ${newComment.original_text}`,
-        created_at: new Date().toISOString(),
-      };
-      return [mockRecord, ...prev];
-    });
+  /**
+   * Add a custom analyzed comment to the pool.
+   * Works in both demo mode and standalone (non-demo) mode.
+   * The `rawResult` is the object returned from api.analyze().
+   */
+  const injectCustomComment = useCallback((rawResult) => {
+    const newComment = {
+      // Normalize: api returns `text`, db stores as `original_text`
+      original_text: rawResult.original_text || rawResult.text || '',
+      translation: `[Simulated Translation] ${rawResult.original_text || rawResult.text || ''}`,
+      sentiment: rawResult.sentiment,
+      confidence: rawResult.confidence,
+      english_ratio: rawResult.english_ratio,
+      language_switch_count: rawResult.language_switch_count,
+      sarcasm_score: rawResult.sarcasm_score,
+      inference_source: rawResult.inference_source,
+      extracted_entities: rawResult.extracted_entities || [],
+      regional_tokens_found: rawResult.regional_tokens_found || [],
+      id: `custom-${Date.now()}`,
+      platform_id: 'custom',
+      page_id: 'custom-analysis',
+      created_at: new Date().toISOString(),
+    };
+    setDemoComments((prev) => [newComment, ...prev]);
+    if (!isDemoMode) setIsDemoMode(true);
   }, [isDemoMode]);
 
-  // Dynamically compute metrics from current demoComments
-  const demoMetrics = useMemo(() => {
-    const summary = {
-      total_comments: demoComments.length,
-      positive: 0,
-      negative: 0,
-      neutral: 0,
-      sarcastic: 0,
-      avg_english_ratio: 0,
-      urgent_alerts: 0,
-    };
-
-    const ratioBands = {
-      '0-25%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
-      '25-50%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
-      '50-75%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
-      '75-100%': { positive: 0, negative: 0, neutral: 0, sarcastic: 0 },
-    };
-    const sentLangMap = {
-      positive: { sumEng: 0, sumSw: 0, count: 0 },
-      negative: { sumEng: 0, sumSw: 0, count: 0 },
-      sarcastic: { sumEng: 0, sumSw: 0, count: 0 },
-      neutral: { sumEng: 0, sumSw: 0, count: 0 },
-    };
-    const sources = { heuristic_mvp: 0, roberta: 0, llama: 0 };
-
-    let totalEngRatio = 0;
-
-    demoComments.forEach((c) => {
-      // Summary
-      if (summary[c.sentiment] !== undefined) summary[c.sentiment]++;
-      if (c.sentiment === 'negative' || c.sentiment === 'sarcastic') {
-        summary.urgent_alerts++;
-      }
-      
-      // Ratios
-      totalEngRatio += (c.english_ratio || 0);
-      const ratio = c.english_ratio || 0;
-      let bandKey = '75-100%';
-      if (ratio <= 0.25) bandKey = '0-25%';
-      else if (ratio <= 0.5) bandKey = '25-50%';
-      else if (ratio <= 0.75) bandKey = '50-75%';
-      
-      if (ratioBands[bandKey][c.sentiment] !== undefined) {
-        ratioBands[bandKey][c.sentiment]++;
-      }
-
-      // Correlation
-      if (sentLangMap[c.sentiment]) {
-        sentLangMap[c.sentiment].sumEng += ratio;
-        sentLangMap[c.sentiment].sumSw += (c.language_switch_count || 0);
-        sentLangMap[c.sentiment].count++;
-      }
-
-      // Sources
-      if (c.inference_source) {
-        sources[c.inference_source] = (sources[c.inference_source] || 0) + 1;
-      } else {
-        sources.heuristic_mvp++;
-      }
-    });
-
-    summary.avg_english_ratio = demoComments.length > 0 ? (totalEngRatio / demoComments.length) : 0;
-
-    const sentLangCorr = Object.entries(sentLangMap)
-      .filter(([_, data]) => data.count > 0)
-      .map(([sentiment, data]) => ({
-        sentiment,
-        avg_en_ratio: data.sumEng / data.count,
-        avg_switches: data.sumSw / data.count,
-        count: data.count,
-      }));
-
-    // Trend (just a static mock shape since it's hard to make time-series dynamic instantly without history)
-    const trend = [
-      { hour: '2024-01-01T08:00', positive: 8, negative: 3, sarcastic: 1, neutral: 5 },
-      { hour: '2024-01-01T09:00', positive: 14, negative: 5, sarcastic: 2, neutral: 8 },
-      { hour: '2024-01-01T10:00', positive: 10, negative: 9, sarcastic: 4, neutral: 6 },
-      { hour: '2024-01-01T11:00', positive: 20, negative: 3, sarcastic: 1, neutral: 11 },
-      { hour: '2024-01-01T12:00', positive: 18, negative: 6, sarcastic: 3, neutral: 9 },
-      { hour: '2024-01-01T13:00', positive: 25, negative: 4, sarcastic: 5, neutral: 12 },
-      { hour: '2024-01-01T14:00', positive: 30, negative: 7, sarcastic: 2, neutral: 14 },
-      // The last node includes the live sums
-      { hour: 'Now', positive: summary.positive, negative: summary.negative, sarcastic: summary.sarcastic, neutral: summary.neutral },
-    ];
-
-    return {
-      metricsData: { summary, trend, data: demoComments },
-      ratioBands,
-      sentLangCorr,
-      sources,
-    };
-  }, [demoComments]);
+  // Dynamically compute all analytics metrics from the current comment set
+  const demoMetrics = useMemo(() => computeMetrics(demoComments), [demoComments]);
 
   return (
-    <DemoContext.Provider value={{ 
-      isDemoMode, 
-      activateDemo, 
-      clearDemo, 
+    <DemoContext.Provider value={{
+      isDemoMode,
+      activateDemo,
+      clearDemo,
       injectCustomComment,
       demoComments,
       demoMetrics,
-      // Pass-through static datasets
       demoLangSwitch: DEMO_LANG_SWITCH,
       demoBrands: DEMO_BRANDS,
     }}>
