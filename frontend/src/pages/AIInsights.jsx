@@ -75,7 +75,7 @@ export default function AIInsights() {
 
   return (
     <>
-      <TopBar title="AI Insights" subtitle="Inference engine performance, model comparison, and classified comment stream" />
+      <TopBar title="AI Insights" subtitle="Inference engine usage and classified comments" />
       <div className="page-body">
 
         {/* Active inference mode banner */}
@@ -95,7 +95,9 @@ export default function AIInsights() {
             </div>
             <div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Currently Active Mode</div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)', marginTop: 2 }}>{activeMode}</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-primary)', fontWeight: 700, marginTop: 2 }}>
+                {INFERENCE_MODES.find(m => m.id === activeMode)?.name || activeMode}
+              </div>
             </div>
             <div style={{ marginLeft: 'auto', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
               {total.toLocaleString()} comments processed
@@ -172,7 +174,7 @@ export default function AIInsights() {
         {/* Llama LoRA architecture note */}
         <div className="panel" style={{ marginBottom: 20 }}>
           <div className="panel-header">
-            <span className="panel-title"><Server size={16} /> AI Pipeline Architecture</span>
+            <span className="panel-title"><Server size={16} /> AI Pipeline</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
             {[

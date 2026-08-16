@@ -12,11 +12,12 @@ export default function TopBar({ title, subtitle, urgentCount = 0, onRefresh }) 
         {urgentCount > 0 && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            background: 'var(--negative-bg)', border: '1px solid rgba(239,68,68,0.3)',
-            padding: '5px 10px', borderRadius: 20,
-            fontSize: '0.72rem', fontWeight: 700, color: '#f87171',
+            background: 'rgba(244,63,94,0.1)',
+            border: '1px solid rgba(244,63,94,0.25)',
+            padding: '4px 10px', borderRadius: 20,
+            fontSize: '0.68rem', fontWeight: 700, color: '#f87171',
           }}>
-            <Bell size={13} />
+            <Bell size={12} />
             {urgentCount} urgent
           </div>
         )}
@@ -25,7 +26,8 @@ export default function TopBar({ title, subtitle, urgentCount = 0, onRefresh }) 
           <button
             className="btn btn-ghost btn-sm"
             onClick={onRefresh}
-            title="Refresh"
+            title="Refresh data"
+            style={{ color: 'var(--text-muted)' }}
           >
             <RefreshCw size={14} />
           </button>
