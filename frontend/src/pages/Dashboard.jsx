@@ -14,9 +14,9 @@ import { api } from '../api/client';
 import { useDemo } from '../context/DemoContext';
 
 const CHART_COLORS = {
-  positive: '#10b981',
-  negative: '#f43f5e',
-  sarcastic: '#f59e0b',
+  positive: '#059669',
+  negative: '#dc2626',
+  sarcastic: '#d97706',
   neutral:   '#64748b',
 };
 

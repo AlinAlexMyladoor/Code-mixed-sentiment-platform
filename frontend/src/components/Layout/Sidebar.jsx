@@ -1,12 +1,14 @@
 import { NavLink } from 'react-router-dom';
-import { BarChart2, Brain, Globe, Home, MessageSquare, X } from 'lucide-react';
+import { BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings, X } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
 
 const NAV = [
-  { label: 'Dashboard',   icon: Home,          to: '/' },
-  { label: 'Analytics',   icon: BarChart2,      to: '/analytics' },
-  { label: 'Comments',    icon: MessageSquare,  to: '/comments' },
-  { label: 'AI Insights', icon: Brain,          to: '/ai-insights' },
+  { label: 'Dashboard',     icon: Home,         to: '/' },
+  { label: 'Analytics',     icon: BarChart2,     to: '/analytics' },
+  { label: 'Comments',      icon: MessageSquare, to: '/comments' },
+  { label: 'AI Insights',   icon: Brain,         to: '/ai-insights' },
+  { label: 'Connect Pages', icon: Link2,         to: '/connect' },
+  { label: 'Settings',      icon: Settings,      to: '/settings' },
 ];
 
 export default function Sidebar({ wsStatus }) {
