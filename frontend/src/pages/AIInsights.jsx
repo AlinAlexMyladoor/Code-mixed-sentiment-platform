@@ -143,7 +143,7 @@ export default function AIInsights() {
                     ['Accuracy', mode.accuracy],
                     ['Latency', mode.latency],
                   ].map(([label, val]) => (
-                    <div key={label} style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 8, padding: '8px 10px' }}>
+                    <div key={label} style={{ background: 'var(--bg-hover)', borderRadius: 8, padding: '8px 10px' }}>
                       <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
                       <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.88rem', marginTop: 2 }}>{val}</div>
                     </div>
@@ -156,13 +156,13 @@ export default function AIInsights() {
                     <span>Comments processed</span>
                     <span>{count.toLocaleString()} ({pct}%)</span>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 4, height: 4, overflow: 'hidden' }}>
+                  <div style={{ background: 'var(--border-mid)', borderRadius: 4, height: 4, overflow: 'hidden' }}>
                     <div style={{ width: `${pct}%`, height: '100%', background: mode.color, borderRadius: 4, transition: 'width 1s ease' }} />
                   </div>
                 </div>
 
                 {/* Setup */}
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', padding: '8px 10px', background: 'rgba(0,0,0,0.2)', borderRadius: 8 }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', padding: '8px 10px', background: 'var(--bg-hover)', borderRadius: 8 }}>
                   <div style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 3 }}>Performance Tier</div>
                   <div>{mode.accuracy} accuracy · {mode.latency} avg latency</div>
                 </div>
@@ -183,7 +183,7 @@ export default function AIInsights() {
               { step: '3', title: 'Inference Server', desc: 'FastAPI server at port 8001. Parses model output for 4 classes: positive, negative, neutral, sarcastic.' },
               { step: '4', title: 'Boundary Extraction', desc: 'Normalize spans before entity detection. Prevents LLM boundary corruption on messy Romanized input.' },
             ].map((item) => (
-              <div key={item.step} style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: '16px', border: '1px solid var(--border)' }}>
+              <div key={item.step} style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: '16px', border: '1px solid var(--border)' }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: 8, background: 'var(--accent-grad)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',

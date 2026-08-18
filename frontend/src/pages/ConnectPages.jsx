@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle, ExternalLink, Facebook, Link2, RefreshCw, Trash2, Wifi } from 'lucide-react';
+import { ExternalLink, Facebook, Link2, RefreshCw, Trash2, Wifi } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, Skeleton } from '../components/UI';
 import { api, API_BASE } from '../api/client';
 
-
 export default function ConnectPages() {
-  const [pages, setPages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshingId, setRefreshingId] = useState(null);
+  const [pages, setPages]                   = useState([]);
+  const [loading, setLoading]               = useState(true);
+  const [refreshingId, setRefreshingId]     = useState(null);
   const [disconnectingId, setDisconnectingId] = useState(null);
-  const [toast, setToast] = useState(null);
+  const [toast, setToast]                   = useState(null);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -20,8 +19,7 @@ export default function ConnectPages() {
   const loadPages = async () => {
     setLoading(true);
     try {
-      const data = await api.connectedPages();
-      setPages(data);
+      setPages(await api.connectedPages());
     } catch {
       setPages([]);
     } finally {
@@ -31,25 +29,20 @@ export default function ConnectPages() {
 
   useEffect(() => {
     loadPages();
-    
-    // Check if we just returned from a successful Meta OAuth flow
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === 'true') {
-      showToast('Successfully connected to Meta!', 'success');
-      // Clean up the URL so refresh doesn't trigger the toast again
+      showToast('Successfully connected to Meta!');
       window.history.replaceState({}, '', '/connect');
     }
   }, []);
 
-  const handleConnect = () => {
-    window.location.href = `${API_BASE}/auth/meta/login`;
-  };
+  const handleConnect = () => { window.location.href = `${API_BASE}/auth/meta/login`; };
 
   const handleRefresh = async (pageId) => {
     setRefreshingId(pageId);
     try {
       await api.refreshPageToken(pageId);
-      showToast('Token refreshed successfully');
+      showToast('Token refreshed');
     } catch (err) {
       showToast(err.message || 'Failed to refresh token', 'error');
     } finally {
@@ -58,7 +51,7 @@ export default function ConnectPages() {
   };
 
   const handleDisconnect = async (pageId, pageName) => {
-    if (!confirm(`Disconnect "${pageName}"? This will stop receiving webhooks for this page.`)) return;
+    if (!confirm(`Disconnect "${pageName}"?`)) return;
     setDisconnectingId(pageId);
     try {
       await api.disconnectPage(pageId);
@@ -73,31 +66,31 @@ export default function ConnectPages() {
 
   return (
     <>
-      <TopBar title="Connect Pages" subtitle="Manage your Meta Facebook & Instagram integrations" />
+      <TopBar title="Connect Pages" subtitle="Manage Facebook & Instagram integrations" />
       <div className="page-body">
 
         {/* Toast */}
         {toast && (
           <div style={{
-            position: 'fixed', top: 80, right: 24, zIndex: 200,
-            background: toast.type === 'error' ? 'var(--negative-bg)' : 'rgba(34,197,94,0.15)',
-            border: `1px solid ${toast.type === 'error' ? 'rgba(239,68,68,0.4)' : 'rgba(34,197,94,0.4)'}`,
-            color: toast.type === 'error' ? '#f87171' : '#4ade80',
-            padding: '12px 20px', borderRadius: 12, fontSize: '0.85rem',
+            position: 'fixed', top: 76, right: 24, zIndex: 200,
+            background: toast.type === 'error' ? 'var(--negative-bg)' : 'var(--positive-bg)',
+            border: `1px solid ${toast.type === 'error' ? 'var(--negative-border)' : 'var(--positive-border)'}`,
+            color: toast.type === 'error' ? 'var(--negative)' : 'var(--positive)',
+            padding: '11px 20px', borderRadius: 12, fontSize: '0.84rem',
             fontWeight: 600, boxShadow: 'var(--shadow-md)',
-            animation: 'slideIn 0.3s ease',
+            animation: 'commentSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1)',
           }}>
             {toast.msg}
           </div>
         )}
 
-        {/* Connect hero */}
+        {/* Hero — Connect */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(24,119,242,0.1) 0%, rgba(99,102,241,0.1) 100%)',
-          border: '1px solid rgba(24,119,242,0.25)',
+          background: 'linear-gradient(135deg, rgba(24,119,242,0.07) 0%, rgba(79,70,229,0.07) 100%)',
+          border: '1px solid rgba(79,70,229,0.15)',
           borderRadius: 'var(--r-xl)',
           padding: '28px 32px',
-          marginBottom: 24,
+          marginBottom: 20,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -105,109 +98,88 @@ export default function ConnectPages() {
           gap: 16,
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(24,119,242,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Facebook size={20} color="#60a5fa" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 12,
+                background: 'rgba(24,119,242,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 2px 8px rgba(24,119,242,0.15)',
+              }}>
+                <Facebook size={22} color="#1877f2" />
               </div>
-              <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                Meta Graph API Integration
-              </h2>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
+                  Meta Graph API
+                </h2>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                  Facebook & Instagram real-time webhooks
+                </p>
+              </div>
             </div>
-            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.82rem', maxWidth: 520 }}>
-              Connect your Facebook Pages and Instagram Business accounts to start receiving real-time webhook events.
-              Requires <code style={{ background: 'rgba(255,255,255,0.07)', padding: '1px 5px', borderRadius: 4, fontSize: '0.78rem' }}>META_APP_ID</code> and <code style={{ background: 'rgba(255,255,255,0.07)', padding: '1px 5px', borderRadius: 4, fontSize: '0.78rem' }}>META_APP_SECRET</code> in your .env file.
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.82rem', maxWidth: 480, lineHeight: 1.65 }}>
+              Connect your Facebook Pages to start receiving real-time comment events and sentiment analysis.
             </p>
           </div>
-          <button className="btn btn-primary" onClick={handleConnect}>
+          <button className="btn btn-primary" onClick={handleConnect} style={{ flexShrink: 0 }}>
             <Link2 size={15} /> Connect with Facebook
           </button>
-        </div>
-
-        {/* Setup checklist */}
-        <div className="panel" style={{ marginBottom: 20 }}>
-          <div className="panel-header">
-            <span className="panel-title"><CheckCircle size={16} /> Setup Checklist</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[
-              { label: 'Create a Meta Developer App', link: 'https://developers.facebook.com/apps', done: false },
-              { label: 'Set META_APP_ID and META_APP_SECRET in .env', done: false },
-              { label: 'Add Webhooks product and subscribe to feed/comments', done: false },
-              { label: 'Set Callback URL to https://your-domain.com/webhook', done: false },
-              { label: 'Request pages_manage_metadata and instagram_manage_comments permissions', done: false },
-              { label: 'Click "Connect with Facebook" above to run OAuth', done: false },
-            ].map((item, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 14px', background: 'var(--bg-glass)', borderRadius: 10,
-                border: '1px solid var(--border)',
-              }}>
-                <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  background: item.done ? 'var(--positive)' : 'rgba(255,255,255,0.06)',
-                  border: `2px solid ${item.done ? 'var(--positive)' : 'var(--border-strong)'}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {item.done && <CheckCircle size={12} color="white" />}
-                </div>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', flex: 1 }}>{item.label}</span>
-                {item.link && (
-                  <a href={item.link} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-1)', display: 'flex' }}>
-                    <ExternalLink size={13} />
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Connected Pages */}
         <div className="panel">
           <div className="panel-header">
-            <span className="panel-title"><Wifi size={16} /> Connected Pages ({pages.length})</span>
-            <button className="btn btn-ghost btn-sm" onClick={loadPages}><RefreshCw size={13} /> Refresh</button>
+            <span className="panel-title">
+              <Wifi size={16} /> Connected Pages
+              <span style={{
+                fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)',
+                background: 'var(--accent-soft)', border: '1px solid rgba(79,70,229,0.12)',
+                padding: '1px 8px', borderRadius: 20, marginLeft: 4,
+              }}>{pages.length}</span>
+            </span>
+            <button className="btn btn-ghost btn-sm" onClick={loadPages}>
+              <RefreshCw size={13} /> Refresh
+            </button>
           </div>
 
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[1, 2].map((i) => <Skeleton key={i} height={80} />)}
+              {[1, 2].map((i) => <Skeleton key={i} height={76} />)}
             </div>
           ) : pages.length === 0 ? (
             <EmptyState
               icon={Link2}
               title="No pages connected"
-              desc="Click 'Connect with Facebook' above to link your pages."
+              desc="Click 'Connect with Facebook' to link your pages."
             />
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {pages.map((p) => (
                 <div key={p.page_id} style={{
-                  display: 'flex', alignItems: 'center', gap: 16,
-                  background: 'rgba(0,0,0,0.25)', border: '1px solid var(--border-strong)',
-                  borderRadius: 12, padding: '14px 18px',
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  background: 'var(--bg-hover)', border: '1px solid var(--border-mid)',
+                  borderRadius: 'var(--r-md)', padding: '14px 16px',
+                  transition: 'box-shadow 0.2s ease',
                 }}>
                   <div style={{
-                    width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                    background: 'rgba(24,119,242,0.15)', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center',
+                    width: 42, height: 42, borderRadius: 10, flexShrink: 0,
+                    background: 'rgba(24,119,242,0.1)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <Facebook size={22} color="#60a5fa" />
+                    <Facebook size={20} color="#1877f2" />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.92rem' }}>{p.page_name}</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>
-                      ID: {p.page_id}
-                      {p.category && ` · ${p.category}`}
-                      {p.follower_count != null && ` · ${p.follower_count.toLocaleString()} followers`}
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{p.page_name}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                      {p.page_id}{p.category && ` · ${p.category}`}{p.follower_count != null && ` · ${p.follower_count.toLocaleString()} followers`}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
-                      fontSize: '0.68rem', fontWeight: 700,
+                      fontSize: '0.65rem', fontWeight: 700,
                       background: p.is_active ? 'var(--positive-bg)' : 'var(--neutral-bg)',
                       color: p.is_active ? 'var(--positive)' : 'var(--neutral)',
-                      border: `1px solid ${p.is_active ? 'rgba(34,197,94,0.3)' : 'var(--border)'}`,
-                      padding: '3px 8px', borderRadius: 6,
+                      border: `1px solid ${p.is_active ? 'var(--positive-border)' : 'var(--neutral-border)'}`,
+                      padding: '3px 9px', borderRadius: 20,
                     }}>
                       {p.is_active ? 'Active' : 'Inactive'}
                     </span>
@@ -232,6 +204,7 @@ export default function ConnectPages() {
             </div>
           )}
         </div>
+
       </div>
     </>
   );

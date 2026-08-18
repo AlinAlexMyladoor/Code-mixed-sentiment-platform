@@ -95,16 +95,17 @@ export default function Dashboard() {
     if (!active || !payload?.length) return null;
     return (
       <div style={{
-        background: '#1a1d26', border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: 10, padding: '10px 14px', fontSize: '0.76rem',
+        background: '#fff', border: '1px solid var(--border-mid)',
+        borderRadius: 12, padding: '10px 14px', fontSize: '0.76rem',
+        boxShadow: 'var(--shadow-md)',
       }}>
-        <div style={{ color: '#4b5563', marginBottom: 6, fontWeight: 600 }}>{label}</div>
+        <div style={{ color: 'var(--text-muted)', marginBottom: 6, fontWeight: 600 }}>{label}</div>
         {payload.map((entry) => (
           <div key={entry.dataKey} style={{
             color: entry.stroke, display: 'flex',
             justifyContent: 'space-between', gap: 16, marginBottom: 2,
           }}>
-            <span style={{ textTransform: 'capitalize' }}>{entry.dataKey}</span>
+            <span style={{ textTransform: 'capitalize', color: 'var(--text-secondary)' }}>{entry.dataKey}</span>
             <span style={{ fontWeight: 700 }}>{entry.value}</span>
           </div>
         ))}
@@ -161,7 +162,7 @@ export default function Dashboard() {
 
             {/* Left: Load demo */}
             <div style={{
-              background: 'rgba(255,255,255,0.03)', borderRadius: 10,
+              background: 'var(--bg-hover)', borderRadius: 10,
               padding: '14px 16px', border: '1px solid var(--border)',
             }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
@@ -202,11 +203,14 @@ export default function Dashboard() {
                 rows={3}
                 style={{
                   width: '100%', boxSizing: 'border-box',
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-strong)',
+                  background: 'var(--bg-hover)', border: '1px solid var(--border-strong)',
                   borderRadius: 8, color: 'var(--text-primary)',
                   fontSize: '0.82rem', padding: '9px 11px', resize: 'vertical',
                   fontFamily: 'var(--font)', outline: 'none', lineHeight: 1.55,
+                  transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                 }}
+                onFocus={e => { e.target.style.borderColor = 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px rgba(79,70,229,0.12)'; e.target.style.background = '#fff'; }}
+                onBlur={e => { e.target.style.borderColor = 'var(--border-strong)'; e.target.style.boxShadow = 'none'; e.target.style.background = 'var(--bg-hover)'; }}
               />
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
                 <button
@@ -314,7 +318,7 @@ export default function Dashboard() {
                       </linearGradient>
                     ))}
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.08)" />
                   <XAxis dataKey="hour" tick={{ fill: '#4b5563', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: '#4b5563', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip content={<CustomTooltip />} />
@@ -341,7 +345,7 @@ export default function Dashboard() {
                 Urgent Alerts
                 <span style={{
                   fontSize: '0.6rem', fontWeight: 600, color: 'var(--text-muted)',
-                  background: 'rgba(255,255,255,0.05)', padding: '1px 6px',
+                  background: 'var(--accent-soft)', padding: '1px 6px',
                   borderRadius: 4, border: '1px solid var(--border)',
                 }}>
                   Negative · Sarcastic
