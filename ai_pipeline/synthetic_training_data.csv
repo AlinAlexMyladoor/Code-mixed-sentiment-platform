@@ -1,5 +1,877 @@
-original,code_mixed,sentiment
-The food was terrible and the service was slow.,The food was terrible and സേവനം മന്ദഗതിയിലായിരുന്നു.,negative
-"I absolutely love this new product, it is amazing!","I absolutely love this പുതിയ ഉൽപ്പന്നം, ഇത് അതിശയകരമാണ്!",positive
-"Wow, what a brilliant idea to increase the price.","Wow, what a brilliant idea വില കൂട്ടാൻ.",sarcastic
- 
+original,code_mixed,sentiment,mix_ratio,base_lang,mix_profile
+Normal experience. Customer service was okay. Will see how it goes.,Normal encounter Customer service was okay. Will see how it goes.,neutral,0.5,tamil,medium
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. Premium quality at affordable price.,positive,0.2,bengali,low
+Love how they charge premium prices for such wonderful quality!,Enjoy how they charge premium prices for such wonderful grade,sarcastic,0.2,hindi,low
+Best customer experience I have had in years! Amazing team.,Best customer wah wah amazing I have had in years! Amazing team.,positive,0.5,tamil,medium
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described Totally worth it! 🙄,sarcastic,0.5,malayalam,injected_sarcasm
+"Average experience. Some things good, some things could be better.","Some things could be better., average experience. some things good",neutral,0.8,tamil,high
+The app is functional. Basic features work. Nothing impressive.,"thik ache, idhu epadi iruku theriyala, the app is functional. basic features work. nothing impressive.",neutral,0.5,tamil,medium
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing kuch khas nahi extraordinary but does the job.,neutral,0.5,hindi,medium
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.2,malayalam,low
+Excellent value for money. Premium quality at affordable price.,"shandar service, bahut accha hai, excellent value for money. premium quality at affordable price.",positive,0.5,hindi,medium
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable caliber,neutral,0.5,malayalam,medium
+Love how they charge premium prices for such wonderful quality!,Enjoy how they charge premium prices for such wonderful quality!,sarcastic,0.5,malayalam,medium
+"Just tried their new product and it is fantastic, love it!","Yeah right, just tried their new product and it is fantastic, love it... wow. waste panra",sarcastic,0.5,malayalam,injected_sarcasm
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my expectations. Absolutely perfect!,positive,0.2,bengali,low
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the price is a bit high for what you get.,neutral,0.2,tamil,low
+"Delivery was on time. The product is alright, nothing special.","Delivery was on time. The product is alright, nothing special.",neutral,0.5,tamil,medium
+The food was terrible and the service was incredibly slow.,The food was terrible and the service was incredibly slow.,negative,0.2,hindi,low
+Delivery was fast and packaging was perfect. Thank you!,Delivery was speedy superb aayirunnu packaging was perfect. Thank you!,positive,0.8,bengali,high
+Delivery was fast and packaging was perfect. Thank you!,"anbudan, ente mone super, oshadharon service, delivery was fast and packaging was perfect. thank you!",positive,0.8,malayalam,high
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting.,negative,0.5,bengali,medium
+"I absolutely love this new product, it is amazing quality!","wah wah amazing, nalla irundhuchu, ente mone super, it is amazing build, i absolutely love this new product",positive,0.8,bengali,high
+Received on time and condition was perfect. Highly recommend!,"Received on time and condition was perfect. Highly recommend! ente mone super, valare nalla aanu",positive,0.5,hindi,medium
+Received on time and condition was perfect. Highly recommend!,Received on time and condition kollam aayirunnu perfect. Highly recommend!,positive,0.8,bengali,high
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious bilkul sahi hai and the service was very fast.,positive,0.8,hindi,high
+"Average experience. Some things good, some things could be better.","Some things could be better., normal ah iruku average experience. some things good",neutral,0.5,bengali,medium
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced standard too!",sarcastic,0.2,tamil,low
+"Thank you team, you made my day! Best purchase ever.","You made my day! best purchase ever., thank you team",positive,0.5,bengali,medium
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.2,hindi,low
+Normal experience. Customer service was okay. Will see how it goes.,Normal journey Customer service was okay. Will see how it goes.,neutral,0.2,malayalam,low
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, cherish it!",positive,0.2,bengali,low
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.2,malayalam,low
+Delivery was fast and packaging was perfect. Thank you!,Delivery was swift and packaging was perfect. Thank you!,positive,0.5,malayalam,medium
+"Thank you team, you made my day! Best purchase ever.","You made my day! best purchase ever., thank you team njan happy aanu, enthayalum nalla",positive,0.5,hindi,medium
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible service! Cancelled my waste panra order without any notice whatsoever.,sarcastic,0.8,tamil,high
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They mast hai resolved my issue instantly.,positive,0.8,bengali,high
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.5,tamil,medium
+Product exceeded my expectations. Absolutely perfect!,"cheriya quality, nahi chalega, avarude seva moshamaanu, how wonderful, product exceeded my expectations. absolutely perfect",sarcastic,0.5,malayalam,injected_sarcasm
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the service was very quick,positive,0.5,hindi,medium
+"Average experience. Some things good, some things could be better.","Average experience. Some things good, thik thak hai some things could be better.",neutral,0.5,hindi,medium
+Normal experience. Customer service was okay. Will see how it goes.,"Normal visit Customer service was okay. Will see how it goes. avanumithu poyallo, theek hai, sari aanu",neutral,0.8,hindi,high
+The food was absolutely delicious and the service was very fast.,"adipoli aayirunnu, the food was absolutely delicious and the help was very fast.",positive,0.2,malayalam,low
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary but does the job.,neutral,0.2,bengali,low
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary but does the job.,neutral,0.2,malayalam,low
+Worst delivery experience. Package lost and nobody is helping.,Worst courier journey Package lost and nobody is helping.,negative,0.5,tamil,medium
+"Thank you team, you made my day! Best purchase ever.","Oh of course, thank you team, you made my day! best bekar service ever. So helpful. Really.",sarcastic,0.5,hindi,injected_sarcasm
+Worst delivery experience. Package lost and nobody is helping.,"Worst delivery interaction Package lost and nobody is helping. prashnam undu, ketta service, khub kharap",negative,0.8,malayalam,high
+Total scam! Paid for express delivery but it arrived late.,"Total scam! Paid for express delivery but it arrived late. amader theke ekhane, bekaar hai",negative,0.5,malayalam,medium
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible service! Cancelled my order without any notice whatsoever.,sarcastic,0.5,hindi,medium
+"As if the price hike was not enough, now they reduced quality too!","Now they reduced caliber too!, as if the price hike was not enough",sarcastic,0.5,hindi,medium
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.2,tamil,low
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received romba mosam the wrong item. Refund please!,negative,0.8,tamil,high
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use.",negative,0.5,tamil,medium
+So great that their premium product broke on the very first use!,"enna da idhu, so great that their premium item broke on the very first use!",sarcastic,0.2,bengali,low
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.5,malayalam,medium
+Product is defective right out of the box. Very disappointing.,Product is defective right out of the box. Very disappointing.,negative,0.5,malayalam,medium
+"Never buying again, total waste of money. Worst experience.","Total waste of money. worst visit, never avarude seva moshamaanu again",negative,0.5,hindi,medium
+"I absolutely love this new product, it is amazing quality!","I absolutely adore this new product, it is amazing caliber",positive,0.2,malayalam,low
+The quality is premium and totally worth the price.,"The quality is premium and totally worth the price. ekdom perfect, enthayalum nalla, sundor packaging",positive,0.8,bengali,high
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.8,bengali,high
+Received on time and condition was perfect. Highly recommend!,Received on time and lajawaab product condition was perfect. Highly recommend!,positive,0.8,bengali,high
+The quality is premium and totally worth the price.,The quality is premium and totally worth the price.,positive,0.2,hindi,low
+"Delivery was on time. The product is alright, nothing special.","Nothing special., logistics was on avanumithu poyallo time. the product is alright",neutral,0.8,hindi,high
+Best customer experience I have had in years! Amazing team.,Best customer experience I have had in years! Amazing team.,positive,0.5,bengali,medium
+Product arrived damaged and customer support is completely useless.,"Product arrived damaged and customer support is completely useless. enna da idhu, khub dukkhojonok, khub dukkhojonok",negative,0.8,bengali,high
+The quality is premium and totally worth the price.,The quality is premium darun product and totally worth the price.,positive,0.8,tamil,high
+The quality is premium and totally worth the price.,The quality is premium and totally worth the price.,positive,0.8,malayalam,high
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the price is a bit high for what you get.,neutral,0.2,hindi,low
+"Average experience. Some things good, some things could be better.","Average visit Some things good, some things could sari aanu better.",neutral,0.8,malayalam,high
+Incredible service! Cancelled my order without any notice whatsoever.,"nahi chalega, moshamayi, incredible service! cancelled my order without any notice whatsoever.",sarcastic,0.5,malayalam,medium
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it anbudan fantastic, love it!",positive,0.8,bengali,high
+Product looks decent. Nothing extraordinary but does the job.,Purchase looks decent. Nothing extraordinary but does the job.,neutral,0.5,malayalam,medium
+How wonderful that their helpline goes straight to voicemail always!,"How wonderful that their helpline goes straight to voicemail always! ketta service, bekar service, nallatalla",sarcastic,0.8,tamil,high
+Mind blowing that they call this five star service honestly.,Mind blowing that they call bekaar hai this five star service honestly.,sarcastic,0.8,malayalam,high
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.5,tamil,medium
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.2,bengali,low
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.2,bengali,low
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.2,hindi,low
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike nallatalla not enough, now they reduced quality too!",sarcastic,0.5,hindi,medium
+Product exceeded my expectations. Absolutely perfect!,Order exceeded my expectations. Absolutely perfect!,positive,0.2,hindi,low
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express delivery but it arrived late.,negative,0.2,tamil,low
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful epadi irundhalum nalla and very intuitive.,positive,0.2,hindi,low
+"Super quick delivery, great quality. Will definitely order again.","darun product, khub bhalo, super quick courier great build will definitely order again.",positive,0.5,hindi,medium
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing paakalam extraordinary but does the job.,neutral,0.8,tamil,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring my calls.,sarcastic,0.2,bengali,low
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant package,sarcastic,0.5,bengali,medium
+So great that their premium product broke on the very first use!,So great that their premium product broke on the very first use!,sarcastic,0.2,malayalam,low
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely avarude seva moshamaanu unhelpful customer support Disgusting.,negative,0.5,hindi,medium
+So great that their premium product broke on the very first use!,So great that their premium order broke on the very first use!,sarcastic,0.5,tamil,medium
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious adipoli aayirunnu the service was very fast.,positive,0.5,malayalam,medium
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows.,negative,0.2,bengali,low
+"Terrible quality, broke within two days. Completely disappointed.","nahi chalega, dhoka diya, theriyama panrom, broke within two days. completely disappointed., terrible quality",negative,0.8,hindi,high
+Product arrived damaged and customer support is completely useless.,Product arrived damaged and customer support is completely useless.,negative,0.8,bengali,high
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.2,malayalam,low
+Product is defective right out of the box. Very disappointing.,"mosham aanu, nosto product, bahut kharab, product is defective right out of the box. very disappointing.",negative,0.8,hindi,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Order is bekar service nothing like the advertisement shows.,negative,0.8,hindi,high
+"Just tried their new product and it is fantastic, love it!","Appreciate it!, lajawaab product tried their new product and it is fantastic",positive,0.5,bengali,medium
+The quality is premium and totally worth the price.,"superb aayirunnu, ipdi irukanum, ente mone super, the build is premium and totally worth the price.",positive,0.8,hindi,high
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible assistance Cancelled my enna da idhu order without any notice whatsoever.,sarcastic,0.5,tamil,medium
+"I absolutely love this new product, it is amazing quality!","It is extraordinary standard, i mela trust absolutely adore this new product",positive,0.5,malayalam,medium
+Product arrived damaged and customer support is completely useless.,Product arrived damaged and customer nahi chalega is completely useless.,negative,0.8,hindi,high
+The food was terrible and the service was incredibly slow.,The food was terrible and the assistance was incredibly slow.,negative,0.2,tamil,low
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.2,tamil,low
+Product exceeded my expectations. Absolutely perfect!,"sundor packaging, bahut accha hai, bilkul sahi hai, product exceeded my expectations. absolutely perfect!",positive,0.8,bengali,high
+"Never buying again, total waste of money. Worst experience.","Never nahi chalega again, total waste of money. Worst visit",negative,0.5,malayalam,medium
+The food was terrible and the service was incredibly slow.,The food was terrible and the team was incredibly slow.,negative,0.5,tamil,medium
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows.,negative,0.2,tamil,low
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the assistance was very quick,positive,0.2,tamil,low
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.2,bengali,low
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the price is a bit high for what you get.,neutral,0.5,hindi,medium
+Best customer experience I have had in years! Amazing team.,Best customer journey I have had in years! Incredible team.,positive,0.2,hindi,low
+"Average experience. Some things good, some things could be better.","Average interaction Some things good, some things could be better.",neutral,0.2,hindi,low
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week!",sarcastic,0.5,tamil,medium
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the dhoka diya service was very fast Best experience EVER 😒,sarcastic,0.5,hindi,injected_sarcasm
+Quality is okay but the price is a bit high for what you get.,"ektu valo ektu kharap, quality is okay but the price is a bit high for what you get.",neutral,0.2,tamil,low
+"Delivery was on time. The product is alright, nothing special.","Dispatch was on time. The chalega is alright, nothing special.",neutral,0.8,tamil,high
+It is fine for the price. Not the best but acceptable quality.,"paakalam, paakalam, okay aanu, it is fine for the price. not the best but acceptable build",neutral,0.8,tamil,high
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.2,tamil,low
+"Average experience. Some things good, some things could be better.","Some things could be better., avanumithu poyallo average experience. some things good",neutral,0.8,tamil,high
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.5,hindi,medium
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced quality too!",sarcastic,0.2,bengali,low
+Quality is okay but the price is a bit high for what you get.,"Quality is okay but the price is a bit high for what you get. ithu epadi aanu theriyilla, paakalam, okay aanu",neutral,0.8,bengali,high
+Worst delivery experience. Package lost and nobody is helping.,Worst courier experience. Package lost baje quality nobody is helping.,negative,0.2,tamil,low
+Total scam! Paid for express delivery but it arrived late.,"nallatalla, bekar service, theriyama panrom, total scam! paid for express shipping but it arrived late.",negative,0.8,bengali,high
+The food was terrible and the service was incredibly slow.,The food was dreadful and nallatalla the assistance was incredibly slow.,negative,0.8,tamil,high
+Delivery was fast and packaging was perfect. Thank you!,Delivery was quick and ekdom perfect packaging was perfect. Thank you!,positive,0.8,malayalam,high
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, love it!",positive,0.8,bengali,high
+The food was absolutely delicious and the service was very fast.,"The food was absolutely delicious and the help was very fast. ipdi irukanum, oshadharon service, wah wah amazing",positive,0.8,hindi,high
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.5,malayalam,medium
+"Just tried their new product and it is fantastic, love it!","Appreciate it!, just tried their sundor packaging new product and it is fantastic",positive,0.5,bengali,medium
+Product exceeded my expectations. Absolutely perfect!,Order exceeded my expectations. sema product perfect!,positive,0.5,bengali,medium
+Worst delivery experience. Package lost and nobody is helping.,Worst dispatch journey Package lost and nobody is helping.,negative,0.5,malayalam,medium
+Order arrived. Product is as described. Average quality overall.,Order arrived. Purchase is as described. Average quality overall. kuch khas nahi,neutral,0.2,hindi,low
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.8,hindi,high
+How wonderful that their helpline goes straight to voicemail always!,"How wonderful that their helpline goes straight to voicemail always! waste panra, prashnam undu, ningal cheythath shari alla",sarcastic,0.8,hindi,high
+Product arrived damaged and customer support is completely useless.,"moshamayi, ningal cheythath shari alla, product arrived damaged and customer support is completely useless.",negative,0.5,malayalam,medium
+The food was terrible and the service was incredibly slow.,The food was terrible and the service was incredibly delayed ketta service,negative,0.2,hindi,low
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline dhoka diya goes straight to voicemail always!,sarcastic,0.8,bengali,high
+Best customer experience I have had in years! Amazing team.,Best customer journey I have kollam had in years! Amazing team.,positive,0.8,bengali,high
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.2,malayalam,low
+So great that their premium product broke on the very first use!,So great that their premium product broke on the very first use!,sarcastic,0.2,bengali,low
+Best customer experience I have had in years! Amazing team.,Best customer experience I have had in years! Incredible team.,positive,0.5,bengali,medium
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced quality too!",sarcastic,0.5,malayalam,medium
+Love how they charge premium prices for such wonderful quality!,Love how nahi chalega charge premium prices for such wonderful grade,sarcastic,0.2,malayalam,low
+Product is defective right out of the box. Very disappointing.,"bekar service, romba mosam, purchase is defective right out of the box. very disappointing.",negative,0.5,tamil,medium
+"Just tried their new product and it is fantastic, love it!","Appreciate it!, just tried their khub satisfied new product and it is fantastic",positive,0.8,hindi,high
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic standard Do not buy.,negative,0.5,tamil,medium
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.2,malayalam,low
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my issue instantly.,positive,0.8,tamil,high
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, fantastic that my order arrived one month late. Great job! moshamayi, theriyama panrom, paavam",sarcastic,0.8,malayalam,high
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.5,malayalam,medium
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.5,hindi,medium
+Excellent value for money. Premium quality at affordable price.,"nahi chalega, ganda quality, ganda quality, sure, excellent value for money. premium quality at affordable price",sarcastic,0.5,hindi,injected_sarcasm
+"I absolutely love this new product, it is amazing quality!",I absolutely adore this new order it is amazing standard,positive,0.5,hindi,medium
+Quality is okay but the price is a bit high for what you get.,"Quality is okay but the price is a bit high for what you get. thik ache, ektu valo ektu kharap",neutral,0.5,malayalam,medium
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star waste panra honestly.,sarcastic,0.8,malayalam,high
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my expectations. Absolutely perfect ...definitely NOT.,sarcastic,0.5,tamil,injected_sarcasm
+Product exceeded my expectations. Absolutely perfect!,"zabardast quality, njan happy aanu, product exceeded my expectations. absolutely perfect!",positive,0.5,malayalam,medium
+"Terrible quality, broke within two days. Completely disappointed.","Terrible grade broke within two days. Completely disappointed. theriyama panrom, khub kharap",negative,0.5,hindi,medium
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, fantastic that my order arrived one month late. Wonderful job!",sarcastic,0.5,hindi,medium
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and portion sizes prashnam undu absolutely tiny.",negative,0.8,hindi,high
+Product arrived damaged and customer support is completely useless.,Product arrived damaged and customer support is completely useless. prashnam undu,negative,0.2,hindi,low
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months avarude seva moshamaanu for this absolutely brilliant product.,sarcastic,0.8,hindi,high
+Product is defective right out of the box. Very disappointing.,Order is defective right out of the box. Very disappointing.,negative,0.2,hindi,low
+"Super quick delivery, great quality. Will definitely order again.","Fantastic, super quick delivery, great quality. will definitely order again",sarcastic,0.5,hindi,injected_sarcasm
+"Super quick delivery, great quality. Will definitely order again.",Super quick logistics great quality. Will definitely order again.,positive,0.5,malayalam,medium
+"Super quick delivery, great quality. Will definitely order again.","oshadharon service, bahut badhiya, mast hai, super quick dispatch excellent grade will definitely order again.",positive,0.8,malayalam,high
+"Thank you team, you made my day! Best purchase ever.","super aayirunnu, thank you team, you made my day! best purchase ever.",positive,0.2,tamil,low
+Best customer experience I have had in years! Amazing team.,Amazing that best customer experience i have had in years! amazing team Best experience EVER 😒,sarcastic,0.5,bengali,injected_sarcasm
+The food was absolutely delicious and the service was very fast.,"bhalo laglo, shandar service, valare nalla aanu, the food was absolutely delicious and the service was very fast.",positive,0.8,malayalam,high
+Nice one! Delivered the wrong product and now ignoring my calls.,"Nice one! Delivered the wrong purchase and now ignoring my calls. cheriya quality, waste panra, bahut bura experience",sarcastic,0.8,hindi,high
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly oshadharon service described!,positive,0.8,tamil,high
+Delivery was fast and packaging was perfect. Thank you!,Delivery was fast and romba nalla packaging was perfect. Thank you!,positive,0.5,bengali,medium
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer support ever. Only waited three hours!",sarcastic,0.2,hindi,low
+Order arrived. Product is as described. Average quality overall.,Order arrived. Product is as described. Average quality overall.,neutral,0.2,malayalam,low
+Love how they charge premium prices for such wonderful quality!,Love how they charge premium ketta service for such wonderful grade,sarcastic,0.5,hindi,medium
+Excellent value for money. Premium quality at affordable price.,"Excellent value for money. Premium quality at affordable price. zabardast quality, enthayalum nalla, epadi irundhalum nalla",positive,0.8,malayalam,high
+"Just tried their new product and it is fantastic, love it!","Great news, just tried their new product and it is fantastic, love it",sarcastic,0.5,hindi,injected_sarcasm
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.2,hindi,low
+The quality is premium and totally worth the price.,Love how the quality is premium and totally worth the price,sarcastic,0.5,tamil,injected_sarcasm
+Product is defective right out of the box. Very disappointing.,Product is defective right out of the box. Very disappointing. dhoka diya,negative,0.2,malayalam,low
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, outstanding grade Will definitely order again. sundor packaging, darun product, bahut badhiya",positive,0.8,hindi,high
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the service was very swift,positive,0.8,bengali,high
+Worst delivery experience. Package lost and nobody is helping.,Worst delivery journey Package lost and nobody is helping.,negative,0.2,hindi,low
+"Terrible quality, broke within two days. Completely disappointed.","Ghastly quality, broke within two days. Completely disappointed.",negative,0.8,hindi,high
+"Terrible quality, broke within two days. Completely disappointed.","Terrible quality, broke within two days. Completely disappointed. bakwaas product, bekaar hai",negative,0.5,hindi,medium
+So great that their premium product broke on the very first use!,So superb that their premium package broke on the very first use!,sarcastic,0.2,malayalam,low
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.5,bengali,medium
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.2,tamil,low
+"Never buying again, total waste of money. Worst experience.","Total waste of money. ganda quality worst experience., never buying again",negative,0.5,bengali,medium
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use.",negative,0.5,bengali,medium
+Received on time and condition was perfect. Highly recommend!,"Received on time and condition was perfect. Highly recommend! bilkul sahi hai, kollam aayirunnu, sema product",positive,0.8,hindi,high
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. Premium quality at affordable price.,positive,0.5,malayalam,medium
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. bilkul sahi hai Beautiful design and very intuitive.,positive,0.8,malayalam,high
+Product exceeded my expectations. Absolutely perfect!,Item exceeded my expectations. Absolutely perfect!,positive,0.2,tamil,low
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic build Do not buy.,negative,0.5,hindi,medium
+The quality is premium and totally worth the price.,The quality is premium and totally worth the price.,positive,0.5,hindi,medium
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.5,malayalam,medium
+"Yeah sure, best customer support ever. Only waited three hours!","Best customer support ever. only waited three hours!, yeah sure",sarcastic,0.2,malayalam,low
+Received on time and condition was perfect. Highly recommend!,"Oh of course, received on time and condition was perfect. highly recommend",sarcastic,0.5,tamil,injected_sarcasm
+"Thank you team, you made my day! Best purchase ever.","sundor packaging, shandar service, thank you team, you made my day! best purchase ever.",positive,0.5,hindi,medium
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, outstanding grade Will definitely super aayirunnu again.",positive,0.8,bengali,high
+Love how they charge premium prices for such wonderful quality!,"dhoka diya, nahi chalega, ningal cheythath shari alla, cherish how they charge premium prices for such wonderful caliber",sarcastic,0.8,bengali,high
+Excellent value for money. Premium quality at affordable price.,"ente mone super, bahut badhiya, excellent value for money. premium build at affordable price.",positive,0.5,bengali,medium
+So great that their premium product broke on the very first use!,So superb that their premium package bayangara problem on the very first use!,sarcastic,0.8,malayalam,high
+"The app crashes constantly, very buggy and frustrating to use.","khub dukkhojonok, waste panra, paavam, very buggy and frustrating to use., the app crashes constantly",negative,0.8,malayalam,high
+"Super quick delivery, great quality. Will definitely order again.",Super quick courier brilliant lajawaab product Will definitely order again.,positive,0.8,tamil,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring bakwaas product calls.,sarcastic,0.8,bengali,high
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.2,hindi,low
+Worst delivery experience. Package lost and nobody is helping.,Worst delivery visit Package cheriya quality and nobody is helping.,negative,0.8,bengali,high
+Normal experience. Customer service was okay. Will see how it goes.,"Normal experience. Customer service was okay. Will see how it goes. normal ah iruku, sari aanu, paakalam",neutral,0.8,tamil,high
+Mind blowing that they call this five star service honestly.,"dhoka diya, theriyama panrom, illa da seri, mind blowing that they call this five star service honestly.",sarcastic,0.8,hindi,high
+"Just tried their new product and it is fantastic, love it!","Just tried their new package and it is fantastic, love it!",positive,0.5,tamil,medium
+"Oh wow, amazing that my order arrived one month late. Great job!","Amazing that my order arrived one month late. great job!, oh wow",sarcastic,0.2,tamil,low
+Product looks decent. Nothing extraordinary but does the job.,"Package looks decent. Nothing extraordinary but does the job. okay aanu, sari aanu, okay aanu",neutral,0.8,tamil,high
+So great that their premium product broke on the very first use!,"So great that their premium product broke on the very first use! enna da idhu, paavam, theriyama panrom",sarcastic,0.8,tamil,high
+Outstanding customer support. They resolved my issue instantly.,"Outstanding customer support. They resolved my issue instantly. darun product, bahut accha hai",positive,0.5,hindi,medium
+Outstanding customer support. They resolved my issue instantly.,Outstanding bahut accha hai support. They resolved my issue instantly.,positive,0.8,hindi,high
+Delivery was fast and packaging was perfect. Thank you!,Logistics was quick and packaging was perfect. Thank you!,positive,0.8,malayalam,high
+Missing items in my order and no response from support. Horrible.,Missing items in bahut kharab order and no response from support. Horrible.,negative,0.8,hindi,high
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my issue instantly.,positive,0.2,hindi,low
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.8,hindi,high
+Delivery was fast and packaging was perfect. Thank you!,Delivery was fast and packaging was perfect. Thank you!,positive,0.5,hindi,medium
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.2,hindi,low
+Total scam! Paid for express delivery but it arrived late.,"khub dukkhojonok, cheriya quality, cheriya quality, total scam! paid for express delivery but it arrived late.",negative,0.8,bengali,high
+Product looks decent. Nothing extraordinary but does the job.,Package looks kuch khas nahi Nothing extraordinary but does the job.,neutral,0.8,bengali,high
+Really happy with my purchase. Exactly as described!,"Oh of course, really happy with my purchase. exactly as described",sarcastic,0.5,bengali,injected_sarcasm
+"I absolutely love this new product, it is amazing quality!",I absolutely love this new order it is amazing grade,positive,0.5,hindi,medium
+Worst delivery experience. Package lost and nobody is helping.,"prashnam undu, prashnam undu, baje quality, worst delivery encounter package lost and nobody is helping.",negative,0.8,malayalam,high
+Order arrived. Product is as described. Average quality overall.,Order arrived. Product is as described. Average quality overall.,neutral,0.2,tamil,low
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows.,negative,0.2,malayalam,low
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic build Do not buy.,negative,0.2,bengali,low
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows.,negative,0.5,malayalam,medium
+"Just tried their new product and it is fantastic, love it!","Just enthayalum nalla their new product and it is fantastic, love it!",positive,0.8,hindi,high
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting.,negative,0.5,bengali,medium
+Outstanding customer support. They resolved my issue instantly.,"sundor packaging, enthayalum nalla, super aayirunnu, outstanding customer support. they resolved my issue instantly.",positive,0.8,hindi,high
+Worst delivery experience. Package lost and nobody is helping.,"ketta service, bahut bura experience, worst delivery experience. package lost and nobody is helping.",negative,0.5,malayalam,medium
+Love how they charge premium prices for such wonderful quality!,Love how they charge premium prices for such wonderful quality!,sarcastic,0.5,tamil,medium
+The quality is premium and totally worth the price.,"ipdi irukanum, mast hai, enthayalum nalla, the caliber is premium and totally worth the price.",positive,0.8,malayalam,high
+Normal experience. Customer service was okay. Will see how it goes.,Normal encounter Customer service was okay. Will okay aanu how it goes.,neutral,0.8,bengali,high
+"Just tried their new product and it is fantastic, love it!","Love it!, just tried their nalla irundhuchu new package and it is fantastic",positive,0.8,hindi,high
+"Wow, what a brilliant idea to increase the price by 50 percent!","What a brilliant idea to increase the price by 50 percent!, wow",sarcastic,0.2,bengali,low
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting.,negative,0.5,tamil,medium
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary but does the job.,neutral,0.2,bengali,low
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star service honestly.,sarcastic,0.2,tamil,low
+Outstanding customer support. They resolved my issue instantly.,"Fantastic, outstanding customer support. they resolved my issue instantly",sarcastic,0.5,bengali,injected_sarcasm
+"Average experience. Some things good, some things could be better.","Some things could be better., average experience. some things good kuch khas nahi, sari aanu, thik thak hai",neutral,0.8,malayalam,high
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week!",sarcastic,0.5,hindi,medium
+Really happy with my purchase. Exactly as described!,"super ah iruku, ente mone super, wah wah amazing, really happy with my purchase. exactly as described!",positive,0.8,malayalam,high
+The quality is premium and totally worth the price.,The caliber is premium valare nalla aanu and totally worth the price.,positive,0.2,tamil,low
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, wonderful quality. Will definitely order again.",positive,0.8,malayalam,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring my calls.,sarcastic,0.8,tamil,high
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my expectations. Absolutely perfect!,positive,0.5,tamil,medium
+Rude staff and completely unhelpful customer service. Disgusting.,"Rude staff and completely unhelpful customer service. Disgusting. emon service hole cholena, amader theke ekhane, baje quality",negative,0.8,bengali,high
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from avarude seva moshamaanu Horrible.,negative,0.2,bengali,low
+How wonderful that their helpline goes straight to voicemail always!,How nallatalla that their helpline goes straight to voicemail always!,sarcastic,0.5,bengali,medium
+Order arrived. Product is as described. Average quality overall.,Order arrived. Item is as described. okay aanu grade overall.,neutral,0.5,tamil,medium
+"Oh wow, amazing that my order arrived one month late. Great job!","Amazing that my order arrived one month avarude seva moshamaanu great job!, oh wow",sarcastic,0.8,malayalam,high
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for avarude seva moshamaanu delivery but it arrived late.,negative,0.5,hindi,medium
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary but does the job.,neutral,0.2,hindi,low
+"Oh wow, amazing that my order arrived one month late. Great job!","bekar service, dhoka diya, ganda quality, oh wow, amazing that my order arrived one month late. wonderful job!",sarcastic,0.8,bengali,high
+Product is defective right out of the box. Very disappointing.,Item is defective right out of the box. Very disappointing.,negative,0.2,tamil,low
+Delivery was fast and packaging was perfect. Thank you!,Courier was fast and super aayirunnu packaging was perfect. Thank you!,positive,0.8,bengali,high
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever.",positive,0.2,hindi,low
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.5,tamil,medium
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.5,malayalam,medium
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. bahut accha hai Premium quality at affordable price.,positive,0.8,tamil,high
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, amazing that my order arrived one month late. Great job!",sarcastic,0.2,bengali,low
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.5,bengali,medium
+"I absolutely love this new product, it is amazing quality!","I absolutely cherish this new khub satisfied product, it is amazing quality!",positive,0.8,malayalam,high
+"Thank you team, you made my day! Best purchase ever.","You made my day! best purchase ever., thank you team",positive,0.5,bengali,medium
+Love how they charge premium prices for such wonderful quality!,Enjoy how they charge premium prices for such wonderful quality!,sarcastic,0.2,tamil,low
+"I absolutely love this new product, it is amazing quality!","Love how i absolutely love this paavam new product, it is amazing quality",sarcastic,0.5,hindi,injected_sarcasm
+"I absolutely love this new product, it is amazing quality!","bahut accha hai, i absolutely love this new product, it is phenomenal grade",positive,0.2,tamil,low
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.5,tamil,medium
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer bahut bura experience ever. Only waited three hours!",sarcastic,0.5,malayalam,medium
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious zabardast quality and the service was very speedy,positive,0.8,malayalam,high
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and portion sizes are absolutely tiny. khub dukkhojonok",negative,0.2,tamil,low
+Order arrived. Product is as described. Average quality overall.,Order arrived. Purchase is as described. Average quality overall.,neutral,0.2,bengali,low
+"Terrible quality, broke within two days. Completely disappointed.","Terrible grade broke within two days. Completely disappointed. khub kharap, bahut kharab, avarude seva moshamaanu",negative,0.8,tamil,high
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, great nahi chalega Will definitely order again oh sure.",sarcastic,0.5,hindi,injected_sarcasm
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced quality too!",sarcastic,0.2,hindi,low
+"Oh wow, amazing that my order arrived one month late. Great job!","Amazing that my order arrived one month late. great job!, oh wow",sarcastic,0.2,bengali,low
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made super ah iruku day! Best purchase ever.",positive,0.8,hindi,high
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my adipoli aayirunnu instantly.,positive,0.5,tamil,medium
+The app works flawlessly. Beautiful design and very intuitive.,"nalla irundhuchu, nalla irundhuchu, the app works flawlessly. beautiful design and very intuitive.",positive,0.5,malayalam,medium
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.5,hindi,medium
+Normal experience. Customer service was okay. Will see how it goes.,"okay aanu, thik thak hai, idhu epadi iruku theriyala, normal experience. customer help was okay. will see how it goes.",neutral,0.8,malayalam,high
+Order arrived. Product is as described. Average quality overall.,Order arrived. Item is as described. Average quality overall.,neutral,0.5,malayalam,medium
+Delivery was fast and packaging was perfect. Thank you!,"bahut accha hai, onek valo, courier was swift and packaging was perfect. thank you!",positive,0.5,malayalam,medium
+Best customer experience I have had in years! Amazing team.,Best customer interaction I have had in years! Extraordinary team.,positive,0.2,hindi,low
+So great that their premium product broke on the very first use!,So great that their premium item broke on the very first use!,sarcastic,0.2,hindi,low
+Complete fraud. Product is nothing like the advertisement shows.,"Complete fraud. Product is nothing like the advertisement shows. bayangara problem, cheriya quality",negative,0.5,hindi,medium
+Product is defective right out of the box. Very disappointing.,Product is defective right out of the box. Very disappointing.,negative,0.2,bengali,low
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable grade,neutral,0.8,bengali,high
+Worst delivery experience. Package lost and nobody is helping.,Worst logistics experience. Package lost prashnam undu nobody is helping.,negative,0.5,tamil,medium
+Quality is okay but the price is a bit high for what you get.,"ektu valo ektu kharap, ithu epadi aanu theriyilla, normal ah iruku, standard is okay but the price is a bit high for what you get.",neutral,0.8,tamil,high
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer support ever. Only waited three hours!",sarcastic,0.5,bengali,medium
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. Premium quality at affordable price as if that is acceptable.,sarcastic,0.5,tamil,injected_sarcasm
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.2,hindi,low
+So great that their premium product broke on the very first use!,So great that their premium product illa da seri broke on the very first use!,sarcastic,0.2,malayalam,low
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express delivery but it arrived late.,negative,0.5,malayalam,medium
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible service! Cancelled my ganda quality without any notice whatsoever.,sarcastic,0.5,bengali,medium
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.2,hindi,low
+"Food was cold, stale, and portion sizes are absolutely tiny.","Stale, and portion sizes are absolutely tiny., food was cold",negative,0.2,malayalam,low
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible help Cancelled my bayangara problem order without any notice whatsoever.,sarcastic,0.5,bengali,medium
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my bhalo laglo expectations. Absolutely perfect!,positive,0.8,malayalam,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is romba mosam nothing like the advertisement shows.,negative,0.8,tamil,high
+"Yeah sure, best customer support ever. Only waited three hours!","nahi chalega, dhoka diya, mosham aanu, yeah sure, best customer support ever. only waited three hours!",sarcastic,0.8,malayalam,high
+"Oh really, so helpful of them to respond after one whole week!","nallatalla, bayangara problem, theriyama panrom, oh really, so helpful of them to respond after one whole week!",sarcastic,0.8,bengali,high
+"Average experience. Some things good, some things could be better.","Some things could be better., mota muti bhalo average visit some things good",neutral,0.8,hindi,high
+"Yeah sure, best customer support ever. Only waited three hours!","Best customer support ever. only waited three hours!, yeah sure",sarcastic,0.2,malayalam,low
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week!",sarcastic,0.2,hindi,low
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth prashnam undu two months for this absolutely brilliant order,sarcastic,0.8,malayalam,high
+"Wow, what a brilliant idea to increase the price by 50 percent!","What a brilliant idea to increase the price by 50 percent!, wow",sarcastic,0.5,bengali,medium
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend!,positive,0.2,malayalam,low
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline nahi chalega goes straight to voicemail always!,sarcastic,0.5,bengali,medium
+The app works flawlessly. Beautiful design and very intuitive.,"The app works flawlessly. Beautiful design and very intuitive. epadi irundhalum nalla, adipoli aayirunnu, kollam",positive,0.8,bengali,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring my calls.,sarcastic,0.2,tamil,low
+"Terrible quality, broke within two days. Completely disappointed.","Terrible quality, broke moshamayi two days. Completely disappointed.",negative,0.8,hindi,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like nahi chalega advertisement shows.,negative,0.8,hindi,high
+Product is defective right out of the box. Very disappointing.,Product is defective right out bayangara problem of the box. Very disappointing.,negative,0.8,malayalam,high
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.5,hindi,medium
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.8,malayalam,high
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary but does the job.,neutral,0.5,hindi,medium
+"Thank you team, you made my day! Best purchase ever.","ente mone super, thank you team, you made my day! best purchase ever.",positive,0.2,hindi,low
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and portion sizes are absolutely tiny. baje quality, nahi chalega, waste panra",negative,0.8,bengali,high
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.2,tamil,low
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express courier but it arrived late.,negative,0.2,tamil,low
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced quality too!",sarcastic,0.2,hindi,low
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent! ningal cheythath shari alla, ketta service",sarcastic,0.5,hindi,medium
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant purchase,sarcastic,0.8,tamil,high
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. Premium quality at sundor packaging price.,positive,0.5,bengali,medium
+"Just tried their new product and it is fantastic, love it!","Great news, just tried their new moshamayi product and it is fantastic, love it",sarcastic,0.5,hindi,injected_sarcasm
+"I absolutely love this new product, it is amazing quality!",I absolutely cherish this new item it is fantastic quality!,positive,0.5,malayalam,medium
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend!,positive,0.5,hindi,medium
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months bayangara problem this absolutely brilliant product.,sarcastic,0.8,malayalam,high
+Product is defective right out of the box. Very disappointing.,Product is defective right out of the box. Very disappointing.,negative,0.8,malayalam,high
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.8,malayalam,high
+Worst delivery experience. Package lost and nobody is helping.,Worst courier experience. Package lost and nobody is helping.,negative,0.8,hindi,high
+The food was terrible and the service was incredibly slow.,"avarude seva moshamaanu, byartho experience, emon service hole cholena, the food was terrible and the service was incredibly slow.",negative,0.8,bengali,high
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant product.,sarcastic,0.5,bengali,medium
+"Oh wow, amazing that my order arrived one month late. Great job!","nahi chalega, bahut kharab, oh wow, amazing that my order arrived one month late. great job!",sarcastic,0.5,tamil,medium
+Product is defective right out of the box. Very disappointing.,"bahut kharab, romba mosam, order is defective right out of the box. very disappointing.",negative,0.5,bengali,medium
+"I absolutely love this new product, it is amazing quality!","It is extraordinary build, i absolutely love this new product",positive,0.5,hindi,medium
+Total scam! Paid for express delivery but it arrived late.,Total nallatalla Paid for express dispatch but it arrived late.,negative,0.2,hindi,low
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced standard too!",sarcastic,0.8,bengali,high
+Received on time and condition was perfect. Highly recommend!,"Received on time and condition was perfect. Highly recommend! onek valo, bilkul sahi hai",positive,0.5,tamil,medium
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.2,malayalam,low
+The app is functional. Basic features work. Nothing impressive.,The app is functional. chalega Basic features work. Nothing impressive.,neutral,0.2,hindi,low
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use.",negative,0.5,tamil,medium
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.2,hindi,low
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. Premium grade at affordable price.,positive,0.5,tamil,medium
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.2,malayalam,low
+Best customer experience I have had in years! Amazing team.,Best customer experience I have had in years! Amazing team.,positive,0.2,malayalam,low
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.2,bengali,low
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.2,tamil,low
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the price is a bit high for what you get.,neutral,0.8,tamil,high
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.5,hindi,medium
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them bayangara problem respond after one whole week!",sarcastic,0.8,hindi,high
+Excellent value for money. Premium quality at affordable price.,Excellent value nalla irundhuchu money. Premium quality at affordable price.,positive,0.5,bengali,medium
+Excellent value for money. Premium quality at affordable price.,"Excellent value for money. Premium quality at affordable price. mast hai, darun product, bilkul sahi hai",positive,0.8,bengali,high
+Really happy with my purchase. Exactly as described!,"waste panra, nallatalla, yeah right, really happy with my purchase. exactly as described... wow.",sarcastic,0.5,bengali,injected_sarcasm
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.8,hindi,high
+The food was terrible and the service was incredibly slow.,The food was terrible and the service was incredibly slow.,negative,0.5,bengali,medium
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.8,malayalam,high
+Quality is okay but the price is a bit high for what you get.,"okay aanu, ektu valo ektu kharap, ektu valo ektu kharap, build is okay but the price is a bit high for what you get.",neutral,0.8,tamil,high
+Rude staff and completely unhelpful customer service. Disgusting.,"prashnam undu, paavam, amader theke ekhane, rude staff and completely unhelpful customer service. disgusting.",negative,0.8,bengali,high
+Worst delivery experience. Package lost and nobody is helping.,Worst shipping experience. Package lost and nobody is helping.,negative,0.2,tamil,low
+"Terrible quality, broke within two days. Completely disappointed.","Terrible quality, mosham aanu within two days. Completely disappointed.",negative,0.2,malayalam,low
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was ningal cheythath shari alla not enough, now they reduced grade too!",sarcastic,0.8,malayalam,high
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.8,hindi,high
+Extremely overpriced for such pathetic quality. Do not buy.,"ningal cheythath shari alla, ganda quality, extremely overpriced for such pathetic quality. do not buy.",negative,0.5,malayalam,medium
+Normal experience. Customer service was okay. Will see how it goes.,Normal experience. Customer service was chalega okay. Will see how it goes.,neutral,0.2,malayalam,low
+Best customer experience I have had in years! Amazing team.,"Best customer encounter I have had in years! Phenomenal team. oshadharon service, lajawaab product, sema product",positive,0.8,tamil,high
+"Terrible quality, broke within two days. Completely disappointed.",Terrible build broke within two days. Completely disappointed.,negative,0.5,hindi,medium
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and portion sizes are absolutely tiny.",negative,0.2,bengali,low
+"The app crashes constantly, very buggy and frustrating to use.","Very buggy and frustrating to use., the app crashes constantly",negative,0.2,bengali,low
+How wonderful that their helpline goes straight to voicemail always!,"How wonderful that their helpline goes straight to voicemail always! moshamayi, illa da seri, romba mosam",sarcastic,0.8,tamil,high
+Received on time and condition was perfect. Highly recommend!,"epadi irundhalum nalla, khub bhalo, ipdi irukanum, received on time and condition was perfect. highly recommend!",positive,0.8,bengali,high
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.2,malayalam,low
+"Super quick delivery, great quality. Will definitely order again.","Great quality. will definitely order again., super quick delivery",positive,0.5,bengali,medium
+Excellent value for money. Premium quality at affordable price.,"Amazing that excellent value for money. premium quality at affordable price ...definitely NOT. ketta service, bahut bura experience",sarcastic,0.5,bengali,injected_sarcasm
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer team Disgusting.,negative,0.5,tamil,medium
+"Delivery was on time. The product is alright, nothing special.","Delivery was on time. The product is alright, nothing special.",neutral,0.8,malayalam,high
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star assistance honestly.,sarcastic,0.2,hindi,low
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting.,negative,0.5,malayalam,medium
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express courier but it arrived late.,negative,0.8,bengali,high
+"Oh wow, amazing that my order arrived one month late. Great job!","Amazing that my order arrived one month late. great job!, oh wow",sarcastic,0.2,hindi,low
+Product exceeded my expectations. Absolutely perfect!,"How wonderful, product exceeded my expectations. absolutely perfect oh sure.",sarcastic,0.5,hindi,injected_sarcasm
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.5,hindi,medium
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer assistance Disgusting.,negative,0.5,bengali,medium
+Love how they charge premium prices for such wonderful quality!,Appreciate how they charge premium prices for such wonderful standard,sarcastic,0.2,tamil,low
+Love how they charge premium prices for such wonderful quality!,Love how they charge premium prices for such wonderful quality!,sarcastic,0.8,malayalam,high
+The food was terrible and the service was incredibly slow.,The food was ghastly and cheriya quality the service was incredibly slow.,negative,0.2,malayalam,low
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star support honestly.,sarcastic,0.2,malayalam,low
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, amazing that my order arrived one month late. Great job!",sarcastic,0.8,hindi,high
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting.,negative,0.8,tamil,high
+The quality is premium and totally worth the price.,The caliber is premium and adipoli aayirunnu worth the price.,positive,0.8,hindi,high
+The app is functional. Basic features work. Nothing impressive.,The app is functional. seri da Basic features work. Nothing impressive.,neutral,0.5,bengali,medium
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.5,hindi,medium
+Received on time and condition was perfect. Highly recommend!,Received on time anbudan condition was perfect. Highly recommend!,positive,0.8,bengali,high
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste panra waste of money. Worst experience.",negative,0.5,tamil,medium
+"Oh really, so helpful of them to respond after one whole week!","So helpful of them to respond after one bekar service week!, oh really",sarcastic,0.2,bengali,low
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever.",positive,0.2,bengali,low
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, outstanding quality. Will definitely order again.",positive,0.5,malayalam,medium
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting.,negative,0.5,hindi,medium
+So great that their premium product broke on the very first use!,"So great that their premium product broke on the very first use! prashnam undu, illa da seri, ganda quality",sarcastic,0.8,hindi,high
+"Never buying again, total waste of money. Worst experience.","Total waste of money. worst journey, never buying again enna da idhu, mosham aanu, bayangara problem",negative,0.8,malayalam,high
+Product is defective right out of the box. Very disappointing.,Product is defective right out of the box. Very disappointing. emon service hole cholena,negative,0.2,bengali,low
+Order arrived. Product is as described. Average quality overall.,Order arrived. Purchase is as described. Average quality overall.,neutral,0.2,malayalam,low
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express theriyama panrom logistics but it arrived late.,negative,0.8,bengali,high
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.2,hindi,low
+"The app crashes constantly, very buggy and frustrating to use.","Very buggy and frustrating to use., the cheriya quality crashes constantly",negative,0.8,hindi,high
+Outstanding customer support. They resolved my issue instantly.,"Oh of course, outstanding customer support. they resolved my issue instantly ...definitely NOT. ningal cheythath shari alla, illa da seri, mosham aanu",sarcastic,0.5,bengali,injected_sarcasm
+Product exceeded my expectations. Absolutely perfect!,Package exceeded my bahut badhiya expectations. Absolutely perfect!,positive,0.2,bengali,low
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the price is a bit high for what you get.,neutral,0.2,bengali,low
+The food was absolutely delicious and the service was very fast.,"bahut badhiya, ipdi irukanum, sema product, the food was absolutely delicious and the assistance was very fast.",positive,0.8,tamil,high
+"Just tried their new product and it is fantastic, love it!","Love it!, just tried their new purchase and it is fantastic",positive,0.2,tamil,low
+"Oh wow, amazing that my order arrived one month late. Great job!","bahut bura experience, bakwaas product, oh wow, fantastic that my order arrived one month late. great job!",sarcastic,0.5,tamil,medium
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.5,hindi,medium
+"Wow, what a brilliant idea to increase the price by 50 percent!","What a brilliant idea theriyama panrom increase the price by 50 percent!, wow",sarcastic,0.5,malayalam,medium
+Product arrived damaged and customer support is completely useless.,Package arrived damaged and customer support is completely useless.,negative,0.5,tamil,medium
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.2,malayalam,low
+"Just tried their new product and it is fantastic, love it!","Just tried their new order and it is fantastic, love it! anbudan, ipdi irukanum",positive,0.5,hindi,medium
+The quality is premium and totally worth the price.,The quality is premium valare nalla aanu and totally worth the price.,positive,0.2,tamil,low
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.2,hindi,low
+"Average experience. Some things good, some things could be better.","Some things could be better., average experience. some things good",neutral,0.2,malayalam,low
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my issue instantly.,positive,0.5,tamil,medium
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer support ever. Only waited three hours! avarude seva moshamaanu, bahut bura experience",sarcastic,0.5,malayalam,medium
+The app works flawlessly. Beautiful design and very intuitive.,"Fantastic, the app works flawlessly. beautiful design and very intuitive. So helpful. Really.",sarcastic,0.5,malayalam,injected_sarcasm
+The app works flawlessly. Beautiful design and very intuitive.,"Great news, the app works flawlessly. beautiful design and very intuitive ...definitely NOT. ganda quality, nahi chalega, ketta service",sarcastic,0.5,hindi,injected_sarcasm
+"Delivery was on time. The product is alright, nothing special.","Delivery was on time. The purchase is alright, nothing special.",neutral,0.2,malayalam,low
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary chalega does the job.,neutral,0.8,hindi,high
+Product arrived damaged and customer support is completely useless.,Product arrived damaged and customer support theriyama panrom completely useless.,negative,0.8,tamil,high
+Received on time and condition was perfect. Highly recommend!,"Oh of course, received on time and condition was perfect. highly recommend Best experience EVER 😒",sarcastic,0.5,malayalam,injected_sarcasm
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend oh sure.,sarcastic,0.5,hindi,injected_sarcasm
+Order arrived. Product is as described. Average quality overall.,Order arrived. Product is kuch khas nahi as described. Average quality overall.,neutral,0.8,tamil,high
+The food was absolutely delicious and the service was very fast.,"enna da idhu, prashnam undu, oh wow, the food was absolutely delicious and the service was very fast",sarcastic,0.5,tamil,injected_sarcasm
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious enthayalum nalla and the help was very quick,positive,0.8,bengali,high
+The quality is premium and totally worth the price.,The quality is premium valare nalla aanu and totally worth the price.,positive,0.2,malayalam,low
+The app is functional. Basic features work. Nothing impressive.,"The app is functional. Basic features work. Nothing impressive. thik ache, ektu valo ektu kharap, mota muti bhalo",neutral,0.8,hindi,high
+"Wow, what a brilliant idea to increase the price by 50 percent!","What a brilliant idea to increase the price by 50 percent!, wow",sarcastic,0.5,tamil,medium
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they moshamayi quality too!",sarcastic,0.8,bengali,high
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend!,positive,0.5,malayalam,medium
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong nahi chalega product and now ignoring my calls.,sarcastic,0.5,tamil,medium
+Outstanding customer support. They resolved my issue instantly.,"Outstanding customer support. They resolved my issue instantly. sema product, superb aayirunnu, darun product",positive,0.8,malayalam,high
+Excellent value for money. Premium quality at affordable price.,"bilkul sahi hai, super ah iruku, sundor packaging, excellent value for money. premium build at affordable price.",positive,0.8,malayalam,high
+Worst delivery experience. Package lost and nobody is helping.,Worst delivery experience. Package lost and nobody is helping.,negative,0.5,bengali,medium
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received khub dukkhojonok the wrong item. Refund please!,negative,0.2,malayalam,low
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use. bahut bura experience, nallatalla",negative,0.5,tamil,medium
+Love how they charge premium prices for such wonderful quality!,"Love how they charge premium prices for such wonderful quality! prashnam undu, nahi chalega",sarcastic,0.5,tamil,medium
+Order arrived. Product is as described. Average quality overall.,Order arrived. Purchase is as described. Average quality overall.,neutral,0.2,bengali,low
+Product is defective right out of the box. Very disappointing.,Purchase is defective right out bahut kharab of the box. Very disappointing.,negative,0.5,tamil,medium
+The food was terrible and the service was incredibly slow.,The food was awful and paavam the service was incredibly lazy,negative,0.8,hindi,high
+Missing items in my order and no response from support. Horrible.,Missing items in my order and nallatalla response from support. Horrible.,negative,0.5,malayalam,medium
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.5,bengali,medium
+"Never buying again, total waste of money. Worst experience.","Total waste of money. worst journey, never buying again",negative,0.8,tamil,high
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant purchase,sarcastic,0.5,malayalam,medium
+The app works flawlessly. Beautiful design and very intuitive.,"The app works flawlessly. Beautiful design and very intuitive. enthayalum nalla, adipoli aayirunnu, lajawaab product",positive,0.8,hindi,high
+The quality is premium and totally worth the price.,"The quality is premium and totally worth the price. zabardast quality, zabardast quality",positive,0.5,tamil,medium
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and nahi chalega portion sizes are absolutely tiny.",negative,0.8,malayalam,high
+Best customer experience I have had in years! Amazing team.,"Best customer experience I have had in years! Fantastic team. khub bhalo, adipoli aayirunnu",positive,0.5,malayalam,medium
+Normal experience. Customer service was okay. Will see how it goes.,Normal interaction Customer service was sari tha Will see how it goes.,neutral,0.8,malayalam,high
+Rude staff and completely unhelpful customer service. Disgusting.,"Rude staff and completely unhelpful customer service. Disgusting. cheriya quality, baje quality",negative,0.5,hindi,medium
+Nice one! Delivered the wrong product and now ignoring my calls.,"nallatalla, bakwaas product, nahi chalega, nice one! delivered the wrong item and now ignoring my calls.",sarcastic,0.8,bengali,high
+"Super quick delivery, great quality. Will definitely order again.","Superb quality. will ekdom perfect order again., super quick delivery",positive,0.8,tamil,high
+Totally worth waiting two months for this absolutely brilliant product.,"Totally worth waiting two months for this absolutely brilliant order mosham aanu, bahut bura experience, waste panra",sarcastic,0.8,tamil,high
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant product.,sarcastic,0.8,malayalam,high
+The food was absolutely delicious and the service was very fast.,"How wonderful, the food was absolutely delicious and the service was very fast",sarcastic,0.5,malayalam,injected_sarcasm
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary but does the job.,neutral,0.8,bengali,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows.,negative,0.5,malayalam,medium
+Delivery was fast and packaging was perfect. Thank you!,Delivery was fast and oshadharon service packaging was perfect. Thank you!,positive,0.8,malayalam,high
+Product exceeded my expectations. Absolutely perfect!,"Fantastic, product exceeded my avarude seva moshamaanu expectations. absolutely perfect oh sure.",sarcastic,0.5,tamil,injected_sarcasm
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, amazing that dhoka diya order arrived one month late. Great job!",sarcastic,0.2,hindi,low
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows. khub dukkhojonok,negative,0.2,hindi,low
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, great caliber Will definitely order again.",positive,0.2,hindi,low
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, incredible that my order arrived one month late. Great job! nallatalla",sarcastic,0.2,malayalam,low
+Order arrived. Product is as described. Average quality overall.,Order arrived. Product is as described. Average quality overall.,neutral,0.5,hindi,medium
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and portion sizes are absolutely tiny.",negative,0.2,tamil,low
+"Average experience. Some things good, some things could be better.","Average encounter Some things good, mota muti bhalo some things could be better.",neutral,0.8,bengali,high
+Delivery was fast and packaging was perfect. Thank you!,Delivery was fast and packaging paavam was perfect. Thank you ...definitely NOT.,sarcastic,0.5,tamil,injected_sarcasm
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such amader theke ekhane pathetic quality. Do not buy.,negative,0.8,bengali,high
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and portion sizes are absolutely tiny.",negative,0.2,hindi,low
+Product is defective right out of the box. Very disappointing.,Product is defective right out bekaar hai of the box. Very disappointing.,negative,0.8,bengali,high
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic ithu epadi aanu theriyilla work. Nothing impressive.,neutral,0.5,bengali,medium
+Normal experience. Customer service was okay. Will see how it goes.,Normal experience. Customer service was okay. Will see how it goes.,neutral,0.5,tamil,medium
+Incredible service! Cancelled my order without any notice whatsoever.,"bekaar hai, theriyama panrom, incredible help cancelled my order without any notice whatsoever.",sarcastic,0.5,malayalam,medium
+Incredible service! Cancelled my order without any notice whatsoever.,"Incredible assistance Cancelled my order without any notice whatsoever. bahut bura experience, bekar service, illa da seri",sarcastic,0.8,hindi,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is khub dukkhojonok nothing like the advertisement shows.,negative,0.8,tamil,high
+Excellent value for money. Premium quality at affordable price.,"Fantastic, excellent value for money. premium quality at affordable price Totally worth it! 🙄",sarcastic,0.5,hindi,injected_sarcasm
+"Super quick delivery, great quality. Will definitely order again.","Sure, super quick delivery, great quality. will definitely order again",sarcastic,0.5,hindi,injected_sarcasm
+Product exceeded my expectations. Absolutely perfect!,"Item exceeded my expectations. Absolutely perfect! ipdi irukanum, adipoli aayirunnu",positive,0.5,hindi,medium
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, incredible that my order arrived one month late. Outstanding job!",sarcastic,0.2,bengali,low
+Best customer experience I have had in years! Amazing team.,Love how best customer experience i have had in years! amazing team,sarcastic,0.5,hindi,injected_sarcasm
+"The app crashes constantly, very buggy and frustrating to use.","Very buggy and frustrating to use., the app crashes constantly",negative,0.5,malayalam,medium
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my issue instantly.,positive,0.8,malayalam,high
+Missing items in my order and no response from support. Horrible.,"Missing items in my order and no response from support. Horrible. ganda quality, bekaar hai, enna da idhu",negative,0.8,bengali,high
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever.",positive,0.5,hindi,medium
+The food was absolutely delicious and the service was very fast.,"The food was absolutely delicious and the support was very fast. super aayirunnu, super ah iruku",positive,0.5,malayalam,medium
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.8,malayalam,high
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response bahut bura experience support. Horrible.,negative,0.8,tamil,high
+Really happy with my purchase. Exactly as described!,"Really happy with my purchase. Exactly as described great job. 😑 bekar service, bekar service, cheriya quality",sarcastic,0.5,hindi,injected_sarcasm
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express delivery but it arrived late.,negative,0.2,bengali,low
+Love how they charge premium prices for such wonderful quality!,Cherish how they charge premium prices for such wonderful standard,sarcastic,0.5,malayalam,medium
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week!",sarcastic,0.2,hindi,low
+It is fine for the price. Not the best but acceptable quality.,It is normal ah iruku for the price. Not the best but acceptable quality.,neutral,0.8,tamil,high
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, phenomenal that my order arrived one month late. Great job!",sarcastic,0.5,hindi,medium
+Normal experience. Customer service was okay. Will see how it goes.,Normal visit Customer service was sari aanu okay. Will see how it goes.,neutral,0.8,bengali,high
+The quality is premium and totally worth the price.,The quality njan happy aanu premium and totally worth the price.,positive,0.8,hindi,high
+"Oh really, so helpful of them to respond after one whole week!","So helpful of them to respond after one whole week!, oh really",sarcastic,0.2,bengali,low
+"Just tried their new product and it is fantastic, love it!","kollam, kollam aayirunnu, kollam, adore it!, just tried their new package and it is fantastic",positive,0.8,hindi,high
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting.,negative,0.2,bengali,low
+Order arrived. Product is as described. Average quality overall.,Order arrived. Order sari aanu as described. Average caliber overall.,neutral,0.8,hindi,high
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week!",sarcastic,0.8,hindi,high
+"Yeah sure, best customer support ever. Only waited three hours!",Best customer support ever. only waited three illa da seri yeah sure,sarcastic,0.8,tamil,high
+Product looks decent. Nothing extraordinary but does the job.,"Product looks decent. Nothing extraordinary but does the job. seri da, theek hai, dekhte hai",neutral,0.8,bengali,high
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of cheriya quality Worst experience.",negative,0.5,bengali,medium
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such nosto product pathetic quality. Do not buy.,negative,0.8,malayalam,high
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and completely unhelpful customer service. Disgusting. nosto product,negative,0.2,malayalam,low
+Normal experience. Customer service was okay. Will see how it goes.,Normal experience. thik thak hai service was okay. Will see how it goes.,neutral,0.8,tamil,high
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use.",negative,0.2,hindi,low
+Waited three weeks and received the wrong item. Refund please!,"Waited three weeks and received the wrong item. Refund please! mosham aanu, nosto product, prashnam undu",negative,0.8,tamil,high
+Excellent value for money. Premium quality at affordable price.,"Excellent value for money. Premium quality at affordable price. epadi irundhalum nalla, adipoli aayirunnu",positive,0.5,hindi,medium
+Normal experience. Customer service was okay. Will see how it goes.,Normal interaction Customer service was okay. Will see how it goes.,neutral,0.2,malayalam,low
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, bahut kharab portion sizes are absolutely tiny.",negative,0.8,hindi,high
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.2,malayalam,low
+Really happy with my purchase. Exactly as described!,Really happy with my ipdi irukanum purchase. Exactly as described!,positive,0.8,tamil,high
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable caliber,neutral,0.5,malayalam,medium
+The food was terrible and the service was incredibly slow.,"theriyama panrom, the food was terrible and the assistance was incredibly slow.",negative,0.2,bengali,low
+Outstanding customer support. They resolved my issue instantly.,"Outstanding customer support. They resolved my issue instantly. njan happy aanu, sundor packaging, mela trust",positive,0.8,bengali,high
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the price is a bit high for what you get.,neutral,0.2,hindi,low
+"Average experience. Some things good, some things could be better.","Some things could be better., paakalam average experience. some things good",neutral,0.8,bengali,high
+"I absolutely love this new product, it is amazing quality!",I absolutely love this new package it is phenomenal quality!,positive,0.5,tamil,medium
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious darun product and the service was very fast.,positive,0.2,malayalam,low
+"Terrible quality, broke within two days. Completely disappointed.","Terrible quality, broke within romba mosam two days. Completely disappointed.",negative,0.2,bengali,low
+"Average experience. Some things good, some things could be better.","kuch khas nahi, okay ache, idhu epadi iruku theriyala, average experience. some things good, some things could be better.",neutral,0.8,hindi,high
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.5,tamil,medium
+How wonderful that their helpline goes straight to voicemail always!,"bekaar hai, nallatalla, illa da seri, how wonderful that their helpline goes straight to voicemail always!",sarcastic,0.8,tamil,high
+The food was terrible and the service was incredibly slow.,The food was ghastly and the service romba mosam incredibly slow.,negative,0.8,tamil,high
+Really happy with my purchase. Exactly as described!,"zabardast quality, super ah iruku, khub bhalo, really happy with my purchase. exactly as described!",positive,0.8,malayalam,high
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use.",negative,0.2,malayalam,low
+Delivery was fast and packaging was perfect. Thank you!,Delivery was swift and packaging was perfect. Thank you!,positive,0.2,tamil,low
+"Super quick delivery, great quality. Will definitely order again.",Super quick courier outstanding quality. Will definitely order again.,positive,0.5,tamil,medium
+"Just tried their new product and it is fantastic, love it!","Love it!, just tried their new product and it is fantastic",positive,0.2,malayalam,low
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and portion waste panra are absolutely tiny.",negative,0.8,malayalam,high
+Quality is okay but the price is a bit high for what you get.,Caliber is okay but the price is normal ah iruku a bit high for what you get.,neutral,0.5,tamil,medium
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic build Do not buy.,negative,0.5,bengali,medium
+Total scam! Paid for express delivery but it arrived late.,"Total scam! Paid for express shipping but it arrived late. khub kharap, nallatalla, khub kharap",negative,0.8,tamil,high
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of nahi chalega Worst visit",negative,0.8,malayalam,high
+So great that their premium product broke on the very first use!,So great that their premium product broke on the very first use! enna da idhu,sarcastic,0.2,tamil,low
+Quality is okay but the price is a bit high for what you get.,Grade is okay but the dekhte hai is a bit high for what you get.,neutral,0.5,tamil,medium
+It is fine for the price. Not the best but acceptable quality.,"sari aanu, seri da, sari tha, it is fine for the price. not the best but acceptable quality.",neutral,0.8,hindi,high
+"The app crashes constantly, very buggy and frustrating to use.","byartho experience, prashnam undu, enna da idhu, the app crashes constantly, very buggy and frustrating to use.",negative,0.8,tamil,high
+Really happy with my purchase. Exactly as described!,Really happy with my bahut badhiya purchase. Exactly as described!,positive,0.8,hindi,high
+Outstanding customer support. They resolved my issue instantly.,"Outstanding customer support. They resolved my issue instantly. khub bhalo, mast hai, onek valo",positive,0.8,tamil,high
+So great that their premium product broke on the very first use!,So excellent that their premium package broke on the nallatalla first use!,sarcastic,0.8,hindi,high
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, superb quality. Will definitely order again.",positive,0.2,malayalam,low
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.2,tamil,low
+"The app crashes constantly, very buggy and frustrating to use.","Very buggy and frustrating to use., the app crashes constantly",negative,0.2,malayalam,low
+"Yeah sure, best customer support ever. Only waited three hours!","Best customer support ever. only waited three hours!, yeah sure prashnam undu",sarcastic,0.2,malayalam,low
+Quality is okay but the price is a bit high for what you get.,Standard is okay but the price is a bit high for what you get.,neutral,0.5,bengali,medium
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! moshamayi the wrong product and now ignoring my calls.,sarcastic,0.8,tamil,high
+Totally worth waiting two months for this absolutely brilliant product.,Totally ganda quality waiting two months for this absolutely brilliant product.,sarcastic,0.8,malayalam,high
+"Terrible quality, broke within two days. Completely disappointed.","bahut kharab, bayangara problem, illa da seri, dreadful caliber broke within two days. completely disappointed.",negative,0.8,hindi,high
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious anbudan and the service was very rapid,positive,0.5,malayalam,medium
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced grade too!",sarcastic,0.2,bengali,low
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the service was very fast Totally worth it! 🙄,sarcastic,0.5,hindi,injected_sarcasm
+The food was absolutely delicious and the service was very fast.,"The food was absolutely delicious and the service was very fast. bilkul sahi hai, bilkul sahi hai",positive,0.5,malayalam,medium
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described! bilkul sahi hai,positive,0.2,bengali,low
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.2,hindi,low
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.5,hindi,medium
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring my calls.,sarcastic,0.8,bengali,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete khub dukkhojonok Package is nothing like the advertisement shows.,negative,0.8,malayalam,high
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express delivery but it arrived late.,negative,0.2,tamil,low
+Outstanding customer support. They resolved my issue instantly.,"darun product, bilkul sahi hai, outstanding customer support. they resolved my issue instantly.",positive,0.5,bengali,medium
+"Yeah sure, best customer support ever. Only waited three hours!","Best customer support bahut kharab only waited three hours!, yeah sure",sarcastic,0.8,malayalam,high
+Worst delivery experience. Package lost and nobody is helping.,Worst courier experience. Package lost and nobody is helping.,negative,0.2,bengali,low
+Missing items in my order and no response from support. Horrible.,Missing items in my order nahi chalega and no response from support. Horrible.,negative,0.8,malayalam,high
+Waited three weeks and received the wrong item. Refund please!,"ningal cheythath shari alla, mosham aanu, dhoka diya, waited three weeks and received the wrong item. refund please!",negative,0.8,hindi,high
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such paavam pathetic quality. Do not buy.,negative,0.2,hindi,low
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, love it! khub satisfied, oshadharon service",positive,0.5,malayalam,medium
+Nice one! Delivered the wrong product and now ignoring my calls.,"prashnam undu, avarude seva moshamaanu, nahi chalega, nice one! delivered the wrong product and now ignoring my calls.",sarcastic,0.8,malayalam,high
+So great that their premium product broke on the very first use!,So outstanding that their premium item broke on the very first use!,sarcastic,0.5,malayalam,medium
+"Wow, what a brilliant idea to increase the price by 50 percent!","romba mosam, bayangara problem, wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.5,malayalam,medium
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows.,negative,0.5,bengali,medium
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star service honestly.,sarcastic,0.5,malayalam,medium
+Product looks decent. Nothing extraordinary but does the job.,Product looks decent. Nothing extraordinary but does the job.,neutral,0.5,malayalam,medium
+Order arrived. Product is as described. Average quality overall.,Order arrived. Product is as described. Average standard overall.,neutral,0.5,tamil,medium
+Total scam! Paid for express delivery but it arrived late.,"Total scam! Paid for express delivery but it arrived late. bayangara problem, dhoka diya, nosto product",negative,0.8,malayalam,high
+Order arrived. Product is as described. Average quality overall.,"seri da, theek hai, order arrived. product is as described. average quality overall.",neutral,0.5,hindi,medium
+Product arrived damaged and customer support is completely useless.,"amader theke ekhane, emon service hole cholena, cheriya quality, product arrived damaged and customer support is completely useless.",negative,0.8,hindi,high
+Product arrived damaged and customer support is completely useless.,Product arrived damaged and customer support is completely useless.,negative,0.2,bengali,low
+Product exceeded my expectations. Absolutely perfect!,Order exceeded my khub bhalo expectations. Absolutely perfect!,positive,0.2,hindi,low
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced emon service hole cholena such pathetic quality. Do not buy.,negative,0.8,malayalam,high
+"I absolutely love this new product, it is amazing quality!","It is amazing quality!, i bahut accha hai absolutely love this new product",positive,0.8,hindi,high
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.2,bengali,low
+Totally worth waiting two months for this absolutely brilliant product.,"Totally worth waiting two months for this absolutely brilliant order bahut kharab, paavam, paavam",sarcastic,0.8,bengali,high
+Mind blowing that they call this five star service honestly.,"Mind blowing that they call this five star team honestly. mosham aanu, paavam, cheriya quality",sarcastic,0.8,malayalam,high
+Delivery was fast and packaging was perfect. Thank you!,Logistics was fast and packaging was perfect. Thank you!,positive,0.8,bengali,high
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.5,tamil,medium
+Outstanding customer support. They resolved my issue instantly.,Outstanding ekdom perfect support. They resolved my issue instantly.,positive,0.8,hindi,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Package is nothing like the advertisement shows.,negative,0.2,malayalam,low
+"Yeah sure, best customer support ever. Only waited three hours!","Best customer support ever. only waited three hours!, yeah sure ningal cheythath shari alla, bekar service, moshamayi",sarcastic,0.8,malayalam,high
+The app works flawlessly. Beautiful design and very intuitive.,"Great news, the app works flawlessly. ganda quality design and very intuitive",sarcastic,0.5,bengali,injected_sarcasm
+"Delivery was on time. The product is alright, nothing special.","Nothing special., courier was on time. the order is alright",neutral,0.2,malayalam,low
+"Delivery was on time. The product is alright, nothing special.","Delivery was on time. The package is alright, nothing special.",neutral,0.2,hindi,low
+Love how they charge premium prices for such wonderful quality!,Love how they charge premium prices for such wonderful standard,sarcastic,0.2,hindi,low
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, amazing that my order arrived one month late. Great job!",sarcastic,0.2,tamil,low
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my expectations. Absolutely perfect!,positive,0.2,bengali,low
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months paavam for this absolutely brilliant purchase,sarcastic,0.2,bengali,low
+Waited three weeks and received the wrong item. Refund please!,"Waited three weeks and received the wrong item. Refund please! amader theke ekhane, avarude seva moshamaanu, illa da seri",negative,0.8,tamil,high
+So great that their premium product broke on the very first use!,So great that their premium product broke on the very first use!,sarcastic,0.5,hindi,medium
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. darun product Premium build at affordable price.,positive,0.2,bengali,low
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, love it oh sure.",sarcastic,0.5,bengali,injected_sarcasm
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, extraordinary that my order arrived one month late. Brilliant job!",sarcastic,0.8,malayalam,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring my calls. bekar service,sarcastic,0.2,malayalam,low
+"Never buying again, total waste of money. Worst experience.","Never buying again, cheriya quality waste of money. Worst interaction",negative,0.8,tamil,high
+So great that their premium product broke on the very first use!,So excellent that their premium product broke on the very first use!,sarcastic,0.5,hindi,medium
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use.",negative,0.5,hindi,medium
+Product arrived damaged and customer support is completely useless.,"illa da seri, ketta service, product arrived damaged and customer support is completely useless.",negative,0.5,tamil,medium
+The quality is premium and totally worth the price.,The standard is premium and totally worth the price.,positive,0.2,hindi,low
+"I absolutely love this new product, it is amazing quality!","I absolutely valare nalla aanu this new product, it is amazing build",positive,0.8,malayalam,high
+"Yeah sure, best customer support ever. Only waited three hours!","Best customer support ever. only dhoka diya waited three hours!, yeah sure",sarcastic,0.8,bengali,high
+"Average experience. Some things good, some things could be better.","Some things could be better., average visit some things good",neutral,0.5,bengali,medium
+Delivery was fast and packaging was perfect. Thank you!,Delivery was quick and packaging was perfect. Thank you!,positive,0.5,bengali,medium
+Mind blowing that they call this five star service honestly.,"bayangara problem, paavam, mind blowing that they call this five star service honestly.",sarcastic,0.5,hindi,medium
+"Terrible quality, broke within two days. Completely disappointed.",Terrible build broke bayangara problem two days. Completely disappointed.,negative,0.8,malayalam,high
+Order arrived. Product is as described. Average quality overall.,"thik ache, sari tha, avanumithu poyallo, order arrived. order is as described. average quality overall.",neutral,0.8,tamil,high
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced standard too!",sarcastic,0.2,hindi,low
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.2,hindi,low
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic standard Do not buy.,negative,0.2,malayalam,low
+Received on time and condition was perfect. Highly recommend!,"bhalo laglo, received on time and condition was perfect. highly recommend!",positive,0.2,tamil,low
+Normal experience. Customer service was okay. Will see how it goes.,Normal experience. Customer service was okay. Will see how it goes.,neutral,0.2,bengali,low
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant package,sarcastic,0.5,hindi,medium
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.5,hindi,medium
+The app works flawlessly. Beautiful design and very intuitive.,"prashnam undu, bahut bura experience, the app works flawlessly. beautiful design and very intuitive as if that is acceptable.",sarcastic,0.5,tamil,injected_sarcasm
+Best customer experience I have had in years! Amazing team.,"Best customer visit I have had in years! Amazing team. sema product, super aayirunnu, darun product",positive,0.8,malayalam,high
+"Thank you team, you made my day! Best purchase ever.","Oh of course, thank you team, you made my day! best purchase ever great job. 😑",sarcastic,0.5,hindi,injected_sarcasm
+"The app crashes constantly, very buggy and frustrating to use.","avarude seva moshamaanu, cheriya quality, the app crashes constantly, very buggy and frustrating to use.",negative,0.5,bengali,medium
+The food was terrible and the service was incredibly slow.,The food was terrible and khub dukkhojonok the support was incredibly delayed,negative,0.5,hindi,medium
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, love it! khub satisfied, valare nalla aanu, onek valo",positive,0.8,tamil,high
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received moshamayi the wrong item. Refund please!,negative,0.2,tamil,low
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.5,tamil,medium
+Excellent value for money. Premium quality at affordable price.,"Excellent value for money. Premium caliber at affordable price. valare nalla aanu, adipoli aayirunnu, khub bhalo",positive,0.8,malayalam,high
+The food was absolutely delicious and the service was very fast.,"The food was absolutely delicious and the service was very fast great job. 😑 nallatalla, enna da idhu, bakwaas product",sarcastic,0.5,tamil,injected_sarcasm
+Best customer experience I have had in years! Amazing team.,Best customer experience I have had prashnam undu years! Amazing team as if that is acceptable.,sarcastic,0.5,malayalam,injected_sarcasm
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my expectations. Absolutely perfect!,positive,0.2,bengali,low
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.5,tamil,medium
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.5,bengali,medium
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now ganda quality reduced quality too!",sarcastic,0.8,bengali,high
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever.",positive,0.2,bengali,low
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.2,malayalam,low
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star help honestly.,sarcastic,0.2,hindi,low
+Delivery was fast and packaging was perfect. Thank you!,Delivery was speedy and packaging was perfect. Thank you!,positive,0.2,malayalam,low
+Worst delivery experience. Package lost and nobody is helping.,Worst illa da seri visit Package lost and nobody is helping.,negative,0.8,hindi,high
+Love how they charge premium prices for such wonderful quality!,Love how they charge premium prices for such wonderful quality!,sarcastic,0.2,malayalam,low
+"I absolutely love this new product, it is amazing quality!","I absolutely love this new product, it is amazing quality! adipoli aayirunnu, valare nalla aanu",positive,0.5,tamil,medium
+Rude staff and completely unhelpful customer service. Disgusting.,"moshamayi, mosham aanu, rude staff and completely unhelpful customer service. disgusting.",negative,0.5,hindi,medium
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.2,tamil,low
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.5,bengali,medium
+"Delivery was on time. The product is alright, nothing special.","Nothing special., delivery was on okay aanu time. the package is alright",neutral,0.2,bengali,low
+"Just tried their new product and it is fantastic, love it!","Just tried their new product ente mone super and it is fantastic, love it!",positive,0.8,tamil,high
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received khub dukkhojonok wrong item. Refund please!,negative,0.5,hindi,medium
+Best customer experience I have had in years! Amazing team.,Best customer experience I have had in years! Phenomenal team.,positive,0.8,hindi,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong purchase and now ignoring my calls.,sarcastic,0.2,hindi,low
+Quality is okay but the price is a bit high for what you get.,"Standard is okay but the price is a bit high for what you get. kuch khas nahi, ithu epadi aanu theriyilla",neutral,0.5,bengali,medium
+So great that their premium product broke on the very first use!,So brilliant that their premium purchase broke nahi chalega the very first use!,sarcastic,0.8,tamil,high
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, love it!",positive,0.2,hindi,low
+"Yeah sure, best customer support ever. Only waited three hours!","bahut bura experience, dhoka diya, paavam, yeah sure, best customer support ever. only waited three hours!",sarcastic,0.8,hindi,high
+Delivery was fast and packaging was perfect. Thank you!,Delivery was fast and packaging was perfect. Thank you Totally worth it! 🙄,sarcastic,0.5,malayalam,injected_sarcasm
+"I absolutely love this new product, it is amazing quality!","super aayirunnu, i absolutely love this new product, it is amazing quality!",positive,0.2,malayalam,low
+"Oh really, so helpful of them to respond after one whole week!","bekaar hai, bekar service, oh really, so helpful of them to respond after one whole week!",sarcastic,0.5,malayalam,medium
+"Super quick delivery, great quality. Will definitely order again.",Super quick dispatch wonderful quality. Will definitely order again.,positive,0.2,hindi,low
+Delivery was fast and packaging was perfect. Thank you!,Logistics was fast and packaging was kollam aayirunnu Thank you!,positive,0.5,bengali,medium
+Product looks decent. Nothing extraordinary but does the job.,Purchase looks decent. Nothing extraordinary but does the job.,neutral,0.2,hindi,low
+The app is functional. Basic features work. Nothing impressive.,The app is functional. theek hai features work. Nothing impressive.,neutral,0.5,malayalam,medium
+The food was terrible and the service was incredibly slow.,The food was terrible and the service was incredibly slow.,negative,0.5,malayalam,medium
+Love how they charge premium prices for such wonderful quality!,Cherish how they charge premium prices for such wonderful grade,sarcastic,0.5,tamil,medium
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer support ever. Only waited three hours!",sarcastic,0.8,tamil,high
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my issue instantly.,positive,0.5,tamil,medium
+"I absolutely love this new product, it is amazing quality!",I absolutely adore this new package it is amazing quality!,positive,0.2,tamil,low
+Order arrived. Product is as described. Average quality overall.,"idhu epadi iruku theriyala, ektu valo ektu kharap, avanumithu poyallo, order arrived. product is as described. average quality overall.",neutral,0.8,tamil,high
+Mind blowing that they call this five star service honestly.,"bakwaas product, bekar service, nallatalla, mind blowing that they call this five star service honestly.",sarcastic,0.8,bengali,high
+Product arrived damaged and customer support is completely useless.,Package arrived damaged ningal cheythath shari alla customer support is completely useless.,negative,0.8,malayalam,high
+"Delivery was on time. The product is alright, nothing special.","Nothing special., dispatch was on time. the product is alright",neutral,0.2,malayalam,low
+Delivery was fast and packaging was perfect. Thank you!,Delivery was fast and packaging was perfect. Thank you Best experience EVER 😒,sarcastic,0.5,tamil,injected_sarcasm
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent!",sarcastic,0.5,bengali,medium
+Normal experience. Customer service was okay. Will see how it goes.,Normal experience. Customer support was okay. Will see how it goes.,neutral,0.5,malayalam,medium
+"Terrible quality, broke within two days. Completely disappointed.","Terrible quality, broke within two days. Completely disappointed. ganda quality, ketta service, nallatalla",negative,0.8,bengali,high
+Received on time and condition was perfect. Highly recommend!,"Received on time and condition was perfect. Highly recommend! kollam, bhalo laglo",positive,0.5,bengali,medium
+Complete fraud. Product is nothing like the advertisement shows.,"Complete fraud. Order is nothing like the advertisement shows. bayangara problem, baje quality, romba mosam",negative,0.8,hindi,high
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.2,tamil,low
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend!,positive,0.5,malayalam,medium
+"Wow, what a brilliant idea to increase the price by 50 percent!","Wow, what a brilliant idea to increase the price by 50 percent! bekaar hai",sarcastic,0.2,bengali,low
+"I absolutely love this new product, it is amazing quality!",I absolutely love this new order it is amazing standard,positive,0.2,bengali,low
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend!,positive,0.2,bengali,low
+The quality is premium and totally worth the price.,The quality is premium and totally worth the price.,positive,0.2,malayalam,low
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring my calls.,sarcastic,0.2,malayalam,low
+Product is defective right out of the box. Very disappointing.,Product is defective right out of the box. Very disappointing.,negative,0.2,bengali,low
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very khub kharap buggy and frustrating to use.",negative,0.5,bengali,medium
+"Delivery was on time. The product is alright, nothing special.","Delivery was on time. The product is alright, nothing special.",neutral,0.5,tamil,medium
+The app is functional. Basic features work. Nothing impressive.,The app is functional. sari tha Basic features work. Nothing impressive.,neutral,0.8,bengali,high
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible support Cancelled my order without any notice whatsoever.,sarcastic,0.2,hindi,low
+"The app crashes constantly, very buggy and frustrating to use.","The app crashes constantly, very buggy and frustrating to use. bakwaas product, avarude seva moshamaanu",negative,0.5,tamil,medium
+Love how they charge premium prices for such wonderful quality!,Love how they charge premium prices ganda quality such wonderful quality!,sarcastic,0.8,bengali,high
+It is fine for the price. Not the best but acceptable quality.,"thik ache, okay ache, okay aanu, it is fine for the price. not the best but acceptable standard",neutral,0.8,tamil,high
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. sundor packaging Premium quality at affordable price.,positive,0.8,malayalam,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong bayangara problem product and now ignoring my calls.,sarcastic,0.8,tamil,high
+Best customer experience I have had in years! Amazing team.,Best enthayalum nalla visit I have had in years! Extraordinary team.,positive,0.8,tamil,high
+Waited three weeks and received the wrong item. Refund please!,Waited three weeks and received the wrong item. Refund please!,negative,0.8,tamil,high
+"I absolutely love this new product, it is amazing quality!","Love how i absolutely love this new product, it is amazing quality",sarcastic,0.5,hindi,injected_sarcasm
+The quality is premium and totally worth the price.,"superb aayirunnu, wah wah amazing, adipoli aayirunnu, the quality is premium and totally worth the price.",positive,0.8,tamil,high
+Quality is okay but the price is a bit high for what you get.,Grade is okay but the price is a bit high for what you get. dekhte hai,neutral,0.2,malayalam,low
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Purchase is nothing like the advertisement shows.,negative,0.2,malayalam,low
+"Yeah sure, best customer support ever. Only waited three hours!","Best customer support ever. only waited three hours!, yeah sure",sarcastic,0.2,tamil,low
+"Wow, what a brilliant idea to increase the price by 50 percent!","What a brilliant idea to increase the price by 50 percent!, wow",sarcastic,0.2,bengali,low
+Incredible service! Cancelled my order without any notice whatsoever.,"Incredible team Cancelled my order without any notice whatsoever. dhoka diya, bakwaas product, avarude seva moshamaanu",sarcastic,0.8,malayalam,high
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly superb aayirunnu described!,positive,0.8,tamil,high
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my issue instantly.,positive,0.5,hindi,medium
+"Thank you team, you made my day! Best purchase ever.","You made my day! best purchase ever., thank you team",positive,0.5,malayalam,medium
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, moshamayi that my order arrived one month late. Great job!",sarcastic,0.5,malayalam,medium
+Really happy with my purchase. Exactly as described!,Really happy with my romba nalla purchase. Exactly as described!,positive,0.8,tamil,high
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring my calls.,sarcastic,0.2,bengali,low
+"Oh really, so helpful of them to respond after one whole week!","So helpful of them to respond after one whole week!, oh really",sarcastic,0.5,hindi,medium
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.8,hindi,high
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.2,hindi,low
+"Wow, what a brilliant idea to increase the price by 50 percent!","What a brilliant idea to increase the price by 50 percent!, wow",sarcastic,0.2,hindi,low
+The quality is premium and totally worth the price.,"Great news, the quality is premium and totally worth the price great job. 😑 bahut kharab, enna da idhu",sarcastic,0.5,malayalam,injected_sarcasm
+"Delivery was on time. The product is alright, nothing special.","Nothing special., delivery was on time. the product is alright",neutral,0.2,bengali,low
+Order arrived. Product is as described. Average quality overall.,Order arrived. Product is as described. Average quality overall.,neutral,0.2,bengali,low
+"Food was cold, stale, and portion sizes are absolutely tiny.","Stale, and portion sizes are bayangara problem absolutely tiny., food was cold",negative,0.8,tamil,high
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced caliber too!",sarcastic,0.2,malayalam,low
+"Oh wow, amazing that my order arrived one month late. Great job!","Oh wow, extraordinary that my order arrived one month late. Great job!",sarcastic,0.2,malayalam,low
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong item and now ignoring my calls. romba mosam,sarcastic,0.2,malayalam,low
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the price sari aanu a bit high for what you get.,neutral,0.5,hindi,medium
+Outstanding customer support. They resolved my issue instantly.,"Outstanding customer support. They resolved my issue instantly. enthayalum nalla, mela trust, wah wah amazing",positive,0.8,bengali,high
+Normal experience. Customer service was okay. Will see how it goes.,Normal encounter Customer help was okay. Will see how it goes.,neutral,0.8,tamil,high
+The quality is premium and totally worth the price.,"illa da seri, waste panra, bayangara problem, oh of course, the quality is premium and totally worth the price ...definitely not.",sarcastic,0.5,tamil,injected_sarcasm
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my expectations. Absolutely perfect!,positive,0.2,tamil,low
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable build,neutral,0.5,tamil,medium
+Love how they charge premium prices for such wonderful quality!,Love how they charge premium avarude seva moshamaanu prices for such wonderful quality!,sarcastic,0.8,bengali,high
+"Oh really, so helpful of them to respond after one whole week!","So helpful of them to respond after one whole week!, oh really",sarcastic,0.2,hindi,low
+"Super quick delivery, great quality. Will definitely order again.","ipdi irukanum, bahut badhiya, mela trust, super quick logistics great quality. will definitely order again.",positive,0.8,tamil,high
+Normal experience. Customer service was okay. Will see how it goes.,Normal encounter Customer service was okay. Will see ithu epadi aanu theriyilla it goes.,neutral,0.8,hindi,high
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express delivery but it arrived late.,negative,0.2,malayalam,low
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible support Cancelled my order without any notice whatsoever.,sarcastic,0.2,malayalam,low
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant item,sarcastic,0.2,hindi,low
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week!",sarcastic,0.2,malayalam,low
+"Terrible quality, broke within two days. Completely disappointed.","Terrible quality, broke within two days. Completely disappointed.",negative,0.5,tamil,medium
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week!",sarcastic,0.2,hindi,low
+Product arrived damaged and customer support is completely useless.,Product arrived damaged and customer support cheriya quality completely useless.,negative,0.5,malayalam,medium
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible help Cancelled my bekar service order without any notice whatsoever.,sarcastic,0.5,bengali,medium
+Best customer experience I have had in years! Amazing team.,Best customer interaction I have had in years! Amazing team.,positive,0.5,malayalam,medium
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, love it!",positive,0.2,tamil,low
+"As if the price hike was not enough, now they reduced quality too!","Now they reduced grade too!, as if the price hike was not enough cheriya quality, ketta service, bekar service",sarcastic,0.8,hindi,high
+"Food was cold, stale, and portion sizes are absolutely tiny.","Food was cold, stale, and ketta service portion sizes are absolutely tiny.",negative,0.5,bengali,medium
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant package,sarcastic,0.5,malayalam,medium
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.5,hindi,medium
+Rude staff and completely unhelpful customer service. Disgusting.,"waste panra, bekar service, rude staff and completely unhelpful customer service. disgusting.",negative,0.5,malayalam,medium
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever.",positive,0.5,hindi,medium
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever.",positive,0.5,bengali,medium
+The quality is premium and totally worth the price.,The build is premium and totally worth the price.,positive,0.2,bengali,low
+Missing items in my order and no response from support. Horrible.,Missing items in my order and no response from support. Horrible.,negative,0.5,bengali,medium
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. Not the best but acceptable quality.,neutral,0.5,tamil,medium
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.8,hindi,high
+The quality is premium and totally worth the price.,The quality is premium and totally worth the price nallatalla job. 😑,sarcastic,0.5,malayalam,injected_sarcasm
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever.",positive,0.2,malayalam,low
+Really happy with my purchase. Exactly as described!,"Fantastic, really happy with my purchase. exactly as described as if that is acceptable.",sarcastic,0.5,tamil,injected_sarcasm
+Worst delivery experience. Package lost and nobody is helping.,Worst delivery interaction Package waste panra and nobody is helping.,negative,0.2,hindi,low
+Waited three weeks and received the wrong item. Refund please!,"Waited three weeks and received the wrong item. Refund please! nahi chalega, khub kharap, mosham aanu",negative,0.8,hindi,high
+The quality is premium and totally worth the price.,"oshadharon service, nalla irundhuchu, zabardast quality, the quality is premium and totally worth the price.",positive,0.8,tamil,high
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. Premium quality at affordable price.,positive,0.5,hindi,medium
+Love how they charge premium prices for such wonderful quality!,Cherish how they charge premium prices for such wonderful caliber,sarcastic,0.2,hindi,low
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star support honestly.,sarcastic,0.2,malayalam,low
+Incredible service! Cancelled my order without any notice whatsoever.,"moshamayi, bekaar hai, incredible service! cancelled my order without any notice whatsoever.",sarcastic,0.5,hindi,medium
+Total scam! Paid for express delivery but it arrived late.,Total scam! Paid for express delivery but it arrived late. bayangara problem,negative,0.2,bengali,low
+Product exceeded my expectations. Absolutely perfect!,"enthayalum nalla, oshadharon service, sema product, product exceeded my expectations. absolutely perfect!",positive,0.8,malayalam,high
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.5,bengali,medium
+Delivery was fast and packaging was perfect. Thank you!,"Oh wow, delivery was fast and packaging was perfect. thank you... wow.",sarcastic,0.5,malayalam,injected_sarcasm
+Order arrived. Product is as described. Average quality overall.,"okay ache, idhu epadi iruku theriyala, order arrived. order is as described. average grade overall.",neutral,0.5,tamil,medium
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the service was very swift,positive,0.5,bengali,medium
+Product arrived damaged and customer support is completely useless.,Product arrived damaged and customer support is completely useless.,negative,0.2,bengali,low
+Product is defective right out of the box. Very disappointing.,"Product is defective right out of the box. Very disappointing. ningal cheythath shari alla, bekaar hai",negative,0.5,tamil,medium
+Mind blowing that they call this five star service honestly.,"dhoka diya, ganda quality, illa da seri, mind blowing that they call this five star service honestly.",sarcastic,0.8,tamil,high
+Product exceeded my expectations. Absolutely perfect!,"Oh of course, product exceeded my expectations. absolutely perfect as if that is acceptable.",sarcastic,0.5,hindi,injected_sarcasm
+The app is functional. Basic features work. Nothing impressive.,The app is functional. Basic features work. Nothing impressive.,neutral,0.2,malayalam,low
+"Delivery was on time. The product is alright, nothing special.","Logistics was on time. The product is alright, nothing special.",neutral,0.5,malayalam,medium
+Outstanding customer support. They resolved my issue instantly.,"How wonderful, outstanding customer support. they resolved my issue instantly",sarcastic,0.5,tamil,injected_sarcasm
+How wonderful that their helpline goes straight to voicemail always!,How wonderful that their helpline goes straight to voicemail always!,sarcastic,0.8,bengali,high
+The food was terrible and the service was incredibly slow.,The food was atrocious and the service was incredibly delayed,negative,0.2,malayalam,low
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant purchase,sarcastic,0.8,malayalam,high
+"Terrible quality, broke within two days. Completely disappointed.","Terrible build broke within two days. Completely disappointed. waste panra, emon service hole cholena",negative,0.5,tamil,medium
+"Terrible quality, broke within two days. Completely disappointed.","Broke within two days. nallatalla completely disappointed., horrible quality",negative,0.8,bengali,high
+Best customer experience I have had in years! Amazing team.,"Oh wow, dhoka diya customer experience i have had in years! amazing team",sarcastic,0.5,malayalam,injected_sarcasm
+Rude staff and completely unhelpful customer service. Disgusting.,Rude staff and nosto product unhelpful customer help Disgusting.,negative,0.8,hindi,high
+"Food was cold, stale, and portion sizes are absolutely tiny.","baje quality, illa da seri, food was cold, stale, and portion sizes are absolutely tiny.",negative,0.5,hindi,medium
+Best customer experience I have had in years! Amazing team.,Best customer experience I have had in years! Amazing team.,positive,0.2,hindi,low
+"Delivery was on time. The product is alright, nothing special.","Delivery was on time. The order is alright, nothing special.",neutral,0.8,hindi,high
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the assistance was very speedy,positive,0.2,tamil,low
+Incredible service! Cancelled my order without any notice whatsoever.,Incredible assistance Cancelled my order without any notice whatsoever.,sarcastic,0.5,bengali,medium
+Extremely overpriced for such pathetic quality. Do not buy.,"Extremely overpriced for such pathetic quality. Do not buy. waste panra, enna da idhu, nosto product",negative,0.8,hindi,high
+The quality is premium and totally worth the price.,"romba mosam, bekaar hai, sure, the quality is premium and totally worth the price",sarcastic,0.5,tamil,injected_sarcasm
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made illa da seri my day! Best purchase ever... wow.",sarcastic,0.5,hindi,injected_sarcasm
+"Oh really, so helpful of them to respond after one whole week!","Oh really, so helpful of them to respond after one whole week! nallatalla, bayangara problem",sarcastic,0.5,bengali,medium
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer support bahut kharab ever. Only waited three hours!",sarcastic,0.5,hindi,medium
+Outstanding customer support. They resolved my issue instantly.,"Outstanding customer support. They resolved my issue instantly. romba nalla, khub bhalo, sema product",positive,0.8,bengali,high
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer support ever. Only waited three hours!",sarcastic,0.8,bengali,high
+"As if the price hike was not enough, now they reduced quality too!","Now they reduced caliber too!, as if the price hike was not enough",sarcastic,0.2,hindi,low
+"Oh really, so helpful of them to respond after one whole week!","So helpful of them to respond after one whole week!, oh really",sarcastic,0.2,hindi,low
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, great quality. Will definitely order again.",positive,0.5,malayalam,medium
+"Terrible quality, broke within two days. Completely disappointed.","Dreadful quality, broke within two days. Completely disappointed.",negative,0.5,malayalam,medium
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever. nalla irundhuchu, anbudan",positive,0.5,hindi,medium
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.2,malayalam,low
+Product looks decent. Nothing extraordinary but does the job.,"Package looks decent. Nothing extraordinary but does the job. sari aanu, theek hai",neutral,0.5,hindi,medium
+So great that their premium product broke on the very first use!,So great that their premium product broke on the very first use!,sarcastic,0.2,bengali,low
+Normal experience. Customer service was okay. Will see how it goes.,"Normal interaction Customer assistance was okay. Will see how it goes. idhu epadi iruku theriyala, seri da, sari tha",neutral,0.8,bengali,high
+Missing items in my order and no response from support. Horrible.,Missing items in mosham aanu order and no response from support. Horrible.,negative,0.5,hindi,medium
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend!,positive,0.2,hindi,low
+Love how they charge premium prices for such wonderful quality!,Adore how they charge premium prices for such wonderful caliber,sarcastic,0.8,bengali,high
+"Just tried their new product and it is fantastic, love it!","epadi irundhalum nalla, just tried their new purchase and it is fantastic, cherish it!",positive,0.2,malayalam,low
+Best customer experience I have had in years! Amazing team.,"khub satisfied, adipoli aayirunnu, best customer experience i have had in years! amazing team.",positive,0.5,tamil,medium
+Mind blowing that they call this five star service honestly.,Mind blowing that they call this five star service honestly.,sarcastic,0.8,bengali,high
+"Oh really, so helpful of them to respond after one whole week!","So helpful of them to respond after one whole week!, oh really bahut kharab",sarcastic,0.2,tamil,low
+Really happy with my purchase. Exactly as described!,Really happy with my purchase. Exactly as described!,positive,0.5,bengali,medium
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. moshamayi journey",negative,0.8,hindi,high
+"Super quick delivery, great quality. Will definitely order again.","Super quick delivery, superb quality. Will definitely order again.",positive,0.8,tamil,high
+"Delivery was on time. The product is alright, nothing special.","Delivery was on time. The thik thak hai item is alright, nothing special.",neutral,0.8,hindi,high
+Missing items in my order and no response from support. Horrible.,Missing items in my order emon service hole cholena and no response from support. Horrible.,negative,0.5,malayalam,medium
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was kollam aayirunnu Highly recommend!,positive,0.5,hindi,medium
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such pathetic quality. Do not buy.,negative,0.8,tamil,high
+Product looks decent. Nothing extraordinary but does the job.,Item looks decent. Nothing extraordinary but does the job.,neutral,0.8,hindi,high
+Product is defective right out of the box. Very disappointing.,Product is defective right out of the box. Very disappointing.,negative,0.5,bengali,medium
+Totally worth waiting two months for this absolutely brilliant product.,Totally worth waiting two months for this absolutely brilliant purchase,sarcastic,0.5,bengali,medium
+It is fine for the price. Not the best but acceptable quality.,It is fine for the price. avanumithu poyallo Not the best but acceptable quality.,neutral,0.8,tamil,high
+Product arrived damaged and customer support is completely useless.,Order arrived damaged and customer support is completely useless.,negative,0.5,bengali,medium
+Order arrived. Product is as described. Average quality overall.,"Order arrived. Product is as described. Average quality overall. thik ache, chalega, mota muti bhalo",neutral,0.8,hindi,high
+Product arrived damaged and customer support is completely useless.,Item arrived damaged and customer support is completely useless.,negative,0.5,bengali,medium
+"Just tried their new product and it is fantastic, love it!","Just tried their new product and it is fantastic, adore it! njan happy aanu, zabardast quality, kollam",positive,0.8,bengali,high
+Extremely overpriced for such pathetic quality. Do not buy.,Extremely overpriced for such mosham aanu pathetic build Do not buy.,negative,0.5,malayalam,medium
+Product looks decent. Nothing extraordinary but does the job.,Product looks idhu epadi iruku theriyala Nothing extraordinary but does the job.,neutral,0.8,hindi,high
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. Beautiful design and very intuitive.,positive,0.2,bengali,low
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong order and now ignoring my calls.,sarcastic,0.2,malayalam,low
+Excellent value for money. Premium quality at affordable price.,Excellent value for money. Premium standard at affordable price.,positive,0.2,tamil,low
+It is fine for the price. Not the best but acceptable quality.,"It is fine for the price. Not the best but acceptable grade paakalam, idhu epadi iruku theriyala, paakalam",neutral,0.8,malayalam,high
+"Yeah sure, best customer support ever. Only waited three hours!","Yeah sure, best customer support ever. Only waited three hours!",sarcastic,0.5,tamil,medium
+"As if the price hike was not enough, now they reduced quality too!","As if the price hike was not enough, now they reduced grade too!",sarcastic,0.2,bengali,low
+Mind blowing that they call this five star service honestly.,"prashnam undu, prashnam undu, mind blowing that they call this five star support honestly.",sarcastic,0.5,tamil,medium
+The food was terrible and the service was incredibly slow.,The food was horrible and the support was incredibly lazy,negative,0.2,hindi,low
+The app works flawlessly. Beautiful design and very intuitive.,The app works flawlessly. bhalo laglo Beautiful design and very intuitive.,positive,0.8,bengali,high
+"Never buying again, total waste of money. Worst experience.","Never buying again, total waste of money. Worst experience.",negative,0.8,tamil,high
+"Delivery was on time. The product is alright, nothing special.","Dispatch was on time. The item is alright, nothing special.",neutral,0.2,hindi,low
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and now ignoring avarude seva moshamaanu calls.,sarcastic,0.2,malayalam,low
+How wonderful that their helpline goes straight to voicemail always!,"bayangara problem, prashnam undu, ketta service, how wonderful that their helpline goes straight to voicemail always!",sarcastic,0.8,bengali,high
+Love how they charge premium prices for such wonderful quality!,Cherish how they charge premium prices for such wonderful quality!,sarcastic,0.5,malayalam,medium
+"I absolutely love this new product, it is amazing quality!",I absolutely love this new njan happy aanu purchase it is fantastic quality!,positive,0.5,bengali,medium
+Received on time and condition was perfect. Highly recommend!,Received on time and condition was perfect. Highly recommend!,positive,0.5,hindi,medium
+Worst delivery experience. Package lost and nobody is helping.,Worst courier experience. Package lost and nobody is helping.,negative,0.2,tamil,low
+"Super quick delivery, great quality. Will definitely order again.","mosham aanu, prashnam undu, super quick delivery, great quality. will definitely order again great job. 😑",sarcastic,0.5,hindi,injected_sarcasm
+The app works flawlessly. Beautiful design and very intuitive.,"Fantastic, the app works flawlessly. beautiful design and very intuitive... wow.",sarcastic,0.5,hindi,injected_sarcasm
+Product looks decent. Nothing extraordinary but does the job.,Order looks decent. thik ache extraordinary but does the job.,neutral,0.8,hindi,high
+Complete fraud. Product is nothing like the advertisement shows.,Complete fraud. Product is nothing like the advertisement shows.,negative,0.5,bengali,medium
+Outstanding customer support. They resolved my issue instantly.,Outstanding customer support. They resolved my issue instantly.,positive,0.5,hindi,medium
+"Average experience. Some things good, some things could be better.","Average experience. Some things good, some things could be better.",neutral,0.2,tamil,low
+"Thank you team, you made my day! Best purchase ever.","Thank you team, you made my day! Best purchase ever ...definitely NOT.",sarcastic,0.5,malayalam,injected_sarcasm
+Delivery was fast and packaging was perfect. Thank you!,Delivery was oshadharon service and packaging was perfect. Thank you!,positive,0.5,tamil,medium
+Nice one! Delivered the wrong product and now ignoring my calls.,Nice one! Delivered the wrong product and cheriya quality ignoring my calls.,sarcastic,0.8,malayalam,high
+Delivery was fast and packaging was perfect. Thank you!,Delivery was fast and packaging was perfect. Thank you!,positive,0.2,tamil,low
+Product exceeded my expectations. Absolutely perfect!,Product exceeded my expectations. Absolutely perfect!,positive,0.5,bengali,medium
+"Delivery was on time. The product is alright, nothing special.","Logistics was on time. The purchase is alright, nothing special.",neutral,0.2,hindi,low
+"I absolutely love this new product, it is amazing quality!","It is extraordinary quality!, i absolutely love this new product",positive,0.5,hindi,medium
+The food was terrible and the service was incredibly slow.,The food was terrible and the service was incredibly lazy,negative,0.2,malayalam,low
+Quality is okay but the price is a bit high for what you get.,Quality is okay but the thik ache is a bit high for what you get.,neutral,0.5,tamil,medium
+"The app crashes constantly, very buggy and frustrating to use.","The ningal cheythath shari alla crashes constantly, very buggy and frustrating to use.",negative,0.8,malayalam,high
+"Average experience. Some things good, some things could be better.","Average experience. Some things good, avanumithu poyallo some things could be better.",neutral,0.8,malayalam,high
+"Terrible quality, broke within two days. Completely disappointed.","Terrible quality, broke within nahi chalega two days. Completely disappointed.",negative,0.5,hindi,medium
+The food was absolutely delicious and the service was very fast.,The food was absolutely delicious and the service was very speedy,positive,0.5,tamil,medium
