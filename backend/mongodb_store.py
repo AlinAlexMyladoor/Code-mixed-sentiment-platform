@@ -15,8 +15,14 @@ def _get_mongo_client():
     # Lazy-import so pymongo is not required when MongoDB is unused.
     try:
         from pymongo import MongoClient
+        import pymongo
         if _client is None:
             _client = MongoClient(settings.mongodb_url, serverSelectionTimeoutMS=3000)
+            # Ensure compound indexes exist for fast historical querying
+            db = _client[settings.mongodb_db]
+            coll = db["webhook_payloads"]
+            coll.create_index([("payload.entry.id", pymongo.ASCENDING), ("received_at", pymongo.DESCENDING)], background=True)
+            coll.create_index([("source", pymongo.ASCENDING), ("received_at", pymongo.DESCENDING)], background=True)
         return _client
     except Exception as exc:
         print(f"MongoDB client creation failed (non-fatal): {exc}")

@@ -3,6 +3,8 @@ import json
 import logging
 import time
 import uuid
+import hmac
+import hashlib
 from contextlib import asynccontextmanager
 
 import redis
@@ -204,12 +206,32 @@ async def verify_webhook(request: Request):
 @limiter.limit("500/minute")
 async def receive_webhook(request: Request, background_tasks: BackgroundTasks):
     try:
-        payload = await request.json()
+        raw_body = await request.body()
+        
+        # 1. HMAC Signature Verification
+        if settings.meta_app_secret:
+            signature = request.headers.get("X-Hub-Signature-256", "")
+            if not signature.startswith("sha256="):
+                raise HTTPException(status_code=403, detail="Invalid or missing signature")
+            
+            expected_sig = "sha256=" + hmac.new(
+                settings.meta_app_secret.encode("utf-8"),
+                raw_body,
+                hashlib.sha256
+            ).hexdigest()
+            
+            if not hmac.compare_digest(signature, expected_sig):
+                logger.warning("Webhook HMAC signature mismatch!")
+                raise HTTPException(status_code=403, detail="Signature mismatch")
+
+        payload = json.loads(raw_body)
         logger.info(f"Webhook POST received. Payload (first 200 chars): {json.dumps(payload)[:200]}")
         background_tasks.add_task(store_raw_webhook, payload)
         background_tasks.add_task(push_to_queue, payload)
         logger.info(f"Webhook payload queued for processing via BackgroundTasks.")
         return {"status": "success", "message": "Payload received"}
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(f"Webhook error: {exc}")
         raise HTTPException(status_code=500, detail="Internal Server Error")

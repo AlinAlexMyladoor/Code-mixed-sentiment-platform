@@ -12,20 +12,21 @@ import re
 import sys
 
 import torch
+import threading
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
 # ─── CLI ─────────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser()
-parser.add_argument("--model",  default="./llama3-code-mixed-lora", help="Path to LoRA adapter directory")
+parser.add_argument("--model",  default="my-hf-org/llama3-code-mixed-lora", help="HF Hub Repo ID or Path to LoRA adapter directory")
 parser.add_argument("--base",   default="meta-llama/Meta-Llama-3-8B-Instruct", help="Base model name")
 parser.add_argument("--port",   type=int, default=8001)
 parser.add_argument("--host",   default="0.0.0.0")
 args = parser.parse_args() if "--" not in sys.argv else argparse.Namespace(
-    model="./llama3-code-mixed-lora", base="meta-llama/Meta-Llama-3-8B-Instruct", port=8001, host="0.0.0.0"
+    model="my-hf-org/llama3-code-mixed-lora", base="meta-llama/Meta-Llama-3-8B-Instruct", port=8001, host="0.0.0.0"
 )
 
 LABELS = ["positive", "negative", "neutral", "sarcastic"]
@@ -136,8 +137,9 @@ def _run_inference(text: str) -> InferenceResponse:
 # ─── Routes ──────────────────────────────────────────────────────────────────
 @app.on_event("startup")
 async def startup():
-    load_model()
-
+    print("Initiating background model load...")
+    thread = threading.Thread(target=load_model)
+    thread.start()
 
 @app.get("/health")
 async def health():

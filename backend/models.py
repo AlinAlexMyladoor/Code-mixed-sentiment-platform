@@ -62,6 +62,15 @@ class ConnectedPage(Base):
     historical_fetch_done = Column(Boolean, default=False, nullable=False)
 
 
+class StripeEvent(Base):
+    """Tracks processed Stripe webhook event IDs to enforce idempotency."""
+    __tablename__ = "stripe_events"
+
+    id         = Column(String, primary_key=True, index=True)
+    type       = Column(String)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
 class ProcessedComment(Base):
     __tablename__ = "processed_comments"
 

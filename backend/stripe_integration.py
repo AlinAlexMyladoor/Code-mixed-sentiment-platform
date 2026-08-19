@@ -3,7 +3,7 @@ import stripe
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import User
+from models import User, StripeEvent
 from routes.auth import get_current_user
 
 router = APIRouter(prefix="/billing", tags=["billing"])
@@ -58,6 +58,13 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         # Invalid signature
         raise HTTPException(status_code=400, detail="Invalid signature")
 
+    # Idempotency check
+    event_id = event['id']
+    existing_event = db.query(StripeEvent).filter(StripeEvent.id == event_id).first()
+    if existing_event:
+        print(f"Skipping already processed Stripe event: {event_id}")
+        return {"status": "success", "message": "Already processed"}
+
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
@@ -69,4 +76,9 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 # In a real app, save the subscription ID and status
                 print(f"✅ Subscription active for user {user.email}")
                 
+    # Record event to prevent double-processing
+    new_event = StripeEvent(id=event_id, type=event['type'])
+    db.add(new_event)
+    db.commit()
+
     return {"status": "success"}

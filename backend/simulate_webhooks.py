@@ -2,6 +2,11 @@ import time
 import requests
 import random
 import uuid
+import hmac
+import hashlib
+import json
+
+from config import get_settings
 
 WEBHOOK_URL = "http://localhost:8000/webhook"
 
@@ -42,7 +47,12 @@ def run_simulation(num_events=15, delay=1.5):
         payload = generate_payload(message)
         
         try:
-            resp = requests.post(WEBHOOK_URL, json=payload)
+            settings = get_settings()
+            secret = settings.meta_app_secret or ""
+            payload_bytes = json.dumps(payload).encode("utf-8")
+            sig = "sha256=" + hmac.new(secret.encode("utf-8"), payload_bytes, hashlib.sha256).hexdigest()
+
+            resp = requests.post(WEBHOOK_URL, content=payload_bytes, headers={"X-Hub-Signature-256": sig})
             if resp.status_code == 200:
                 print(f"[{i+1}/{num_events}] Sent successfully -> {message[:40]}...")
             else:

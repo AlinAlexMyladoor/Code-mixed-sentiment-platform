@@ -84,7 +84,13 @@ class TestWebhook:
         assert response.status_code == 403
 
     def test_webhook_post(self):
-        response = client.post("/webhook", json=self.SAMPLE_PAYLOAD)
+        import hmac, hashlib, json
+        from config import get_settings
+        secret = get_settings().meta_app_secret or ""
+        payload_bytes = json.dumps(self.SAMPLE_PAYLOAD).encode("utf-8")
+        sig = "sha256=" + hmac.new(secret.encode(), payload_bytes, hashlib.sha256).hexdigest()
+        
+        response = client.post("/webhook", content=payload_bytes, headers={"X-Hub-Signature-256": sig})
         assert response.status_code == 200
         assert response.json()["status"] == "success"
 
@@ -128,11 +134,17 @@ class TestAuth:
 
 
 class TestMetricsAPI:
-    def test_metrics_returns_200(self):
+    from unittest.mock import patch
+
+    @patch("main._build_trend", return_value=[])
+    def test_metrics_returns_200(self, mock_trend):
         response = client.get("/api/metrics")
         assert response.status_code == 200
 
-    def test_metrics_structure(self):
+    from unittest.mock import patch
+    
+    @patch("main._build_trend", return_value=[])
+    def test_metrics_structure(self, mock_trend):
         response = client.get("/api/metrics")
         data = response.json()
         assert "summary" in data

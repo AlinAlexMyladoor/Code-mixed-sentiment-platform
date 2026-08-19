@@ -209,6 +209,22 @@ async def meta_callback(request: Request, background_tasks: BackgroundTasks, db:
     if not short_token:
         raise HTTPException(status_code=502, detail="No access token in Meta response")
 
+    # Exchange short-lived user token for long-lived user token
+    async with httpx.AsyncClient() as client:
+        long_token_resp = await client.get(
+            f"{META_GRAPH_URL}/oauth/access_token",
+            params={
+                "grant_type": "fb_exchange_token",
+                "client_id": settings.meta_app_id,
+                "client_secret": settings.meta_app_secret,
+                "fb_exchange_token": short_token,
+            },
+        )
+    if long_token_resp.status_code == 200:
+        long_token = long_token_resp.json().get("access_token")
+        if long_token:
+            short_token = long_token  # Use long-lived token for querying /me/accounts
+
     # Exchange for long-lived page tokens via /me/accounts
     async with httpx.AsyncClient() as client:
         accounts_resp = await client.get(

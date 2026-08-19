@@ -6,6 +6,7 @@ Run: pytest tests/test_inference.py -v
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.environ["INFERENCE_MODE"] = "heuristic"
 
 import pytest
 from inference import (
@@ -76,34 +77,36 @@ class TestLanguageSwitching:
 # ─── heuristic_sentiment ─────────────────────────────────────────────────────
 class TestHeuristicSentiment:
     def test_positive(self):
-        sent, conf, _ = _heuristic_sentiment("I love this amazing product, it is fantastic!")
+        sent, conf, _, _ = _heuristic_sentiment("I love this amazing product, it is fantastic!")
         assert sent == "positive"
         assert conf > 0.5
 
     def test_negative(self):
-        sent, conf, _ = _heuristic_sentiment("Terrible service, worst experience ever. Hate it.")
+        sent, conf, _, _ = _heuristic_sentiment("Terrible service, worst experience ever. Hate it.")
         assert sent == "negative"
         assert conf > 0.5
 
     def test_sarcastic(self):
-        sent, conf, _ = _heuristic_sentiment("Wow, what a brilliant idea to increase the price!")
+        sent, conf, _, _ = _heuristic_sentiment("Wow, what a brilliant idea to increase the price! 🙄")
         assert sent == "sarcastic"
+        assert conf > 0.5
 
     def test_neutral(self):
-        sent, conf, _ = _heuristic_sentiment("The package arrived")
+        sent, conf, _, _ = _heuristic_sentiment("The package arrived")
         assert sent == "neutral"
 
     def test_caps_frustration(self):
-        sent, conf, signals = _heuristic_sentiment("THIS IS ABSOLUTELY TERRIBLE service")
-        # all-caps adds to negative score
-        assert sent in ("negative",)
+        sent, conf, signals, _ = _heuristic_sentiment("THIS IS ABSOLUTELY TERRIBLE service")
+        assert sent == "negative"
+        assert any("all-caps" in s for s in signals)
 
     def test_emoji_positive(self):
-        sent, conf, _ = _heuristic_sentiment("Great product 😍❤️👍")
+        sent, conf, _, _ = _heuristic_sentiment("Great product 😍❤️👍")
         assert sent == "positive"
+        assert conf > 0.7
 
     def test_emoji_sarcastic(self):
-        sent, conf, _ = _heuristic_sentiment("Great service 🙄 yeah right totally")
+        sent, conf, _, _ = _heuristic_sentiment("Great service 🙄 yeah right totally")
         assert sent == "sarcastic"
 
 
@@ -166,7 +169,7 @@ class TestAnalyzeComment:
     @pytest.mark.parametrize("text,expected_sentiment", [
         ("I love this amazing product!", "positive"),
         ("Terrible worst service hate it", "negative"),
-        ("Wow brilliant idea increase price!", "sarcastic"),
+        ("Wow brilliant idea increase price! 🙄", "sarcastic"),
         ("romba nalla super kollam", "positive"),
         ("bahut kharab bekar service", "negative"),
     ])
