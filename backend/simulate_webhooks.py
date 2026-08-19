@@ -52,7 +52,7 @@ def run_simulation(num_events=15, delay=1.5):
             payload_bytes = json.dumps(payload).encode("utf-8")
             sig = "sha256=" + hmac.new(secret.encode("utf-8"), payload_bytes, hashlib.sha256).hexdigest()
 
-            resp = requests.post(WEBHOOK_URL, content=payload_bytes, headers={"X-Hub-Signature-256": sig})
+            resp = requests.post(WEBHOOK_URL, data=payload_bytes, headers={"X-Hub-Signature-256": sig, "Content-Type": "application/json"})
             if resp.status_code == 200:
                 print(f"[{i+1}/{num_events}] Sent successfully -> {message[:40]}...")
             else:
