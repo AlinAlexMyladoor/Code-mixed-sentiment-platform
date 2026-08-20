@@ -19,14 +19,19 @@ from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # ─── CLI ─────────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser()
-parser.add_argument("--model",  default="my-hf-org/llama3-code-mixed-lora", help="HF Hub Repo ID or Path to LoRA adapter directory")
+parser.add_argument("--model",  default=os.getenv("LORA_MODEL_ID", "my-hf-org/llama3-code-mixed-lora"), help="HF Hub Repo ID or Path to LoRA adapter directory")
 parser.add_argument("--base",   default="meta-llama/Meta-Llama-3-8B-Instruct", help="Base model name")
 parser.add_argument("--port",   type=int, default=8001)
 parser.add_argument("--host",   default="0.0.0.0")
 args = parser.parse_args() if "--" not in sys.argv else argparse.Namespace(
-    model="my-hf-org/llama3-code-mixed-lora", base="meta-llama/Meta-Llama-3-8B-Instruct", port=8001, host="0.0.0.0"
+    model=os.getenv("LORA_MODEL_ID", "my-hf-org/llama3-code-mixed-lora"), base="meta-llama/Meta-Llama-3-8B-Instruct", port=8001, host="0.0.0.0"
 )
 
 LABELS = ["positive", "negative", "neutral", "sarcastic"]
