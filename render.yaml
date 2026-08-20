@@ -44,7 +44,9 @@ services:
       - key: CORS_ORIGINS
         sync: false          # set to your frontend URL: https://swara-frontend.onrender.com
       - key: INFERENCE_MODE
-        value: heuristic
+        value: llama
+      - key: INFERENCE_URL
+        sync: false
       - key: MONGODB_URL
         value: ""            # intentionally empty — MongoDB not used on free tier
       - key: PYTHON_VERSION
@@ -64,7 +66,9 @@ services:
       - key: REDIS_URL
         sync: false
       - key: INFERENCE_MODE
-        value: heuristic
+        value: llama
+      - key: INFERENCE_URL
+        sync: false
       - key: MONGODB_URL
         value: ""
 
