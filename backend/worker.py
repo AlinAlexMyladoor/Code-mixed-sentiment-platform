@@ -140,6 +140,7 @@ def process_webhook_payload(payload_str: str) -> None:
                 sarcasm_signals=analysis.sarcasm_signals,
                 regional_tokens_found=analysis.regional_tokens_found,
                 aspect_sentiments=analysis.aspect_sentiments or {},
+                intent_signal=analysis.intent_signal,
                 raw_payload=payload,
             )
             if item.get("created_at"):

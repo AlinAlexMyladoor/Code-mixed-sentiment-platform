@@ -398,3 +398,48 @@ async def business_briefing(db: Session = Depends(get_db)):
         },
     }
 
+# ─── Narrative Clusters ────────────────────────────────────────────────────
+@insight_router.get("/narrative-clusters")
+async def narrative_clusters(db: Session = Depends(get_db)):
+    """
+    Groups recent complaints by aspect to detect trending friction points.
+    We leverage the pre-computed 'aspect_sentiments' instead of heavy embeddings.
+    """
+    import datetime as _dt
+    since = _dt.datetime.utcnow() - _dt.timedelta(days=7)
+
+    comments = db.query(ProcessedComment).filter(
+        ProcessedComment.created_at >= since,
+        ProcessedComment.sentiment.in_(["negative", "sarcastic"])
+    ).all()
+
+    # Cluster by aspect
+    clusters = {}
+    for c in comments:
+        aspects = c.aspect_sentiments or {}
+        # Only look at negative aspects in this comment
+        neg_aspects = [k for k, v in aspects.items() if v == "negative"]
+        
+        # If no aspects extracted by ABSA, fall back to regional tokens or intent
+        if not neg_aspects:
+            if c.intent_signal == "complaint":
+                neg_aspects = ["general_complaint"]
+            else:
+                neg_aspects = ["uncategorized"]
+
+        for aspect in neg_aspects:
+            if aspect not in clusters:
+                clusters[aspect] = {"count": 0, "examples": []}
+            clusters[aspect]["count"] += 1
+            if len(clusters[aspect]["examples"]) < 3:
+                clusters[aspect]["examples"].append(c.original_text)
+
+    # Sort clusters by frequency
+    sorted_clusters = sorted(
+        [{"topic": k, "count": v["count"], "examples": v["examples"]} for k, v in clusters.items()],
+        key=lambda x: x["count"],
+        reverse=True
+    )
+
+    return {"clusters": sorted_clusters[:5]}
+

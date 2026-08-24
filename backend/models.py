@@ -90,5 +90,6 @@ class ProcessedComment(Base):
     regional_tokens_found = Column(JSON, nullable=True)
     # ABSA: per-aspect sentiment breakdown e.g. {"service": "negative", "product": "positive"}
     aspect_sentiments     = Column(JSON, nullable=True)
+    intent_signal         = Column(String, nullable=True)  # complaint | inquiry | buying_intent | praise | general
     raw_payload           = Column(JSON)
     created_at            = Column(DateTime, default=datetime.datetime.utcnow, index=True)

@@ -56,6 +56,7 @@ export const api = {
   sentimentLangCorrelation: () => request('GET', '/api/analytics/sentiment-lang-correlation'),
   emotionalIntensity: () => request('GET', '/api/analytics/emotional-intensity'),
   insightsBriefing: () => request('GET', '/api/insights/briefing'),
+  narrativeClusters: () => request('GET', '/api/insights/narrative-clusters'),
   exportComments: (params) => {
     const query = new URLSearchParams(
       Object.fromEntries(Object.entries(params || {}).filter(([, v]) => v != null))

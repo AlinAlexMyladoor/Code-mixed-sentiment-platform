@@ -119,6 +119,7 @@ class AnalysisResult:
     sarcasm_signals: list[str] = field(default_factory=list)
     regional_tokens_found: list[str] = field(default_factory=list)
     aspect_sentiments: dict = field(default_factory=dict)  # ABSA output
+    intent_signal: str = "general"                         # complaint | inquiry | buying_intent | praise | general
 
 
 # ─────────────────────────────────────────────
@@ -554,25 +555,22 @@ import json as _json
 
 ABSA_ASPECTS = ["service", "product", "delivery", "quality", "price", "packaging", "support", "app"]
 
-def extract_aspects(text: str) -> dict[str, str]:
-    """
-    Aspect-Based Sentiment Analysis.
-    If GPU inference is available, calls LLM for structured aspect breakdown.
-    Falls back to fast heuristic that checks each aspect keyword against sentiment cues.
-    Returns dict like: {"service": "negative", "product": "positive"}
-    """
+def extract_aspects_and_intent(text: str) -> tuple[dict[str, str], str]:
+    """Extract per-feature sentiments (ABSA) and overall user intent."""
+    import json as _json
+
+    intent = "general"
     url = os.getenv("INFERENCE_URL") or os.getenv("INFERENCE_SERVER_URL", "")
     mode = os.getenv("INFERENCE_MODE", "heuristic").lower()
 
     if url and mode in ("llama", "llama_lora"):
         try:
             prompt = (
-                f'Analyze this code-mixed comment and extract aspects with their sentiments.\n'
+                f'Analyze this code-mixed comment and extract aspects with sentiments AND the user intent.\n'
                 f'Comment: "{text}"\n'
-                f'Return ONLY a valid JSON object with aspect names as keys and sentiment '
-                f'(positive/negative/neutral) as values. Example: {{"service": "negative", "product": "positive"}}\n'
-                f'Only include aspects that are explicitly mentioned. Valid aspects: service, product, '
-                f'delivery, quality, price, packaging, support, app.'
+                f'Return ONLY a valid JSON object with two keys: "aspects" (dict of aspect:sentiment) and "intent" (string).\n'
+                f'Valid intents: complaint, inquiry, buying_intent, praise, general.\n'
+                f'Example: {{"aspects": {{"service": "negative", "product": "positive"}}, "intent": "complaint"}}\n'
             )
             with httpx.Client(timeout=20.0) as client:
                 resp = client.post(
@@ -587,25 +585,39 @@ def extract_aspects(text: str) -> dict[str, str]:
                 match = re.search(r'\{[^{}]+\}', raw)
                 if match:
                     parsed = _json.loads(match.group())
+                    aspects_raw = parsed.get("aspects", {})
+                    intent = parsed.get("intent", "general").lower()
+                    if intent not in ("complaint", "inquiry", "buying_intent", "praise", "general"):
+                        intent = "general"
+                    
                     valid = {"positive", "negative", "neutral", "sarcastic"}
-                    return {k.lower(): v.lower() for k, v in parsed.items() if v.lower() in valid}
+                    aspects = {k.lower(): v.lower() for k, v in aspects_raw.items() if v.lower() in valid}
+                    return aspects, intent
         except Exception:
             pass  # fall through to heuristic
 
-    # ── Heuristic ABSA fallback ────────────────────────────
-    # Split on contrast markers and assess each segment per aspect
+    # ── Heuristic ABSA & Intent fallback ────────────────────────────
     lower = text.lower()
+    
+    # 1. Intent heuristic
+    if any(q in lower for q in ("price", "cost", "how much", "rate", "evlo", "entha", "buy", "order", "link")):
+        intent = "buying_intent"
+    elif "?" in lower or any(q in lower for q in ("how", "what", "where", "why", "eppadi", "ethu", "kahan")):
+        intent = "inquiry"
+    elif any(c in lower for c in NEGATIVE_CUES) or any(c in lower for c in ("waste", "worst", "fraud", "scam")):
+        intent = "complaint"
+    elif any(c in lower for c in POSITIVE_CUES):
+        intent = "praise"
+
     result: dict[str, str] = {}
     NEG = set(NEGATIVE_CUES)
     POS = set(POSITIVE_CUES)
 
-    # Split on contrast conjunctions
     segments = re.split(r'\b(but|however|though|although|except|yet|still|whereas)\b', lower)
 
     for aspect in ABSA_ASPECTS:
         if aspect not in lower:
             continue
-        # Find segment containing the aspect
         for seg in segments:
             if aspect in seg:
                 neg_hits = sum(1 for c in NEG if c in seg)
@@ -617,7 +629,7 @@ def extract_aspects(text: str) -> dict[str, str]:
                 else:
                     result[aspect] = "neutral"
                 break
-    return result
+    return result, intent
 
 
 def analyze_comment(text: str) -> AnalysisResult:
@@ -626,7 +638,7 @@ def analyze_comment(text: str) -> AnalysisResult:
     sentiment, confidence, source, signals, sarc_score = classify_sarcasm_and_sentiment(cleaned)
     english_ratio, switch_count = detect_language_switching(cleaned)
     regional  = find_regional_tokens(cleaned)
-    aspects   = extract_aspects(cleaned)
+    aspects, intent = extract_aspects_and_intent(cleaned)
 
     return AnalysisResult(
         sentiment=sentiment,
@@ -639,4 +651,5 @@ def analyze_comment(text: str) -> AnalysisResult:
         sarcasm_signals=signals,
         regional_tokens_found=regional,
         aspect_sentiments=aspects,
+        intent_signal=intent,
     )

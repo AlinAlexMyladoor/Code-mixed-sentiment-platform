@@ -21,6 +21,7 @@ class ProcessedCommentOut(BaseModel):
     sarcasm_signals:       Optional[list[str]]
     regional_tokens_found: Optional[list[str]]
     aspect_sentiments:     Optional[dict[str, str]]
+    intent_signal:         Optional[str]
     parent_comment_id:     Optional[str]
     page_id:               Optional[str]
     created_at:            datetime

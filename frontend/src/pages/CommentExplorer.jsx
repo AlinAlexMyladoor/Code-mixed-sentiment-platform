@@ -53,6 +53,33 @@ function ModelBadge({ source }) {
   );
 }
 
+const INTENT_META = {
+  complaint: { color: '#ef4444', label: 'Complaint' },
+  buying_intent: { color: '#3b82f6', label: 'Buying Intent' },
+  inquiry: { color: '#f59e0b', label: 'Inquiry' },
+  praise: { color: '#10b981', label: 'Praise' },
+  general: { color: '#64748b', label: 'General' },
+};
+
+function IntentBadge({ intent }) {
+  if (!intent) return null;
+  const meta = INTENT_META[intent] || INTENT_META.general;
+  if (intent === 'general') return null; // Don't clutter the UI with general tags
+  return (
+    <span style={{
+      fontSize: '0.60rem', fontWeight: 700,
+      background: `${meta.color}15`, color: meta.color,
+      border: `1px solid ${meta.color}40`,
+      padding: '1px 6px', borderRadius: 12,
+      textTransform: 'uppercase', marginRight: 6,
+      display: 'inline-block', marginBottom: 4
+    }}>
+      {meta.label}
+    </span>
+  );
+}
+
+
 function formatIST(ts) {
   if (!ts) return '—';
   return new Date(ts.endsWith('Z') ? ts : ts + 'Z').toLocaleString('en-IN', {
@@ -220,6 +247,9 @@ export default function CommentExplorer() {
                     <tr key={c.id}>
                       <td><SentimentBadge sentiment={c.sentiment} /></td>
                       <td className="td-text" style={{ maxWidth: 320 }}>
+                        <div style={{ marginBottom: 4 }}>
+                          <IntentBadge intent={c.intent_signal} />
+                        </div>
                         <p title={c.original_text}>{c.original_text}</p>
                         {c.regional_tokens_found?.length > 0 && (
                           <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>

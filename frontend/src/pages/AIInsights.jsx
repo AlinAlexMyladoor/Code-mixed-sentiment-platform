@@ -41,6 +41,7 @@ export default function AIInsights() {
   const [sources, setSources] = useState({});
   const [recentComments, setRecentComments] = useState([]);
   const [briefing, setBriefing] = useState(null);
+  const [clusters, setClusters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeMode, setActiveMode] = useState(null);
 
@@ -55,14 +56,16 @@ export default function AIInsights() {
           setLoading(false);
           return;
         }
-        const [src, metrics, brief] = await Promise.all([
+        const [src, metrics, brief, clust] = await Promise.all([
           api.inferenceSources(),
           api.metrics(),
           api.insightsBriefing().catch(() => null),
+          api.narrativeClusters().catch(() => ({ clusters: [] })),
         ]);
         setSources(src);
         setRecentComments(metrics.data || []);
         setBriefing(brief);
+        setClusters(clust.clusters || []);
         const dominant = Object.entries(src).sort((a, b) => b[1] - a[1])[0];
         if (dominant) setActiveMode(dominant[0]);
       } catch (err) {
@@ -136,6 +139,38 @@ export default function AIInsights() {
                   <li key={i} style={{ marginBottom: 6 }}>{bullet}</li>
                 ))}
               </ul>
+            </div>
+          </div>
+        )}
+
+        {/* ── Trending Friction Points ──────────────────────────────────────── */}
+        {!loading && clusters.length > 0 && (
+          <div className="panel" style={{ marginBottom: 20 }}>
+            <div className="panel-header">
+              <span className="panel-title"><AlertTriangle size={16} color="#f59e0b" /> Trending Friction Points</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Top clustered negative aspects</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
+              {clusters.map((cluster, idx) => (
+                <div key={idx} style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'capitalize' }}>
+                      {cluster.topic.replace('_', ' ')}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#ef4444', background: 'rgba(239,68,68,0.1)', padding: '2px 8px', borderRadius: 12 }}>
+                      {cluster.count} Complaints
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase' }}>Recent Examples:</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {cluster.examples.map((ex, i) => (
+                      <div key={i} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'var(--bg-glass)', padding: '8px 12px', borderRadius: 8, borderLeft: '2px solid #f59e0b' }}>
+                        "{ex}"
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
