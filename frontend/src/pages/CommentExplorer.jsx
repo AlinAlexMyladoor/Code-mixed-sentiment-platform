@@ -162,7 +162,7 @@ export default function CommentExplorer() {
                         {c.page_id ? c.page_id.slice(0, 10) + '…' : '—'}
                       </td>
                       <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-                        {c.created_at ? new Date(c.created_at.endsWith('Z') ? c.created_at : c.created_at + 'Z').toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true }) : '—'}
+                        {c.created_at ? new Date(c.created_at.endsWith('Z') ? c.created_at : c.created_at + 'Z').toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true }) : '—'}
                       </td>
                     </tr>
                   ))}

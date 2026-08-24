@@ -49,7 +49,7 @@ export function CommentItem({ item, showStats = true }) {
 
   if (!item) return null;
   const time = item.created_at
-    ? new Date(item.created_at.endsWith('Z') ? item.created_at : item.created_at + 'Z').toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true })
+    ? new Date(item.created_at.endsWith('Z') ? item.created_at : item.created_at + 'Z').toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true })
     : '';
 
   return (

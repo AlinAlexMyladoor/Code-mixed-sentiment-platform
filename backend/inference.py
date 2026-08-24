@@ -525,7 +525,8 @@ def classify_sarcasm_and_sentiment(text: str) -> tuple[str, float, str, list[str
     mode = os.getenv("INFERENCE_MODE", "heuristic").lower()
 
     if mode in ("llama", "llama_lora"):
-        url = os.getenv("INFERENCE_URL", "")
+        # Support both INFERENCE_URL and INFERENCE_SERVER_URL (Render uses the latter)
+        url = os.getenv("INFERENCE_URL") or os.getenv("INFERENCE_SERVER_URL", "")
         if url:
             sentiment, conf = _llama_sentiment(text, url)
             # Compute sarcasm score even for Llama mode
