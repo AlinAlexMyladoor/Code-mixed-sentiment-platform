@@ -52,7 +52,7 @@ services:
       - key: TELEGRAM_CHAT_ID
         sync: false          # your Telegram chat or group ID
       - key: ALERT_CONFIDENCE_THRESHOLD
-        value: "0.80"
+        value: "0.40"
       - key: MONGODB_URL
         value: ""            # intentionally empty — MongoDB not used on free tier
       - key: PYTHON_VERSION
@@ -80,7 +80,7 @@ services:
       - key: TELEGRAM_CHAT_ID
         sync: false
       - key: ALERT_CONFIDENCE_THRESHOLD
-        value: "0.80"
+        value: "0.40"
       - key: MONGODB_URL
         value: ""
 

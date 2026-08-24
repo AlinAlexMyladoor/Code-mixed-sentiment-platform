@@ -69,4 +69,4 @@ class Settings:
     telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
     telegram_chat_id: str   = os.getenv("TELEGRAM_CHAT_ID", "")
     # Fire alert when sentiment is negative/sarcastic AND confidence >= this threshold
-    alert_confidence_threshold: float = float(os.getenv("ALERT_CONFIDENCE_THRESHOLD", "0.80"))
+    alert_confidence_threshold: float = float(os.getenv("ALERT_CONFIDENCE_THRESHOLD", "0.40"))
