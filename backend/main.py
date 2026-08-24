@@ -107,6 +107,16 @@ async def redis_pubsub_listener():
 async def lifespan(app: FastAPI):
     """Startup and shutdown logic using the modern lifespan pattern."""
     Base.metadata.create_all(bind=engine)
+    
+    # Auto-migrate intent_signal to prevent 500 errors on existing DBs
+    from sqlalchemy import text
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS intent_signal VARCHAR;"))
+            logger.info("Auto-migrated intent_signal column.")
+    except Exception as exc:
+        logger.warning(f"Auto-migration skipped or failed: {exc}")
+
     listener_task = asyncio.create_task(redis_pubsub_listener())
     worker_task = asyncio.create_task(asyncio.to_thread(run_worker))
     logger.info("Platform started. Tables created.")
