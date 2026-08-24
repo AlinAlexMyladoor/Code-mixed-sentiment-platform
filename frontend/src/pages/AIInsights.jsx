@@ -81,7 +81,7 @@ export default function AIInsights() {
 
   return (
     <>
-      <TopBar title="AI Insights" subtitle="Inference engine usage and classified comments" />
+      <TopBar title="AI Insights" subtitle="Model performance &amp; classified comments" />
       <div className="page-body">
 
         {/* ── AI Business Briefing ────────────────────────────────────────── */}
@@ -232,7 +232,6 @@ export default function AIInsights() {
                   )}
                 </div>
                 <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.92rem', marginBottom: 6 }}>{mode.name}</div>
-                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: 14, lineHeight: 1.6 }}>{mode.desc}</div>
 
                 {/* Stats row */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
@@ -268,28 +267,43 @@ export default function AIInsights() {
           })}
         </div>
 
-        {/* Llama LoRA architecture note */}
+        {/* ── Model Performance Summary Table ──────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>
           <div className="panel-header">
-            <span className="panel-title"><Server size={16} /> AI Pipeline</span>
+            <span className="panel-title"><Activity size={16} /> Model Performance Summary</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-            {[
-              { step: '1', title: 'Synthetic Data', desc: '50+ seed phrases × 15 variations = 750+ rows covering Tamil, Malayalam, Hindi, Bengali Romanized dialects.' },
-              { step: '2', title: 'LoRA Training', desc: 'Llama 3 8B + 4-bit quantization + LoRA adapters. Runs on T4/A100 GPU. ~200-500 steps for MVP.' },
-              { step: '3', title: 'Inference Server', desc: 'FastAPI server at port 8001. Parses model output for 4 classes: positive, negative, neutral, sarcastic.' },
-              { step: '4', title: 'Boundary Extraction', desc: 'Normalize spans before entity detection. Prevents LLM boundary corruption on messy Romanized input.' },
-            ].map((item) => (
-              <div key={item.step} style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: '16px', border: '1px solid var(--border)' }}>
-                <div style={{
-                  width: 28, height: 28, borderRadius: 8, background: 'var(--accent-grad)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.78rem', fontWeight: 800, color: 'white', marginBottom: 10,
-                }}>{item.step}</div>
-                <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.88rem', marginBottom: 6 }}>{item.title}</div>
-                <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>{item.desc}</div>
-              </div>
-            ))}
+          <div style={{ overflowX: 'auto' }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>Accuracy</th>
+                  <th>Latency</th>
+                  <th>Best For</th>
+                </tr>
+              </thead>
+              <tbody>
+                {INFERENCE_MODES.map(m => (
+                  <tr key={m.id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 7, background: `${m.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <m.icon size={14} color={m.color} />
+                        </div>
+                        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{m.name}</span>
+                      </div>
+                    </td>
+                    <td style={{ fontWeight: 700, color: m.color }}>{m.accuracy}</td>
+                    <td style={{ color: 'var(--text-secondary)' }}>{m.latency}</td>
+                    <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {m.id === 'heuristic_mvp' && 'High-volume, low-latency triage'}
+                      {m.id === 'roberta_cpu' && 'Balanced accuracy & speed'}
+                      {m.id === 'llama_lora' && 'Deep code-mixed understanding'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 

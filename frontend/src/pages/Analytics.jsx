@@ -105,7 +105,7 @@ export default function Analytics() {
 
   return (
     <>
-      <TopBar title="Analytics" subtitle="Sociolinguistic and sentiment insights" />
+      <TopBar title="Analytics" subtitle="Sentiment &amp; Language Intelligence" />
 
       <div className="page-body">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
@@ -167,15 +167,12 @@ export default function Analytics() {
                       +{diff}%
                     </div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                      More English in positive comments
+                      English ratio: positive vs. sarcastic comments
                     </div>
                   </div>
                   <div style={{ background: 'rgba(34,197,94,0.12)', borderRadius: 12, padding: 10 }}>
                     <TrendingUp size={20} color="#22c55e" />
                   </div>
-                </div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.6, padding: '8px 0 0', borderTop: '1px solid var(--border)' }}>
-                  Research baseline: 34.3% more English in positive utterances
                 </div>
               </div>
             );
@@ -225,73 +222,13 @@ export default function Analytics() {
             </div>
           </div>
         </div>
-
-        {/* ── Emotional Intensity & Priority Tickets ────────────────────── */}
-        {activeIntensity && (
-          <div className="panel" style={{ marginBottom: 20 }}>
-            <div className="panel-header" style={{ marginBottom: 16 }}>
-              <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Flame size={16} color="#ef4444" /> Emotional Intensity & Priority Tickets
-              </span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                Scores based on regional language usage, confidence, and sarcasm signals
-              </span>
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 20 }}>
-              {Object.entries(activeIntensity.buckets).map(([level, count], i) => {
-                const colors = { Low: '#22c55e', Medium: '#f59e0b', High: '#f97316', Critical: '#ef4444' };
-                const color = colors[level];
-                return (
-                  <div key={level} style={{ background: 'var(--bg-hover)', borderRadius: 10, padding: '14px', border: `1px solid ${color}33`, borderLeft: `3px solid ${color}` }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{level} Intensity</div>
-                    <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>{count}</div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 12px 0', color: 'var(--text-secondary)' }}>Top Priority Tickets</h3>
-            {activeIntensity.priority_tickets?.length === 0 ? (
-              <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', background: 'var(--bg-hover)', borderRadius: 8 }}>
-                No high-priority tickets found currently.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {activeIntensity.priority_tickets?.map(ticket => (
-                  <div key={ticket.id} style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'var(--bg-hover)', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--border)' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(239,68,68,0.1)', color: '#ef4444', width: 44, height: 44, borderRadius: 8, flexShrink: 0 }}>
-                      <AlertTriangle size={18} />
-                      <span style={{ fontSize: '0.6rem', fontWeight: 700, marginTop: 2 }}>{ticket.intensity.toFixed(1)}</span>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 4 }}>
-                        {ticket.text}
-                      </div>
-                      <div style={{ display: 'flex', gap: 12, fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                        <span style={{ color: ticket.sentiment === 'sarcastic' ? '#f59e0b' : '#ef4444', fontWeight: 600, textTransform: 'uppercase' }}>
-                          {ticket.sentiment}
-                        </span>
-                        <span>{ticket.english_ratio * 100}% English</span>
-                        <span>{new Date(ticket.created_at).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
         {/* ── Sentiment Trend Over Time ───────────────────────────────── */}
+
         <div className="panel" style={{ marginBottom: 20 }}>
           <div className="panel-header">
             <span className="panel-title"><TrendingUp size={16} /> Sentiment Trend Over Time</span>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly avg English ratio per sentiment</span>
           </div>
-          <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0 0 16px' }}>
-            Tracks how the language mix of each sentiment class shifts hour-by-hour. Spikes in regional language usage often correlate with emotional intensity.
-          </p>
           <div style={{ minHeight: 260 }}>
             {loading ? <Skeleton height={260} /> : activeSentLangCorr.length === 0 ? (
               <EmptyState icon={TrendingUp} title="No trend data yet" desc="Process more comments across multiple hours to reveal trends." />
@@ -327,10 +264,6 @@ export default function Analytics() {
             <span className="panel-title"><Activity size={16} /> Sentiment ↔ Language Correlation</span>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Avg English ratio per sentiment class</span>
           </div>
-          <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0 0 16px' }}>
-            Positive utterances exhibit significantly greater English proportions (~34.3%), while negative
-            and sarcastic comments rely more on regional Romanized language to carry heavier emotional weight.
-          </p>
           <div style={{ minHeight: 220 }}>
             {loading ? <Skeleton height={220} /> : activeSentLangCorr.length === 0 ? (
               <EmptyState icon={Activity} title="No correlation data yet" desc="Process code-mixed comments to reveal language-sentiment patterns." />
@@ -372,9 +305,6 @@ export default function Analytics() {
             <span className="panel-title"><Globe size={16} /> Language-Switching Over Time</span>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly buckets</span>
           </div>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 16, margin: '0 0 16px' }}>
-            Studies show bilingual users use more English for positive sentiments (34%+) and switch to regional language for heavier emotional expression.
-          </p>
           <div style={{ minHeight: 260 }}>
             {loading ? <Skeleton height={260} /> : activeLangSwitch.length === 0 ? (
               <EmptyState icon={Globe} title="No language data yet" desc="Process some code-mixed comments to see switching patterns." />
@@ -410,9 +340,6 @@ export default function Analytics() {
             <div className="panel-header">
               <span className="panel-title"><BarChart2 size={16} /> Sentiment by English Ratio Band</span>
             </div>
-            <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: 16 }}>
-              Shows how sentiment shifts as English proportion increases in code-mixed comments.
-            </p>
             {loading ? <Skeleton height={240} /> : bandData.length === 0 ? (
               <EmptyState icon={BarChart2} title="No data" desc="Process comments to see band analysis." />
             ) : (
@@ -437,9 +364,6 @@ export default function Analytics() {
             <div className="panel-header">
               <span className="panel-title"><Layers size={16} /> Inference Source Distribution</span>
             </div>
-            <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: 16 }}>
-              Which AI model processed each comment: heuristic / RoBERTa CPU / Llama LoRA.
-            </p>
             {loading ? <Skeleton height={240} /> : sourcePieData.length === 0 ? (
               <EmptyState icon={Layers} title="No source data" />
             ) : (
@@ -478,9 +402,6 @@ export default function Analytics() {
               Export CSV
             </button>
           </div>
-          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 16 }}>
-            Track how your brand's mention volume and sentiment ratios stack up against local or regional competitors discussed in the comments.
-          </p>
           {loading ? <Skeleton height={260} /> : activeBrands.length === 0 ? (
             <EmptyState icon={Hash} title="No brands detected yet" desc="Competitor brand names in comments will appear here." />
           ) : (

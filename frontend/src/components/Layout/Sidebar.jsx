@@ -77,7 +77,7 @@ export default function Sidebar({ wsStatus }) {
           <div className={`status-dot ${wsStatus || 'connecting'}`} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-              {wsStatus === 'live' ? 'Live Stream' : wsStatus === 'connecting' ? 'Connecting…' : 'Reconnecting…'}
+              {wsStatus === 'live' ? 'Active Data Feed' : wsStatus === 'connecting' ? 'Connecting…' : 'Reconnecting…'}
             </div>
           </div>
           <Globe size={13} color="var(--text-muted)" />

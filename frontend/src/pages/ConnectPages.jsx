@@ -84,67 +84,91 @@ export default function ConnectPages() {
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 20 }}>
           {/* Facebook */}
           <div style={{
-            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(24,119,242,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Facebook size={22} color="#1877f2" />
+            background: '#fff', border: '1px solid var(--border-mid)', borderRadius: 'var(--r-xl)', 
+            padding: '24px', display: 'flex', flexDirection: 'column', gap: 16,
+            boxShadow: 'var(--shadow-sm)', transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.transform = 'none'; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg,#1877f2,#0b5fcc)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(24,119,242,0.3)' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Facebook Pages</h2>
-                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Real-time webhooks</p>
+                <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>Facebook Pages</h2>
+                <p style={{ margin: '3px 0 0', color: 'var(--text-muted)', fontSize: '0.72rem' }}>Real-time comment webhooks · Live</p>
               </div>
+              <span style={{ marginLeft: 'auto', fontSize: '0.6rem', fontWeight: 700, background: 'var(--positive-bg)', color: 'var(--positive)', border: '1px solid var(--positive-border)', padding: '2px 8px', borderRadius: 20 }}>ACTIVE</span>
             </div>
-            <button className="btn btn-primary" onClick={handleConnect}><Link2 size={15} /> Connect</button>
+            <button className="btn btn-primary" onClick={handleConnect}><Link2 size={15} /> Connect with Meta</button>
           </div>
           
           {/* Instagram */}
           <div style={{
-            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(225,48,108,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#e1306c' }}>IG</div>
+            background: '#fff', border: '1px solid var(--border-mid)', borderRadius: 'var(--r-xl)', 
+            padding: '24px', display: 'flex', flexDirection: 'column', gap: 16,
+            boxShadow: 'var(--shadow-sm)', transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.transform = 'none'; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(225,48,108,0.3)' }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Instagram</h2>
-                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Comments & DMs</p>
+                <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>Instagram</h2>
+                <p style={{ margin: '3px 0 0', color: 'var(--text-muted)', fontSize: '0.72rem' }}>Comments & Mentions · v2.1</p>
               </div>
+              <span style={{ marginLeft: 'auto', fontSize: '0.6rem', fontWeight: 700, background: 'rgba(249,115,22,0.08)', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)', padding: '2px 8px', borderRadius: 20 }}>COMING SOON</span>
             </div>
             <button className="btn btn-outline" onClick={() => showToast("Instagram connection coming soon in v2.1")}><Link2 size={15} /> Connect</button>
           </div>
 
           {/* YouTube */}
           <div style={{
-            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,0,0,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#ff0000' }}>YT</div>
+            background: '#fff', border: '1px solid var(--border-mid)', borderRadius: 'var(--r-xl)', 
+            padding: '24px', display: 'flex', flexDirection: 'column', gap: 16,
+            boxShadow: 'var(--shadow-sm)', transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.transform = 'none'; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg,#ff0000,#cc0000)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(255,0,0,0.28)' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>YouTube</h2>
-                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Video Comments</p>
+                <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>YouTube</h2>
+                <p style={{ margin: '3px 0 0', color: 'var(--text-muted)', fontSize: '0.72rem' }}>Video Comments · v2.1</p>
               </div>
+              <span style={{ marginLeft: 'auto', fontSize: '0.6rem', fontWeight: 700, background: 'rgba(249,115,22,0.08)', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)', padding: '2px 8px', borderRadius: 20 }}>COMING SOON</span>
             </div>
             <button className="btn btn-outline" onClick={() => showToast("YouTube connection coming soon in v2.1")}><Link2 size={15} /> Connect</button>
           </div>
 
           {/* Twitter / X */}
           <div style={{
-            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#000000' }}>𝕏</div>
+            background: '#fff', border: '1px solid var(--border-mid)', borderRadius: 'var(--r-xl)', 
+            padding: '24px', display: 'flex', flexDirection: 'column', gap: 16,
+            boxShadow: 'var(--shadow-sm)', transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; e.currentTarget.style.transform = 'none'; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.25)' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>X (Twitter)</h2>
-                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Mentions & Replies</p>
+                <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>X (Twitter)</h2>
+                <p style={{ margin: '3px 0 0', color: 'var(--text-muted)', fontSize: '0.72rem' }}>Mentions & Replies · v2.1</p>
               </div>
+              <span style={{ marginLeft: 'auto', fontSize: '0.6rem', fontWeight: 700, background: 'rgba(249,115,22,0.08)', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)', padding: '2px 8px', borderRadius: 20 }}>COMING SOON</span>
             </div>
             <button className="btn btn-outline" onClick={() => showToast("X/Twitter connection coming soon in v2.1")}><Link2 size={15} /> Connect</button>
           </div>
