@@ -524,7 +524,7 @@ def classify_sarcasm_and_sentiment(text: str) -> tuple[str, float, str, list[str
     """
     mode = os.getenv("INFERENCE_MODE", "heuristic").lower()
 
-    if mode == "llama":
+    if mode in ("llama", "llama_lora"):
         url = os.getenv("INFERENCE_URL", "")
         if url:
             sentiment, conf = _llama_sentiment(text, url)
