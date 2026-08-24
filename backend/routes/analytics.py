@@ -230,3 +230,171 @@ async def sentiment_lang_correlation(db: Session = Depends(get_db)):
         }
         for r in rows
     ]
+
+
+# ─── Emotional Intensity ───────────────────────────────────────────────────
+@router.get("/emotional-intensity")
+async def emotional_intensity(db: Session = Depends(get_db)):
+    """
+    Computes an Emotional Intensity Score per comment:
+      intensity = (1 - english_ratio) * confidence * (1 + sarcasm_score)
+    Higher score = more regional language + high confidence + sarcasm = deeper emotional signal.
+    Returns bucketed distribution + top 5 priority tickets.
+    """
+    from models import ProcessedComment as PC
+    comments = db.query(PC).filter(
+        PC.english_ratio.isnot(None),
+        PC.confidence.isnot(None),
+    ).order_by(PC.created_at.desc()).limit(500).all()
+
+    buckets = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
+    scored  = []
+
+    for c in comments:
+        en     = float(c.english_ratio or 0)
+        conf   = float(c.confidence or 0)
+        sarc   = float(c.sarcasm_score or 0)
+        score  = (1 - en) * conf * (1 + sarc)
+        scored.append((score, c))
+        if score < 0.25:
+            buckets["Low"] += 1
+        elif score < 0.50:
+            buckets["Medium"] += 1
+        elif score < 0.75:
+            buckets["High"] += 1
+        else:
+            buckets["Critical"] += 1
+
+    # Top 5 priority tickets: highest intensity AND negative/sarcastic
+    priority = sorted(
+        [(s, c) for s, c in scored if c.sentiment in ("negative", "sarcastic")],
+        key=lambda x: x[0],
+        reverse=True,
+    )[:5]
+
+    return {
+        "buckets": buckets,
+        "priority_tickets": [
+            {
+                "id":            c.id,
+                "text":          c.original_text[:200],
+                "sentiment":     c.sentiment,
+                "confidence":    round(float(c.confidence or 0), 3),
+                "english_ratio": round(float(c.english_ratio or 0), 3),
+                "intensity":     round(score, 3),
+                "created_at":    c.created_at.isoformat() if c.created_at else None,
+            }
+            for score, c in priority
+        ],
+    }
+
+
+# ─── Business Briefing ─────────────────────────────────────────────────────
+from datetime import timedelta
+
+insight_router = APIRouter(prefix="/api/insights", tags=["insights"])
+
+
+@insight_router.get("/briefing")
+async def business_briefing(db: Session = Depends(get_db)):
+    """
+    Generates a structured weekly business briefing from the last 7 days of comments.
+    Works fully offline (no LLM required). If GPU is available it optionally adds
+    a natural-language executive summary sentence.
+    """
+    import datetime as _dt
+    from sqlalchemy import case
+
+    since = _dt.datetime.utcnow() - timedelta(days=7)
+    prev  = _dt.datetime.utcnow() - timedelta(days=14)
+
+    # This-week vs last-week totals for delta
+    this_week = db.query(ProcessedComment).filter(ProcessedComment.created_at >= since).all()
+    last_week = db.query(ProcessedComment).filter(
+        ProcessedComment.created_at >= prev,
+        ProcessedComment.created_at < since,
+    ).all()
+
+    if not this_week:
+        return {
+            "generated_at":     _dt.datetime.utcnow().isoformat(),
+            "period_days":      7,
+            "total_comments":   0,
+            "sentiment_delta":  None,
+            "top_complaint":    None,
+            "high_risk_pct":    0,
+            "avg_en_ratio":     None,
+            "briefing_bullets": ["No data yet. Connect a Facebook/Instagram page and process some comments."],
+            "sentiment_breakdown": {},
+        }
+
+    total_this = len(this_week)
+    total_last = len(last_week)
+
+    def sent_pct(comments, sentiment):
+        if not comments:
+            return 0.0
+        return round(sum(1 for c in comments if c.sentiment == sentiment) / len(comments) * 100, 1)
+
+    pos_this = sent_pct(this_week, "positive")
+    pos_last = sent_pct(last_week, "positive")
+    neg_pct  = sent_pct(this_week, "negative")
+    sarc_pct = sent_pct(this_week, "sarcastic")
+
+    sentiment_delta = round(pos_this - pos_last, 1) if last_week else None
+
+    # High-risk = negative or sarcastic with confidence >= 0.80
+    high_risk = [c for c in this_week if c.sentiment in ("negative", "sarcastic") and (c.confidence or 0) >= 0.80]
+    high_risk_pct = round(len(high_risk) / total_this * 100, 1) if total_this else 0
+
+    # Top complaint: most common regional token in negative/sarcastic comments
+    neg_comments = [c for c in this_week if c.sentiment in ("negative", "sarcastic")]
+    token_freq: dict = {}
+    for c in neg_comments:
+        for t in (c.regional_tokens_found or []):
+            token_freq[t] = token_freq.get(t, 0) + 1
+    top_token = max(token_freq, key=token_freq.get) if token_freq else None
+
+    avg_en  = round(sum(float(c.english_ratio or 0) for c in this_week) / total_this, 3) if total_this else None
+    top_source = {}
+    for c in this_week:
+        src = c.inference_source or "heuristic_mvp"
+        top_source[src] = top_source.get(src, 0) + 1
+
+    # Build bullet points
+    bullets = []
+
+    if sentiment_delta is not None:
+        arrow = "▲" if sentiment_delta >= 0 else "▼"
+        bullets.append(f"{arrow} Positive sentiment shifted {abs(sentiment_delta):.1f}% vs last week ({pos_this:.1f}% → {pos_last:.1f}% last week)")
+    if neg_pct > 0:
+        bullets.append(f"🔴 {neg_pct:.1f}% of this week's comments are negative")
+    if sarc_pct > 0:
+        bullets.append(f"⚠️ {sarc_pct:.1f}% flagged as sarcastic — review high-risk tickets")
+    if top_token:
+        token_count = token_freq[top_token]
+        bullets.append(f"🗣️ Top regional signal in complaints: '{top_token}' (appears {token_count}x) — high emotional intensity")
+    if high_risk_pct > 0:
+        bullets.append(f"🚨 {high_risk_pct:.1f}% of comments are high-risk (≥80% confidence negative/sarcastic)")
+    if avg_en is not None:
+        bullets.append(f"📊 Average English ratio: {round(avg_en*100)}% — {'mostly English' if avg_en > 0.7 else 'heavy code-mixing detected'}")
+    dominant_model = max(top_source, key=top_source.get) if top_source else "unknown"
+    bullets.append(f"🤖 {total_this} comments processed this week via {dominant_model}")
+
+    return {
+        "generated_at":   _dt.datetime.utcnow().isoformat(),
+        "period_days":    7,
+        "total_comments": total_this,
+        "sentiment_delta": sentiment_delta,
+        "top_complaint":   f"Regional signal '{top_token}' in {neg_pct:.0f}% negative comments" if top_token else None,
+        "high_risk_pct":   high_risk_pct,
+        "avg_en_ratio":    avg_en,
+        "briefing_bullets": bullets,
+        "sentiment_breakdown": {
+            "positive":  sent_pct(this_week, "positive"),
+            "negative":  neg_pct,
+            "sarcastic": sarc_pct,
+            "neutral":   sent_pct(this_week, "neutral"),
+        },
+    }
+

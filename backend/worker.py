@@ -2,6 +2,7 @@ import json
 import logging
 import time
 import datetime
+import urllib.request
 import redis
 
 from config import get_settings
@@ -67,6 +68,7 @@ def publish_processed_event(record: ProcessedComment) -> None:
             "sarcasm_score":         record.sarcasm_score,
             "sarcasm_signals":       record.sarcasm_signals,
             "regional_tokens_found": record.regional_tokens_found,
+            "aspect_sentiments":     record.aspect_sentiments or {},
             "created_at":            record.created_at.isoformat() if record.created_at else None,
         },
     }
@@ -76,6 +78,38 @@ def publish_processed_event(record: ProcessedComment) -> None:
         redis_client.publish(settings.redis_pubsub_channel, payload)
     except redis.RedisError as exc:
         logger.error(f"Pub/sub publish failed: {exc}")
+
+
+def send_telegram_alert(record) -> None:
+    """Fire a Telegram message when a high-confidence negative/sarcastic comment arrives."""
+    token   = settings.telegram_bot_token
+    chat_id = settings.telegram_chat_id
+    if not token or not chat_id:
+        return  # not configured — skip silently
+    try:
+        import urllib.request as _req
+        sentiment_emoji = {"negative": "🔴", "sarcastic": "⚠️"}.get(record.sentiment, "❗")
+        conf_pct = int((record.confidence or 0) * 100)
+        msg = (
+            f"{sentiment_emoji} *SwaraSense Alert*\n\n"
+            f"*Sentiment:* {record.sentiment.upper()} ({conf_pct}% confidence)\n"
+            f"*Comment:* {record.original_text[:300]}\n"
+            f"*EN Ratio:* {round((record.english_ratio or 0)*100)}% English\n"
+            f"*Model:* {record.inference_source or 'unknown'}\n"
+            f"*Time:* {record.created_at.strftime('%d %b %Y, %I:%M %p') if record.created_at else 'N/A'}"
+        )
+        import urllib.parse
+        data = urllib.parse.urlencode({
+            "chat_id":    chat_id,
+            "text":       msg,
+            "parse_mode": "Markdown",
+        }).encode()
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        req = _req.Request(url, data=data, method="POST")
+        with _req.urlopen(req, timeout=5) as resp:
+            logger.info(f"Telegram alert sent (HTTP {resp.status}) for comment {record.platform_id}")
+    except Exception as exc:
+        logger.warning(f"Telegram alert failed (non-critical): {exc}")
 
 
 def process_webhook_payload(payload_str: str) -> None:
@@ -106,6 +140,7 @@ def process_webhook_payload(payload_str: str) -> None:
                 sarcasm_score=round(analysis.sarcasm_score, 4),
                 sarcasm_signals=analysis.sarcasm_signals,
                 regional_tokens_found=analysis.regional_tokens_found,
+                aspect_sentiments=analysis.aspect_sentiments or {},
                 raw_payload=payload,
             )
             if item.get("created_at"):
@@ -114,6 +149,13 @@ def process_webhook_payload(payload_str: str) -> None:
             db.add(record)
             db.commit()
             db.refresh(record)
+
+            # ── Telegram real-time alert ──────────────────────────────
+            if (
+                record.sentiment in ("negative", "sarcastic")
+                and (record.confidence or 0) >= settings.alert_confidence_threshold
+            ):
+                send_telegram_alert(record)
             publish_processed_event(record)
             logger.info(
                 f"Result -> {analysis.sentiment} "

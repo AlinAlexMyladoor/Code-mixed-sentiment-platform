@@ -54,6 +54,8 @@ export const api = {
   inferenceSources: () => request('GET', '/api/analytics/inference-sources'),
   englishRatioBands: () => request('GET', '/api/analytics/english-ratio-bands'),
   sentimentLangCorrelation: () => request('GET', '/api/analytics/sentiment-lang-correlation'),
+  emotionalIntensity: () => request('GET', '/api/analytics/emotional-intensity'),
+  insightsBriefing: () => request('GET', '/api/insights/briefing'),
   exportComments: (params) => {
     const query = new URLSearchParams(
       Object.fromEntries(Object.entries(params || {}).filter(([, v]) => v != null))

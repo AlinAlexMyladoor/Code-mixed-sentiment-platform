@@ -3,7 +3,7 @@ import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
   PieChart, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend, LineChart, Line,
 } from 'recharts';
-import { BarChart2, Globe, Hash, Layers, Activity, TrendingUp, Brain } from 'lucide-react';
+import { BarChart2, Globe, Hash, Layers, Activity, TrendingUp, Brain, Flame, AlertTriangle } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, Skeleton } from '../components/UI';
 import { api } from '../api/client';
@@ -44,6 +44,7 @@ export default function Analytics() {
   const [ratioBands, setRatioBands]     = useState({});
   const [sentLangCorr, setSentLangCorr] = useState([]);
   const [sentTrend, setSentTrend]       = useState([]);
+  const [intensity, setIntensity]       = useState(null);
   const [loading, setLoading]           = useState(true);
 
   // In demo mode: read directly from context (always up-to-date)
@@ -52,6 +53,7 @@ export default function Analytics() {
   const activeSources     = isDemoMode ? demoMetrics.sources     : sources;
   const activeRatioBands  = isDemoMode ? demoMetrics.ratioBands  : ratioBands;
   const activeSentLangCorr = isDemoMode ? demoMetrics.sentLangCorr : sentLangCorr;
+  const activeIntensity   = intensity;
 
   useEffect(() => {
     if (isDemoMode) {
@@ -61,18 +63,20 @@ export default function Analytics() {
     const load = async () => {
       setLoading(true);
       try {
-        const [ls, bm, src, rb, slc] = await Promise.all([
+        const [ls, bm, src, rb, slc, ei] = await Promise.all([
           api.languageSwitching(48),
           api.brandMentions(10),
           api.inferenceSources(),
           api.englishRatioBands(),
           api.sentimentLangCorrelation(),
+          api.emotionalIntensity().catch(() => null),
         ]);
         setLangSwitch(ls);
         setBrands(bm);
         setSources(src);
         setRatioBands(rb);
         setSentLangCorr(slc);
+        setIntensity(ei);
         // Build sentiment trend from language switching hourly data
         setSentTrend(ls);
       } catch (err) {
@@ -213,6 +217,63 @@ export default function Analytics() {
             </div>
           </div>
         </div>
+
+        {/* ── Emotional Intensity & Priority Tickets ────────────────────── */}
+        {activeIntensity && (
+          <div className="panel" style={{ marginBottom: 20 }}>
+            <div className="panel-header" style={{ marginBottom: 16 }}>
+              <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Flame size={16} color="#ef4444" /> Emotional Intensity & Priority Tickets
+              </span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                Scores based on regional language usage, confidence, and sarcasm signals
+              </span>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 20 }}>
+              {Object.entries(activeIntensity.buckets).map(([level, count], i) => {
+                const colors = { Low: '#22c55e', Medium: '#f59e0b', High: '#f97316', Critical: '#ef4444' };
+                const color = colors[level];
+                return (
+                  <div key={level} style={{ background: 'var(--bg-hover)', borderRadius: 10, padding: '14px', border: `1px solid ${color}33`, borderLeft: `3px solid ${color}` }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{level} Intensity</div>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 4 }}>{count}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, margin: '0 0 12px 0', color: 'var(--text-secondary)' }}>Top Priority Tickets</h3>
+            {activeIntensity.priority_tickets?.length === 0 ? (
+              <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', background: 'var(--bg-hover)', borderRadius: 8 }}>
+                No high-priority tickets found currently.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {activeIntensity.priority_tickets?.map(ticket => (
+                  <div key={ticket.id} style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'var(--bg-hover)', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(239,68,68,0.1)', color: '#ef4444', width: 44, height: 44, borderRadius: 8, flexShrink: 0 }}>
+                      <AlertTriangle size={18} />
+                      <span style={{ fontSize: '0.6rem', fontWeight: 700, marginTop: 2 }}>{ticket.intensity.toFixed(1)}</span>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 4 }}>
+                        {ticket.text}
+                      </div>
+                      <div style={{ display: 'flex', gap: 12, fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                        <span style={{ color: ticket.sentiment === 'sarcastic' ? '#f59e0b' : '#ef4444', fontWeight: 600, textTransform: 'uppercase' }}>
+                          {ticket.sentiment}
+                        </span>
+                        <span>{ticket.english_ratio * 100}% English</span>
+                        <span>{new Date(ticket.created_at).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Sentiment Trend Over Time ───────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>

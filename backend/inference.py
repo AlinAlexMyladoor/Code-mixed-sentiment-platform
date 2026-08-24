@@ -115,9 +115,10 @@ class AnalysisResult:
     extracted_entities: dict
     confidence: float
     source: str
-    sarcasm_score: float = 0.0              # NEW: continuous sarcasm confidence 0.0–1.0
+    sarcasm_score: float = 0.0
     sarcasm_signals: list[str] = field(default_factory=list)
     regional_tokens_found: list[str] = field(default_factory=list)
+    aspect_sentiments: dict = field(default_factory=dict)  # ABSA output
 
 
 # ─────────────────────────────────────────────
@@ -545,12 +546,87 @@ def classify_sarcasm_and_sentiment(text: str) -> tuple[str, float, str, list[str
     return sentiment, conf, "heuristic_mvp", signals, sarc_sc
 
 
+# ─────────────────────────────────────────────
+# Aspect-Based Sentiment Analysis (ABSA)
+# ─────────────────────────────────────────────
+
+import json as _json
+
+ABSA_ASPECTS = ["service", "product", "delivery", "quality", "price", "packaging", "support", "app"]
+
+def extract_aspects(text: str) -> dict[str, str]:
+    """
+    Aspect-Based Sentiment Analysis.
+    If GPU inference is available, calls LLM for structured aspect breakdown.
+    Falls back to fast heuristic that checks each aspect keyword against sentiment cues.
+    Returns dict like: {"service": "negative", "product": "positive"}
+    """
+    url = os.getenv("INFERENCE_URL") or os.getenv("INFERENCE_SERVER_URL", "")
+    mode = os.getenv("INFERENCE_MODE", "heuristic").lower()
+
+    if url and mode in ("llama", "llama_lora"):
+        try:
+            prompt = (
+                f'Analyze this code-mixed comment and extract aspects with their sentiments.\n'
+                f'Comment: "{text}"\n'
+                f'Return ONLY a valid JSON object with aspect names as keys and sentiment '
+                f'(positive/negative/neutral) as values. Example: {{"service": "negative", "product": "positive"}}\n'
+                f'Only include aspects that are explicitly mentioned. Valid aspects: service, product, '
+                f'delivery, quality, price, packaging, support, app.'
+            )
+            with httpx.Client(timeout=20.0) as client:
+                resp = client.post(
+                    url,
+                    json={"text": prompt, "task": "absa"},
+                    headers={"ngrok-skip-browser-warning": "true"},
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                raw = data.get("sentiment") or data.get("text") or ""
+                # Extract JSON from response
+                match = re.search(r'\{[^{}]+\}', raw)
+                if match:
+                    parsed = _json.loads(match.group())
+                    valid = {"positive", "negative", "neutral", "sarcastic"}
+                    return {k.lower(): v.lower() for k, v in parsed.items() if v.lower() in valid}
+        except Exception:
+            pass  # fall through to heuristic
+
+    # ── Heuristic ABSA fallback ────────────────────────────
+    # Split on contrast markers and assess each segment per aspect
+    lower = text.lower()
+    result: dict[str, str] = {}
+    NEG = set(NEGATIVE_CUES)
+    POS = set(POSITIVE_CUES)
+
+    # Split on contrast conjunctions
+    segments = re.split(r'\b(but|however|though|although|except|yet|still|whereas)\b', lower)
+
+    for aspect in ABSA_ASPECTS:
+        if aspect not in lower:
+            continue
+        # Find segment containing the aspect
+        for seg in segments:
+            if aspect in seg:
+                neg_hits = sum(1 for c in NEG if c in seg)
+                pos_hits = sum(1 for c in POS if c in seg)
+                if neg_hits > pos_hits:
+                    result[aspect] = "negative"
+                elif pos_hits > neg_hits:
+                    result[aspect] = "positive"
+                else:
+                    result[aspect] = "neutral"
+                break
+    return result
+
+
 def analyze_comment(text: str) -> AnalysisResult:
     cleaned   = normalize_text(text)
     entities  = extract_entities_with_boundary_logic(cleaned)
     sentiment, confidence, source, signals, sarc_score = classify_sarcasm_and_sentiment(cleaned)
     english_ratio, switch_count = detect_language_switching(cleaned)
     regional  = find_regional_tokens(cleaned)
+    aspects   = extract_aspects(cleaned)
 
     return AnalysisResult(
         sentiment=sentiment,
@@ -562,4 +638,5 @@ def analyze_comment(text: str) -> AnalysisResult:
         sarcasm_score=round(sarc_score, 3),
         sarcasm_signals=signals,
         regional_tokens_found=regional,
+        aspect_sentiments=aspects,
     )

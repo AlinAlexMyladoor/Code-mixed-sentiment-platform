@@ -47,6 +47,12 @@ services:
         value: llama
       - key: INFERENCE_URL
         sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false          # get from @BotFather on Telegram
+      - key: TELEGRAM_CHAT_ID
+        sync: false          # your Telegram chat or group ID
+      - key: ALERT_CONFIDENCE_THRESHOLD
+        value: "0.80"
       - key: MONGODB_URL
         value: ""            # intentionally empty — MongoDB not used on free tier
       - key: PYTHON_VERSION
@@ -69,6 +75,12 @@ services:
         value: llama
       - key: INFERENCE_URL
         sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: ALERT_CONFIDENCE_THRESHOLD
+        value: "0.80"
       - key: MONGODB_URL
         value: ""
 

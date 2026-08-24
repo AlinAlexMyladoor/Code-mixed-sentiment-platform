@@ -232,6 +232,21 @@ export default function CommentExplorer() {
                             ))}
                           </div>
                         )}
+                        {c.aspect_sentiments && Object.keys(c.aspect_sentiments).length > 0 && (
+                          <div style={{ marginTop: 6, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {Object.entries(c.aspect_sentiments).map(([aspect, sent]) => {
+                              const color = sent === 'positive' ? '#22c55e' : sent === 'negative' ? '#ef4444' : '#64748b';
+                              const dot = sent === 'positive' ? '🟢' : sent === 'negative' ? '🔴' : '⚪';
+                              return (
+                                <span key={aspect} style={{
+                                  fontSize: '0.62rem', background: `${color}15`,
+                                  color, border: `1px solid ${color}33`,
+                                  padding: '2px 6px', borderRadius: 12, fontWeight: 600,
+                                }}>{dot} {aspect}</span>
+                              );
+                            })}
+                          </div>
+                        )}
                       </td>
                       <td>{c.english_ratio != null ? `${(c.english_ratio * 100).toFixed(0)}%` : '—'}</td>
                       <td>{c.language_switch_count ?? '—'}</td>

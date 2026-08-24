@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Activity, Brain, CheckCircle, Cpu, Server, Zap } from 'lucide-react';
+import { Activity, Brain, CheckCircle, Cpu, Server, Zap, Sparkles, TrendingUp, AlertTriangle } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, Skeleton } from '../components/UI';
 import { api } from '../api/client';
@@ -40,6 +40,7 @@ export default function AIInsights() {
   const { isDemoMode, demoMetrics, demoComments } = useDemo();
   const [sources, setSources] = useState({});
   const [recentComments, setRecentComments] = useState([]);
+  const [briefing, setBriefing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeMode, setActiveMode] = useState(null);
 
@@ -54,12 +55,14 @@ export default function AIInsights() {
           setLoading(false);
           return;
         }
-        const [src, metrics] = await Promise.all([
+        const [src, metrics, brief] = await Promise.all([
           api.inferenceSources(),
           api.metrics(),
+          api.insightsBriefing().catch(() => null),
         ]);
         setSources(src);
         setRecentComments(metrics.data || []);
+        setBriefing(brief);
         const dominant = Object.entries(src).sort((a, b) => b[1] - a[1])[0];
         if (dominant) setActiveMode(dominant[0]);
       } catch (err) {
@@ -77,6 +80,65 @@ export default function AIInsights() {
     <>
       <TopBar title="AI Insights" subtitle="Inference engine usage and classified comments" />
       <div className="page-body">
+
+        {/* ── AI Business Briefing ────────────────────────────────────────── */}
+        {!loading && briefing && (
+          <div className="panel" style={{ marginBottom: 20, border: '1px solid #8b5cf633', background: 'var(--bg-glass)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)' }} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div style={{ background: 'rgba(139,92,246,0.15)', padding: 8, borderRadius: 10 }}>
+                <Sparkles size={20} color="#8b5cf6" />
+              </div>
+              <div>
+                <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>AI Weekly Briefing</h2>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                  Generated from {briefing.total_comments} comments over the last 7 days
+                </div>
+              </div>
+              
+              {briefing.sentiment_delta !== null && (
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, background: briefing.sentiment_delta > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', padding: '6px 12px', borderRadius: 20 }}>
+                  <TrendingUp size={14} color={briefing.sentiment_delta > 0 ? '#22c55e' : '#ef4444'} style={{ transform: briefing.sentiment_delta < 0 ? 'rotate(180deg)' : 'none' }} />
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: briefing.sentiment_delta > 0 ? '#22c55e' : '#ef4444' }}>
+                    {briefing.sentiment_delta > 0 ? '+' : ''}{briefing.sentiment_delta}% Sentiment
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 16 }}>
+              <div style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
+                  <AlertTriangle size={14} color="#f59e0b" /> Top Complaint Signal
+                </div>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {briefing.top_complaint || "No major complaints detected"}
+                </div>
+              </div>
+              <div style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: 8 }}>
+                  <Activity size={14} color="#ef4444" /> High Risk Comments
+                </div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#ef4444' }}>
+                  {briefing.high_risk_pct}%
+                </div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Require immediate attention</div>
+              </div>
+            </div>
+
+            <div style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 10 }}>
+                Key Insights
+              </div>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                {briefing.briefing_bullets.map((bullet, i) => (
+                  <li key={i} style={{ marginBottom: 6 }}>{bullet}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
 
         {/* Active inference mode banner */}
         {!loading && activeMode && (

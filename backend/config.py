@@ -62,3 +62,11 @@ class Settings:
 
     redis_queue_key: str = "meta_webhook_queue"
     redis_pubsub_channel: str = "comment_processed"
+
+    # ── Telegram Alerting ────────────────────────────────────────────────────
+    # Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in Render env vars.
+    # Get a bot token from @BotFather on Telegram.
+    telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    telegram_chat_id: str   = os.getenv("TELEGRAM_CHAT_ID", "")
+    # Fire alert when sentiment is negative/sarcastic AND confidence >= this threshold
+    alert_confidence_threshold: float = float(os.getenv("ALERT_CONFIDENCE_THRESHOLD", "0.80"))

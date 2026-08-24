@@ -88,5 +88,7 @@ class ProcessedComment(Base):
     sarcasm_score         = Column(Float, nullable=True)   # continuous 0.0–1.0 sarcasm confidence
     sarcasm_signals       = Column(JSON, nullable=True)
     regional_tokens_found = Column(JSON, nullable=True)
+    # ABSA: per-aspect sentiment breakdown e.g. {"service": "negative", "product": "positive"}
+    aspect_sentiments     = Column(JSON, nullable=True)
     raw_payload           = Column(JSON)
     created_at            = Column(DateTime, default=datetime.datetime.utcnow, index=True)

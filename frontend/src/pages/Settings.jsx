@@ -38,6 +38,27 @@ export default function Settings() {
           </p>
         </div>
 
+        {/* Telegram Alerting */}
+        <div className="panel" style={{ marginBottom: 18 }}>
+          <div className="panel-header">
+            <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Zap size={16} color="#0284c7" /> Telegram Alerting</span>
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 12px 0', lineHeight: 1.5 }}>
+            SwaraSense can instantly notify you of high-intensity complaints (≥ 80% confidence negative/sarcastic).
+          </p>
+          <div style={{ background: 'var(--bg-hover)', padding: '14px 18px', borderRadius: 10, border: '1px solid var(--border)', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+            <ol style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
+              <li>Message <strong>@BotFather</strong> on Telegram and send <code>/newbot</code>.</li>
+              <li>Copy the generated HTTP API Token and set it as <code>TELEGRAM_BOT_TOKEN</code> in your Render environment variables.</li>
+              <li>Add your new bot to a Telegram group (or message it directly).</li>
+              <li>Get the Chat ID (e.g., using @userinfobot) and set it as <code>TELEGRAM_CHAT_ID</code> in Render.</li>
+            </ol>
+            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)' }}>
+              <CheckCircle size={14} color="var(--positive)" /> Alerts trigger automatically via background worker
+            </div>
+          </div>
+        </div>
+
         {/* Platform Info */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">

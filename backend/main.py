@@ -23,7 +23,7 @@ from models import ProcessedComment
 from mongodb_store import store_raw_webhook
 from routes.meta_auth import router as meta_auth_router
 from routes.auth import router as auth_router
-from routes.analytics import router as analytics_router
+from routes.analytics import router as analytics_router, insight_router
 from routes.auth import decode_token
 from schemas import DashboardMetrics, MetricsSummary, ProcessedCommentOut
 from ws_manager import manager
@@ -183,6 +183,7 @@ async def security_headers(request: Request, call_next):
 app.include_router(auth_router)
 app.include_router(meta_auth_router)
 app.include_router(analytics_router)
+app.include_router(insight_router)
 app.include_router(billing_router)
 
 
