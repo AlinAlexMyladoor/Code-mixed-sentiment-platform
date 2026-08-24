@@ -8,7 +8,7 @@ import redis
 from config import get_settings
 from database import SessionLocal
 from inference import analyze_comment
-from models import ProcessedComment
+from models import ProcessedComment, AlertRule
 
 logger = logging.getLogger("sentiment_worker")
 logging.basicConfig(
@@ -110,6 +110,35 @@ def send_telegram_alert(record) -> None:
     except Exception as exc:
         logger.warning(f"Telegram alert failed (non-critical): {exc}")
 
+def evaluate_alert_rules(record, db) -> None:
+    """Evaluate custom alert rules and route appropriately."""
+    rules = db.query(AlertRule).filter(AlertRule.is_active == True).all()
+    triggered = False
+    
+    text_lower = record.original_text.lower()
+    
+    for rule in rules:
+        match = True
+        if rule.keyword and rule.keyword.lower() not in text_lower:
+            match = False
+        if rule.intent and rule.intent != record.intent_signal:
+            match = False
+        if rule.sentiment and rule.sentiment != record.sentiment:
+            match = False
+            
+        if match:
+            triggered = True
+            logger.info(f"Rule '{rule.name}' triggered! Routing to {rule.channel}...")
+            # For MVP, we route to Telegram if it's Telegram, otherwise we just log it as a simulation
+            if rule.channel == "Telegram":
+                send_telegram_alert(record)
+            else:
+                logger.info(f"SIMULATED: Sent alert to {rule.channel}")
+                
+    # Fallback to default Telegram alert if no rules exist but it's negative
+    if not rules and record.sentiment in ("negative", "sarcastic") and (record.confidence or 0) >= settings.alert_confidence_threshold:
+        send_telegram_alert(record)
+
 
 def process_webhook_payload(payload_str: str) -> None:
     payload  = json.loads(payload_str)
@@ -150,12 +179,9 @@ def process_webhook_payload(payload_str: str) -> None:
             db.commit()
             db.refresh(record)
 
-            # ── Telegram real-time alert ──────────────────────────────
-            if (
-                record.sentiment in ("negative", "sarcastic")
-                and (record.confidence or 0) >= settings.alert_confidence_threshold
-            ):
-                send_telegram_alert(record)
+            # ── Evaluate routing rules ──────────────────────────────
+            evaluate_alert_rules(record, db)
+            
             publish_processed_event(record)
             logger.info(
                 f"Result -> {analysis.sentiment} "

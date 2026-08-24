@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings, X, Ticket } from 'lucide-react';
+import { BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings, X, Ticket, Bell } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
 
 const NAV = [
@@ -9,6 +9,7 @@ const NAV = [
   { label: 'Tickets',       icon: Ticket,       to: '/tickets' },
   { label: 'AI Insights',   icon: Brain,        to: '/ai-insights' },
   { label: 'Connect Pages', icon: Link2,        to: '/connect' },
+  { label: 'Alert Rules',   icon: Bell,         to: '/alert-rules' },
   { label: 'Settings',      icon: Settings,     to: '/settings' },
 ];
 

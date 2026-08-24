@@ -38,6 +38,17 @@ export default function Tickets() {
     }
   };
 
+  const handleDraftReply = async (commentId) => {
+    try {
+      const res = await api.draftReply(commentId);
+      if (res.status === 'success') {
+        setTickets(tickets.map(t => t.id === commentId ? { ...t, draft_reply: res.draft_reply } : t));
+      }
+    } catch (err) {
+      alert("Failed to draft reply: " + err.message);
+    }
+  };
+
   const filteredTickets = filter === 'All' ? tickets : tickets.filter(t => t.ticket_status === filter);
 
   return (
@@ -117,6 +128,20 @@ export default function Tickets() {
                         <td><SentimentBadge sentiment={t.sentiment} /></td>
                         <td className="td-text" style={{ maxWidth: 320 }}>
                           <p title={t.original_text}>{t.original_text}</p>
+                          {t.draft_reply ? (
+                            <div style={{ marginTop: 8, padding: 8, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 6 }}>
+                              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#6366f1', marginBottom: 4, textTransform: 'uppercase' }}>AI Draft Reply</div>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t.draft_reply}</div>
+                            </div>
+                          ) : (
+                            <button
+                              className="btn btn-outline btn-sm"
+                              style={{ marginTop: 8, fontSize: '0.65rem', padding: '3px 8px' }}
+                              onClick={() => handleDraftReply(t.id)}
+                            >
+                              Draft AI Reply
+                            </button>
+                          )}
                         </td>
                         <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                           {new Date(t.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}

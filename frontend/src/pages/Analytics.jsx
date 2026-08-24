@@ -6,7 +6,7 @@ import {
 import { BarChart2, Globe, Hash, Layers, Activity, TrendingUp, Brain, Flame, AlertTriangle } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, Skeleton } from '../components/UI';
-import { api } from '../api/client';
+import { api, API_BASE } from '../api/client';
 import { useDemo } from '../context/DemoContext';
 
 const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b', '#ef4444', '#38bdf8'];
@@ -108,6 +108,14 @@ export default function Analytics() {
       <TopBar title="Analytics" subtitle="Sociolinguistic and sentiment insights" />
 
       <div className="page-body">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => window.open(`${API_BASE}/api/reports/latest`, '_blank')}
+          >
+            Download Weekly Report (PDF)
+          </button>
+        </div>
 
         {/* ── Sociolinguistic Insight Cards ─────────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}>

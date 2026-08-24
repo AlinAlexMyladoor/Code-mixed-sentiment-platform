@@ -47,8 +47,14 @@ export const api = {
   // ─── Comments & Tickets ────────────────────────────────────────────────
   comments: (params) => request('GET', '/api/comments', null, params),
   createTicket: (commentId) => request('POST', `/api/comments/${commentId}/ticket`),
+  draftReply: (commentId) => request('POST', `/api/comments/${commentId}/draft-reply`),
   getTickets: () => request('GET', '/api/tickets'),
   updateTicketStatus: (ticketId, status) => request('PATCH', `/api/tickets/${ticketId}`, { status }),
+
+  // ─── Alert Rules ───────────────────────────────────────────────────────
+  getAlertRules: () => request('GET', '/api/alert-rules'),
+  createAlertRule: (data) => request('POST', '/api/alert-rules', data),
+  deleteAlertRule: (ruleId) => request('DELETE', `/api/alert-rules/${ruleId}`),
 
   // ─── Analytics ─────────────────────────────────────────────────────────
   languageSwitching: (hours = 48) => request('GET', '/api/analytics/language-switching', null, { hours }),

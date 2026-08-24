@@ -66,7 +66,7 @@ export default function ConnectPages() {
 
   return (
     <>
-      <TopBar title="Connect Pages" subtitle="Manage Facebook & Instagram integrations" />
+      <TopBar title="Connect Integrations" subtitle="Manage Omni-channel webhook integrations" />
       <div className="page-body">
 
         {/* Toast */}
@@ -84,45 +84,70 @@ export default function ConnectPages() {
           </div>
         )}
 
-        {/* Hero — Connect */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(24,119,242,0.07) 0%, rgba(79,70,229,0.07) 100%)',
-          border: '1px solid rgba(79,70,229,0.15)',
-          borderRadius: 'var(--r-xl)',
-          padding: '28px 32px',
-          marginBottom: 20,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 16,
-        }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 12,
-                background: 'rgba(24,119,242,0.12)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 2px 8px rgba(24,119,242,0.15)',
-              }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginBottom: 20 }}>
+          {/* Facebook */}
+          <div style={{
+            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(24,119,242,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Facebook size={22} color="#1877f2" />
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
-                  Meta Graph API
-                </h2>
-                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                  Facebook & Instagram real-time webhooks
-                </p>
+                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Facebook Pages</h2>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Real-time webhooks</p>
               </div>
             </div>
-            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.82rem', maxWidth: 480, lineHeight: 1.65 }}>
-              Connect your Facebook Pages to start receiving real-time comment events and sentiment analysis.
-            </p>
+            <button className="btn btn-primary" onClick={handleConnect}><Link2 size={15} /> Connect</button>
           </div>
-          <button className="btn btn-primary" onClick={handleConnect} style={{ flexShrink: 0 }}>
-            <Link2 size={15} /> Connect with Facebook
-          </button>
+          
+          {/* Instagram */}
+          <div style={{
+            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(225,48,108,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#e1306c' }}>IG</div>
+              </div>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Instagram</h2>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Comments & DMs</p>
+              </div>
+            </div>
+            <button className="btn btn-outline" onClick={() => showToast("Instagram connection coming soon in v2.1")}><Link2 size={15} /> Connect</button>
+          </div>
+
+          {/* YouTube */}
+          <div style={{
+            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,0,0,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#ff0000' }}>YT</div>
+              </div>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>YouTube</h2>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Video Comments</p>
+              </div>
+            </div>
+            <button className="btn btn-outline" onClick={() => showToast("YouTube connection coming soon in v2.1")}><Link2 size={15} /> Connect</button>
+          </div>
+
+          {/* Twitter / X */}
+          <div style={{
+            background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: 'var(--r-xl)', padding: '24px', display: 'flex', flexDirection: 'column', gap: 16
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#000000' }}>𝕏</div>
+              </div>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>X (Twitter)</h2>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Mentions & Replies</p>
+              </div>
+            </div>
+            <button className="btn btn-outline" onClick={() => showToast("X/Twitter connection coming soon in v2.1")}><Link2 size={15} /> Connect</button>
+          </div>
         </div>
 
         {/* Connected Pages */}

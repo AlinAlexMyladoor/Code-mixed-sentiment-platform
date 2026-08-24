@@ -92,5 +92,17 @@ class ProcessedComment(Base):
     intent_signal         = Column(String, nullable=True)  # complaint | inquiry | buying_intent | praise | general
     ticket_id             = Column(String, nullable=True)
     ticket_status         = Column(String, nullable=True, default="Open") # Open | In Progress | Resolved
+    draft_reply           = Column(String, nullable=True)
     raw_payload           = Column(JSON)
     created_at            = Column(DateTime, default=datetime.datetime.utcnow, index=True)
+
+class AlertRule(Base):
+    __tablename__ = "alert_rules"
+    id            = Column(Integer, primary_key=True, index=True)
+    name          = Column(String, index=True)
+    keyword       = Column(String, nullable=True)     # e.g., "delivery", "refund"
+    intent        = Column(String, nullable=True)     # e.g., "complaint"
+    sentiment     = Column(String, nullable=True)     # e.g., "negative"
+    channel       = Column(String, default="Telegram") # Telegram, Slack, Email
+    is_active     = Column(Boolean, default=True)
+    created_at    = Column(DateTime, default=datetime.datetime.utcnow)

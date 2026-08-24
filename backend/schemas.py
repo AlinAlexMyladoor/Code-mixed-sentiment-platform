@@ -24,6 +24,7 @@ class ProcessedCommentOut(BaseModel):
     intent_signal:         Optional[str]
     ticket_id:             Optional[str]
     ticket_status:         Optional[str]
+    draft_reply:           Optional[str]
     parent_comment_id:     Optional[str]
     page_id:               Optional[str]
     created_at:            datetime
@@ -111,6 +112,30 @@ class HeatmapCell(BaseModel):
     day_of_week: int    # 0=Mon … 6=Sun
     hour:        int    # 0-23
     count:       int
+
+
+class WebSocketEvent(BaseModel):
+    type: str
+    persisted: bool = False
+    data: dict
+
+
+# ─── Alert Rules ────────────────────────────────────────────────────────
+class AlertRuleBase(BaseModel):
+    name: str
+    keyword: Optional[str] = None
+    intent: Optional[str] = None
+    sentiment: Optional[str] = None
+    channel: str = "Telegram"
+    is_active: bool = True
+
+class AlertRuleCreate(AlertRuleBase):
+    pass
+
+class AlertRuleOut(AlertRuleBase):
+    id: int
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BrandMention(BaseModel):

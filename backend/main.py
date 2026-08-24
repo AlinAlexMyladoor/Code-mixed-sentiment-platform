@@ -30,6 +30,9 @@ from pydantic import BaseModel
 from ws_manager import manager
 from stripe_integration import router as billing_router
 from worker import run_worker
+import asyncio
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from reports import generate_weekly_report
 
 # ─── Logging ───────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -109,6 +112,12 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown logic using the modern lifespan pattern."""
     Base.metadata.create_all(bind=engine)
     
+    # Start APScheduler for weekly reports
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(generate_weekly_report, 'cron', day_of_week='mon', hour=8, minute=0)
+    scheduler.start()
+    logger.info("APScheduler started: Weekly report job scheduled.")
+
     # Auto-migrate intent_signal & ticket_id to prevent 500 errors on existing DBs
     from sqlalchemy import text
     try:
@@ -116,7 +125,21 @@ async def lifespan(app: FastAPI):
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS intent_signal VARCHAR;"))
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS ticket_id VARCHAR;"))
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS ticket_status VARCHAR;"))
-            logger.info("Auto-migrated schema columns (intent_signal, ticket_id, ticket_status).")
+            conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS draft_reply VARCHAR;"))
+            # Auto-migrate alert_rules table if not exists
+            conn.execute(text('''
+                CREATE TABLE IF NOT EXISTS alert_rules (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR,
+                    keyword VARCHAR,
+                    intent VARCHAR,
+                    sentiment VARCHAR,
+                    channel VARCHAR DEFAULT 'Telegram',
+                    is_active BOOLEAN DEFAULT TRUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            '''))
+            logger.info("Auto-migrated schema columns and tables (alert_rules).")
     except Exception as exc:
         logger.warning(f"Auto-migration skipped or failed: {exc}")
 
@@ -288,8 +311,37 @@ async def analyze_text(request: Request):
         logger.error(f"Analyze error: {exc}")
         raise HTTPException(status_code=500, detail="Analysis failed")
 
+@app.post("/webhook/instagram")
+async def webhook_instagram(payload: dict):
+    """Mock endpoint for Instagram webhooks."""
+    try:
+        redis_client.lpush(settings.redis_queue_key, json.dumps(payload))
+        return {"status": "accepted"}
+    except Exception as exc:
+        logger.error(f"Error publishing to Redis: {exc}")
+        raise HTTPException(status_code=500, detail="Internal processing error")
 
-# ─── Dashboard metrics ─────────────────────────────────────────────────────
+@app.post("/webhook/youtube")
+async def webhook_youtube(payload: dict):
+    """Mock endpoint for YouTube Data API push notifications."""
+    try:
+        redis_client.lpush(settings.redis_queue_key, json.dumps(payload))
+        return {"status": "accepted"}
+    except Exception as exc:
+        logger.error(f"Error publishing to Redis: {exc}")
+        raise HTTPException(status_code=500, detail="Internal processing error")
+
+@app.post("/webhook/twitter")
+async def webhook_twitter(payload: dict):
+    """Mock endpoint for Twitter/X Account Activity API."""
+    try:
+        redis_client.lpush(settings.redis_queue_key, json.dumps(payload))
+        return {"status": "accepted"}
+    except Exception as exc:
+        logger.error(f"Error publishing to Redis: {exc}")
+        raise HTTPException(status_code=500, detail="Internal processing error")
+
+# ─── Simulated webhook generator ─────────────────────────────────────────────────────
 def _build_summary(db) -> MetricsSummary:
     total = db.query(func.count(ProcessedComment.id)).scalar() or 0
     counts = dict(
@@ -438,6 +490,79 @@ async def update_ticket_status(ticket_id: str, update: TicketStatusUpdate):
         comment.ticket_status = update.status
         db.commit()
         return {"status": "success", "ticket_id": ticket_id, "ticket_status": update.status}
+    finally:
+        db.close()
+
+@app.post("/api/comments/{comment_id}/draft-reply")
+async def generate_reply_for_comment(comment_id: int):
+    """Generates an AI draft reply for the comment."""
+    db = SessionLocal()
+    try:
+        from inference import generate_draft_reply
+        comment = db.query(ProcessedComment).filter(ProcessedComment.id == comment_id).first()
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        
+        reply = generate_draft_reply(
+            text=comment.original_text,
+            sentiment=comment.sentiment,
+            intent=comment.intent_signal,
+            lang_ratio=comment.english_ratio or 1.0
+        )
+        comment.draft_reply = reply
+        db.commit()
+        return {"status": "success", "draft_reply": reply}
+    finally:
+        db.close()
+
+from fastapi.responses import FileResponse
+
+@app.get("/api/reports/latest")
+async def get_latest_report():
+    """Returns the most recently generated weekly PDF report."""
+    import os
+    reports_dir = "reports"
+    if not os.path.exists(reports_dir):
+        raise HTTPException(status_code=404, detail="No reports available yet.")
+    files = sorted([f for f in os.listdir(reports_dir) if f.endswith(".pdf")], reverse=True)
+    if not files:
+        raise HTTPException(status_code=404, detail="No reports available yet.")
+    return FileResponse(path=os.path.join(reports_dir, files[0]), filename=files[0], media_type="application/pdf")
+
+# ─── Alert Rules ───────────────────────────────────────────────────────────
+from schemas import AlertRuleOut, AlertRuleCreate
+from models import AlertRule
+
+@app.get("/api/alert-rules", response_model=list[AlertRuleOut])
+def get_alert_rules():
+    db = SessionLocal()
+    try:
+        return db.query(AlertRule).order_by(AlertRule.created_at.desc()).all()
+    finally:
+        db.close()
+
+@app.post("/api/alert-rules", response_model=AlertRuleOut)
+def create_alert_rule(rule: AlertRuleCreate):
+    db = SessionLocal()
+    try:
+        new_rule = AlertRule(**rule.model_dump())
+        db.add(new_rule)
+        db.commit()
+        db.refresh(new_rule)
+        return new_rule
+    finally:
+        db.close()
+
+@app.delete("/api/alert-rules/{rule_id}")
+def delete_alert_rule(rule_id: int):
+    db = SessionLocal()
+    try:
+        rule = db.query(AlertRule).filter(AlertRule.id == rule_id).first()
+        if not rule:
+            raise HTTPException(status_code=404, detail="Rule not found")
+        db.delete(rule)
+        db.commit()
+        return {"status": "success"}
     finally:
         db.close()
 

@@ -9,6 +9,7 @@ import CommentExplorer from './pages/CommentExplorer';
 import Tickets from './pages/Tickets';
 import AIInsights from './pages/AIInsights';
 import ConnectPages from './pages/ConnectPages';
+import AlertRules from './pages/AlertRules';
 import Settings from './pages/Settings';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import './index.css';
@@ -30,6 +31,7 @@ function AppShell() {
           <Route path="/tickets"     element={<Tickets />} />
           <Route path="/ai-insights" element={<AIInsights />} />
           <Route path="/connect"     element={<ConnectPages />} />
+          <Route path="/alert-rules" element={<AlertRules />} />
           <Route path="/settings"    element={<Settings />} />
         </Routes>
       </main>
