@@ -46,6 +46,7 @@ export const api = {
 
   // ─── Comments ──────────────────────────────────────────────────────────
   comments: (params) => request('GET', '/api/comments', null, params),
+  createTicket: (commentId) => request('POST', `/api/comments/${commentId}/ticket`),
 
   // ─── Analytics ─────────────────────────────────────────────────────────
   languageSwitching: (hours = 48) => request('GET', '/api/analytics/language-switching', null, { hours }),

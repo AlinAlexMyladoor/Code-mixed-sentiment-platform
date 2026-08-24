@@ -459,10 +459,10 @@ export default function Analytics() {
           </div>
         </div>
 
-        {/* Top Brand Mentions */}
+        {/* ── Competitive Benchmarking & Share of Voice ───────────────────── */}
         <div className="panel">
           <div className="panel-header">
-            <span className="panel-title"><Hash size={16} /> Top Brand / Entity Mentions</span>
+            <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Hash size={16} color="#6366f1" /> Competitive Benchmarking & Share-of-Voice</span>
             <button
               className="btn btn-outline btn-sm"
               onClick={() => api.exportComments({})}
@@ -470,31 +470,49 @@ export default function Analytics() {
               Export CSV
             </button>
           </div>
-          {loading ? <Skeleton height={200} /> : activeBrands.length === 0 ? (
-            <EmptyState icon={Hash} title="No brands detected yet" desc="Brand names in comments will appear here." />
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 16 }}>
+            Track how your brand's mention volume and sentiment ratios stack up against local or regional competitors discussed in the comments.
+          </p>
+          {loading ? <Skeleton height={260} /> : activeBrands.length === 0 ? (
+            <EmptyState icon={Hash} title="No brands detected yet" desc="Competitor brand names in comments will appear here." />
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Brand / Entity</th>
-                    <th>Total Mentions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activeBrands.map((b, i) => (
-                    <tr key={b.brand || b.entity}>
-                      <td style={{ color: 'var(--text-muted)', fontWeight: 600 }}>{i + 1}</td>
-                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{b.brand || b.entity}</td>
-                      <td style={{ fontWeight: 700, color: 'var(--accent-1)' }}>{b.count}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="two-col" style={{ alignItems: 'flex-start' }}>
+              {/* Share of Voice Pie Chart */}
+              <div style={{ background: 'var(--bg-glass)', borderRadius: 12, padding: 16, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 12, width: '100%', textAlign: 'center' }}>Share of Voice (Mention Volume)</div>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie data={activeBrands} dataKey="count" nameKey="brand" cx="50%" cy="50%" innerRadius={50} outerRadius={80} label={({ brand, percent }) => `${brand} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                      {activeBrands.map((_, i) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Sentiment Breakdown Stacked Bar Chart */}
+              <div style={{ background: 'var(--bg-glass)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 12, width: '100%', textAlign: 'center' }}>Sentiment by Brand</div>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={activeBrands.map(b => ({ brand: b.brand, ...b.sentiment_breakdown }))} layout="vertical" barSize={16}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} />
+                    <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
+                    <YAxis type="category" dataKey="brand" tick={{ fill: 'var(--text-primary)', fontSize: 11, fontWeight: 600 }} width={80} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
+                    <Bar dataKey="positive" stackId="a" fill="#22c55e" radius={[0,0,0,0]} />
+                    <Bar dataKey="neutral" stackId="a" fill="#64748b" radius={[0,0,0,0]} />
+                    <Bar dataKey="sarcastic" stackId="a" fill="#f59e0b" radius={[0,0,0,0]} />
+                    <Bar dataKey="negative" stackId="a" fill="#ef4444" radius={[0,4,4,0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
         </div>
+
       </div>
     </>
   );

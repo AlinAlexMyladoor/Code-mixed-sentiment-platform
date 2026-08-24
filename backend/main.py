@@ -108,12 +108,13 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown logic using the modern lifespan pattern."""
     Base.metadata.create_all(bind=engine)
     
-    # Auto-migrate intent_signal to prevent 500 errors on existing DBs
+    # Auto-migrate intent_signal & ticket_id to prevent 500 errors on existing DBs
     from sqlalchemy import text
     try:
         with engine.begin() as conn:
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS intent_signal VARCHAR;"))
-            logger.info("Auto-migrated intent_signal column.")
+            conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS ticket_id VARCHAR;"))
+            logger.info("Auto-migrated schema columns (intent_signal, ticket_id).")
     except Exception as exc:
         logger.warning(f"Auto-migration skipped or failed: {exc}")
 
@@ -381,6 +382,30 @@ async def list_comments(
             "per_page":  per_page,
             "data":      [ProcessedCommentOut.model_validate(c) for c in items],
         }
+    finally:
+        db.close()
+
+
+@app.post("/api/comments/{comment_id}/ticket")
+async def create_ticket(comment_id: int):
+    """
+    Simulates a CRM / Helpdesk integration by generating a ticket ID 
+    and linking it to a negative or sarcastic comment.
+    """
+    import random
+    db = SessionLocal()
+    try:
+        comment = db.query(ProcessedComment).filter(ProcessedComment.id == comment_id).first()
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        if comment.ticket_id:
+            raise HTTPException(status_code=400, detail="Ticket already created for this comment")
+        
+        # Simulate ticket creation in external system
+        new_ticket_id = f"TKT-{random.randint(1000, 9999)}"
+        comment.ticket_id = new_ticket_id
+        db.commit()
+        return {"status": "success", "ticket_id": new_ticket_id}
     finally:
         db.close()
 

@@ -136,6 +136,18 @@ export default function CommentExplorer() {
     setPage(1);
   };
 
+  const handleCreateTicket = async (commentId) => {
+    try {
+      const res = await api.createTicket(commentId);
+      if (res.status === 'success') {
+        // Update local state to show the badge
+        setComments(comments.map(c => c.id === commentId ? { ...c, ticket_id: res.ticket_id } : c));
+      }
+    } catch (err) {
+      alert("Failed to create ticket: " + err.message);
+    }
+  };
+
   const totalPages = Math.ceil(total / perPage);
 
   return (
@@ -240,6 +252,7 @@ export default function CommentExplorer() {
                     <th>Model</th>
                     <th>Page ID</th>
                     <th>Time</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -287,6 +300,29 @@ export default function CommentExplorer() {
                       </td>
                       <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                         {formatIST(c.created_at)}
+                      </td>
+                      <td>
+                        {c.ticket_id ? (
+                          <span style={{
+                            fontSize: '0.65rem', fontWeight: 700,
+                            background: 'rgba(139,92,246,0.15)', color: '#8b5cf6',
+                            border: '1px solid rgba(139,92,246,0.3)',
+                            padding: '3px 8px', borderRadius: 4,
+                            whiteSpace: 'nowrap'
+                          }}>
+                            🎟️ {c.ticket_id}
+                          </span>
+                        ) : (c.sentiment === 'negative' || c.sentiment === 'sarcastic') ? (
+                          <button
+                            className="btn btn-outline btn-sm"
+                            style={{ fontSize: '0.65rem', padding: '3px 8px' }}
+                            onClick={() => handleCreateTicket(c.id)}
+                          >
+                            Create Ticket
+                          </button>
+                        ) : (
+                          <span style={{ color: 'var(--text-muted)' }}>—</span>
+                        )}
                       </td>
                     </tr>
                   ))}
