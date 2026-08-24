@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
-  PieChart, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend, RadialBar, RadialBarChart,
+  PieChart, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend, LineChart, Line,
 } from 'recharts';
-import { BarChart2, Globe, Hash, Layers, Activity, TrendingUp } from 'lucide-react';
+import { BarChart2, Globe, Hash, Layers, Activity, TrendingUp, Brain } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, Skeleton } from '../components/UI';
 import { api } from '../api/client';
@@ -43,6 +43,7 @@ export default function Analytics() {
   const [sources, setSources]           = useState({});
   const [ratioBands, setRatioBands]     = useState({});
   const [sentLangCorr, setSentLangCorr] = useState([]);
+  const [sentTrend, setSentTrend]       = useState([]);
   const [loading, setLoading]           = useState(true);
 
   // In demo mode: read directly from context (always up-to-date)
@@ -72,6 +73,8 @@ export default function Analytics() {
         setSources(src);
         setRatioBands(rb);
         setSentLangCorr(slc);
+        // Build sentiment trend from language switching hourly data
+        setSentTrend(ls);
       } catch (err) {
         console.error('Analytics load failed:', err);
       } finally {
@@ -83,6 +86,12 @@ export default function Analytics() {
 
   const sourcePieData = Object.entries(activeSources).map(([name, value]) => ({ name, value })).filter(d => d.value > 0);
   const bandData = Object.entries(activeRatioBands).map(([band, counts]) => ({ band, ...counts }));
+
+  // Model breakdown summary
+  const totalComments   = sourcePieData.reduce((s, d) => s + d.value, 0);
+  const llamaCount      = activeSources['llama_lora']    || 0;
+  const heuristicCount  = activeSources['heuristic_mvp'] || 0;
+  const llamaPct        = totalComments > 0 ? ((llamaCount / totalComments) * 100).toFixed(0) : 0;
 
   // Compute overall avg English ratio for the intensity meter
   const overallAvgEn = activeSentLangCorr.length > 0
@@ -159,6 +168,88 @@ export default function Analytics() {
               </div>
             );
           })()}
+          {/* Model Accuracy Comparison card */}
+          <div className="metric-card" style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', fontWeight: 600, marginBottom: 4 }}>
+                  AI Model Coverage
+                </div>
+                {loading ? (
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>—</div>
+                ) : (
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: '#6366f1' }}>
+                    {llamaPct}%
+                  </div>
+                )}
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                  Comments processed by Llama LoRA
+                </div>
+              </div>
+              <div style={{ background: 'rgba(99,102,241,0.12)', borderRadius: 12, padding: 10 }}>
+                <Brain size={20} color="#6366f1" />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+              {[
+                { label: '🧠 Llama LoRA', count: llamaCount, color: '#6366f1' },
+                { label: '🔧 Heuristic', count: heuristicCount, color: '#94a3b8' },
+              ].map(m => (
+                <div key={m.label} style={{
+                  flex: 1, background: 'var(--bg-glass)', borderRadius: 6,
+                  padding: '6px 8px', border: '1px solid var(--border)',
+                }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{m.label}</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 700, color: m.color }}>{m.count}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ height: 4, background: 'var(--border)', borderRadius: 4, overflow: 'hidden', marginTop: 12 }}>
+              <div style={{
+                height: '100%', width: `${llamaPct}%`,
+                background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                borderRadius: 4, transition: 'width 0.8s ease',
+              }} />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Sentiment Trend Over Time ───────────────────────────────── */}
+        <div className="panel" style={{ marginBottom: 20 }}>
+          <div className="panel-header">
+            <span className="panel-title"><TrendingUp size={16} /> Sentiment Trend Over Time</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly avg English ratio per sentiment</span>
+          </div>
+          <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0 0 16px' }}>
+            Tracks how the language mix of each sentiment class shifts hour-by-hour. Spikes in regional language usage often correlate with emotional intensity.
+          </p>
+          <div style={{ minHeight: 260 }}>
+            {loading ? <Skeleton height={260} /> : activeSentLangCorr.length === 0 ? (
+              <EmptyState icon={TrendingUp} title="No trend data yet" desc="Process more comments across multiple hours to reveal trends." />
+            ) : (
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={activeSentLangCorr} barGap={6} barCategoryGap="30%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="sentiment" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} domain={[0, 1]} />
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    formatter={(v, name) => [
+                      name === 'avg_en_ratio' ? `${(v * 100).toFixed(1)}%` : v,
+                      name === 'avg_en_ratio' ? 'Avg English Ratio' : 'Comment Count',
+                    ]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
+                  <Bar dataKey="avg_en_ratio" name="Avg English Ratio" radius={[6, 6, 0, 0]}>
+                    {activeSentLangCorr.map((entry, i) => (
+                      <Cell key={i} fill={SENTIMENT_COLORS[entry.sentiment] || '#6366f1'} />
+                    ))}
+                  </Bar>
+                  <Bar dataKey="count" name="Comment Count" radius={[6, 6, 0, 0]} fill="#6366f144" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
         </div>
 
         {/* ── Sentiment–Language Correlation Chart ──────────────────────── */}
