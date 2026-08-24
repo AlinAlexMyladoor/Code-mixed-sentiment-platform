@@ -23,6 +23,7 @@ class ProcessedCommentOut(BaseModel):
     aspect_sentiments:     Optional[dict[str, str]]
     intent_signal:         Optional[str]
     ticket_id:             Optional[str]
+    ticket_status:         Optional[str]
     parent_comment_id:     Optional[str]
     page_id:               Optional[str]
     created_at:            datetime

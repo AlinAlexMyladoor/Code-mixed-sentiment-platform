@@ -44,9 +44,11 @@ export const api = {
   metrics: () => request('GET', '/api/metrics'),
   analyze: (text) => request('POST', '/api/analyze', { text }),
 
-  // ─── Comments ──────────────────────────────────────────────────────────
+  // ─── Comments & Tickets ────────────────────────────────────────────────
   comments: (params) => request('GET', '/api/comments', null, params),
   createTicket: (commentId) => request('POST', `/api/comments/${commentId}/ticket`),
+  getTickets: () => request('GET', '/api/tickets'),
+  updateTicketStatus: (ticketId, status) => request('PATCH', `/api/tickets/${ticketId}`, { status }),
 
   // ─── Analytics ─────────────────────────────────────────────────────────
   languageSwitching: (hours = 48) => request('GET', '/api/analytics/language-switching', null, { hours }),

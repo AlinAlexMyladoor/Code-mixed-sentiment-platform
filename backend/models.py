@@ -91,5 +91,6 @@ class ProcessedComment(Base):
     aspect_sentiments     = Column(JSON, nullable=True)
     intent_signal         = Column(String, nullable=True)  # complaint | inquiry | buying_intent | praise | general
     ticket_id             = Column(String, nullable=True)
+    ticket_status         = Column(String, nullable=True, default="Open") # Open | In Progress | Resolved
     raw_payload           = Column(JSON)
     created_at            = Column(DateTime, default=datetime.datetime.utcnow, index=True)

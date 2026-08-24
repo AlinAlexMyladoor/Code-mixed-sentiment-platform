@@ -26,6 +26,7 @@ from routes.auth import router as auth_router
 from routes.analytics import router as analytics_router, insight_router
 from routes.auth import decode_token
 from schemas import DashboardMetrics, MetricsSummary, ProcessedCommentOut
+from pydantic import BaseModel
 from ws_manager import manager
 from stripe_integration import router as billing_router
 from worker import run_worker
@@ -114,7 +115,8 @@ async def lifespan(app: FastAPI):
         with engine.begin() as conn:
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS intent_signal VARCHAR;"))
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS ticket_id VARCHAR;"))
-            logger.info("Auto-migrated schema columns (intent_signal, ticket_id).")
+            conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS ticket_status VARCHAR;"))
+            logger.info("Auto-migrated schema columns (intent_signal, ticket_id, ticket_status).")
     except Exception as exc:
         logger.warning(f"Auto-migration skipped or failed: {exc}")
 
@@ -404,11 +406,40 @@ async def create_ticket(comment_id: int):
         # Simulate ticket creation in external system
         new_ticket_id = f"TKT-{random.randint(1000, 9999)}"
         comment.ticket_id = new_ticket_id
+        comment.ticket_status = "Open"
         db.commit()
-        return {"status": "success", "ticket_id": new_ticket_id}
+        return {"status": "success", "ticket_id": new_ticket_id, "ticket_status": "Open"}
     finally:
         db.close()
 
+@app.get("/api/tickets")
+async def list_tickets():
+    """Fetch all comments that have been escalated to tickets."""
+    db = SessionLocal()
+    try:
+        tickets = db.query(ProcessedComment).filter(ProcessedComment.ticket_id.isnot(None)).order_by(ProcessedComment.created_at.desc()).all()
+        return {"status": "success", "data": [ProcessedCommentOut.model_validate(t) for t in tickets]}
+    finally:
+        db.close()
+
+class TicketStatusUpdate(BaseModel):
+    status: str
+
+@app.patch("/api/tickets/{ticket_id}")
+async def update_ticket_status(ticket_id: str, update: TicketStatusUpdate):
+    """Update the status of an existing ticket."""
+    if update.status not in ("Open", "In Progress", "Resolved"):
+        raise HTTPException(status_code=400, detail="Invalid status")
+    db = SessionLocal()
+    try:
+        comment = db.query(ProcessedComment).filter(ProcessedComment.ticket_id == ticket_id).first()
+        if not comment:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+        comment.ticket_status = update.status
+        db.commit()
+        return {"status": "success", "ticket_id": ticket_id, "ticket_status": update.status}
+    finally:
+        db.close()
 
 # ─── Dead Letter Queue (DLQ) ───────────────────────────────────────────────
 @app.get("/api/dlq")

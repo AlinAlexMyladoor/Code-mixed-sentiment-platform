@@ -6,6 +6,7 @@ import { DemoProvider } from './context/DemoContext';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
 import CommentExplorer from './pages/CommentExplorer';
+import Tickets from './pages/Tickets';
 import AIInsights from './pages/AIInsights';
 import ConnectPages from './pages/ConnectPages';
 import Settings from './pages/Settings';
@@ -26,6 +27,7 @@ function AppShell() {
           <Route path="/"            element={<Dashboard />} />
           <Route path="/analytics"   element={<Analytics />} />
           <Route path="/comments"    element={<CommentExplorer />} />
+          <Route path="/tickets"     element={<Tickets />} />
           <Route path="/ai-insights" element={<AIInsights />} />
           <Route path="/connect"     element={<ConnectPages />} />
           <Route path="/settings"    element={<Settings />} />

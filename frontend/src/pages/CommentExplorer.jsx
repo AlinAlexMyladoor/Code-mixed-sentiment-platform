@@ -305,12 +305,12 @@ export default function CommentExplorer() {
                         {c.ticket_id ? (
                           <span style={{
                             fontSize: '0.65rem', fontWeight: 700,
-                            background: 'rgba(139,92,246,0.15)', color: '#8b5cf6',
-                            border: '1px solid rgba(139,92,246,0.3)',
+                            background: 'rgba(34,197,94,0.15)', color: '#22c55e',
+                            border: '1px solid rgba(34,197,94,0.3)',
                             padding: '3px 8px', borderRadius: 4,
-                            whiteSpace: 'nowrap'
+                            whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4
                           }}>
-                            🎟️ {c.ticket_id}
+                            ✓ Ticket Created
                           </span>
                         ) : (c.sentiment === 'negative' || c.sentiment === 'sarcastic') ? (
                           <button
