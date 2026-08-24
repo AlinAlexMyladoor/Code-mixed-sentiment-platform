@@ -91,18 +91,17 @@ def send_telegram_alert(record) -> None:
         sentiment_emoji = {"negative": "🔴", "sarcastic": "⚠️"}.get(record.sentiment, "❗")
         conf_pct = int((record.confidence or 0) * 100)
         msg = (
-            f"{sentiment_emoji} *SwaraSense Alert*\n\n"
-            f"*Sentiment:* {record.sentiment.upper()} ({conf_pct}% confidence)\n"
-            f"*Comment:* {record.original_text[:300]}\n"
-            f"*EN Ratio:* {round((record.english_ratio or 0)*100)}% English\n"
-            f"*Model:* {record.inference_source or 'unknown'}\n"
-            f"*Time:* {record.created_at.strftime('%d %b %Y, %I:%M %p') if record.created_at else 'N/A'}"
+            f"{sentiment_emoji} SwaraSense Alert\n\n"
+            f"Sentiment: {record.sentiment.upper()} ({conf_pct}% confidence)\n"
+            f"Comment: {record.original_text[:300]}\n"
+            f"EN Ratio: {round((record.english_ratio or 0)*100)}% English\n"
+            f"Model: {record.inference_source or 'unknown'}\n"
+            f"Time: {record.created_at.strftime('%d %b %Y, %I:%M %p') if record.created_at else 'N/A'}"
         )
         import urllib.parse
         data = urllib.parse.urlencode({
             "chat_id":    chat_id,
             "text":       msg,
-            "parse_mode": "Markdown",
         }).encode()
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         req = _req.Request(url, data=data, method="POST")
