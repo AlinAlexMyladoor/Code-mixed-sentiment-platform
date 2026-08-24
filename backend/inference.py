@@ -500,7 +500,11 @@ def _roberta_sentiment(text: str) -> tuple[str, float, float]:
 def _llama_sentiment(text: str, url: str) -> tuple[str, float]:
     try:
         with httpx.Client(timeout=30.0) as client:
-            resp = client.post(url, json={"text": text})
+            resp = client.post(
+                url, 
+                json={"text": text},
+                headers={"ngrok-skip-browser-warning": "true"}
+            )
             resp.raise_for_status()
             data = resp.json()
             sentiment  = data.get("sentiment", "neutral").lower()

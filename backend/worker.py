@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-
+import datetime
 import redis
 
 from config import get_settings
@@ -29,6 +29,7 @@ def extract_comments_from_payload(payload: dict) -> list[dict]:
     comments: list[dict] = []
     for entry in payload.get("entry", []):
         page_id = str(entry.get("id", ""))
+        entry_time = entry.get("time")
         for change in entry.get("changes", []):
             value      = change.get("value", {}) or {}
             text       = value.get("message") or value.get("text") or ""
@@ -41,6 +42,7 @@ def extract_comments_from_payload(payload: dict) -> list[dict]:
                         "text":       text,
                         "page_id":    page_id,
                         "parent_comment_id": str(parent_id) if parent_id else None,
+                        "created_at": entry_time
                     }
                 )
     return comments
@@ -106,6 +108,9 @@ def process_webhook_payload(payload_str: str) -> None:
                 regional_tokens_found=analysis.regional_tokens_found,
                 raw_payload=payload,
             )
+            if item.get("created_at"):
+                record.created_at = datetime.datetime.fromtimestamp(item["created_at"])
+
             db.add(record)
             db.commit()
             db.refresh(record)
