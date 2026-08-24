@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { CheckCircle, Copy, ExternalLink, FileText, Shield, Zap } from 'lucide-react';
+import { Bell, CheckCircle, Copy, ExternalLink, FileText, Shield, Zap } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { API_BASE } from '../api/client';
 
 export default function Settings() {
   const [copied, setCopied] = useState(false);
+  const [alertsEnabled, setAlertsEnabled] = useState(true);
 
   const copyWebhookUrl = () => {
     navigator.clipboard.writeText(`${API_BASE}/webhook`);
@@ -14,7 +15,7 @@ export default function Settings() {
 
   return (
     <>
-      <TopBar title="Settings" subtitle="Integration and compliance" />
+      <TopBar title="Settings" subtitle="Platform configuration" />
       <div className="page-body">
 
         {/* Webhook */}
@@ -22,7 +23,7 @@ export default function Settings() {
           <div className="panel-header">
             <span className="panel-title"><Shield size={16} /> Webhook Callback URL</span>
           </div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             <div className="input-group" style={{ flex: 1 }}>
               <span className="input-group-icon"><Shield size={14} /></span>
               <input className="input" readOnly value={`${API_BASE}/webhook`} />
@@ -32,29 +33,72 @@ export default function Settings() {
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
-            Register this as the callback endpoint in your Meta Developer App → Webhooks.
-            The verify token is configured server-side and must match the value in your Meta app settings.
-          </p>
         </div>
 
         {/* Telegram Alerting */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">
-            <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Zap size={16} color="#0284c7" /> Telegram Alerting</span>
+            <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bell size={16} color="#0284c7" /> Telegram Alerting</span>
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 12px 0', lineHeight: 1.5 }}>
-            SwaraSense can instantly notify you of high-intensity complaints (≥ 80% confidence negative/sarcastic).
-          </p>
-          <div style={{ background: 'var(--bg-hover)', padding: '14px 18px', borderRadius: 10, border: '1px solid var(--border)', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-            <ol style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
-              <li>Message <strong>@BotFather</strong> on Telegram and send <code>/newbot</code>.</li>
-              <li>Copy the generated HTTP API Token and set it as <code>TELEGRAM_BOT_TOKEN</code> in your Render environment variables.</li>
-              <li>Add your new bot to a Telegram group (or message it directly).</li>
-              <li>Get the Chat ID (e.g., using @userinfobot) and set it as <code>TELEGRAM_CHAT_ID</code> in Render.</li>
-            </ol>
-            <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)' }}>
-              <CheckCircle size={14} color="var(--positive)" /> Alerts trigger automatically via background worker
+          {/* Status + Toggle row */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: alertsEnabled ? 'rgba(13,148,136,0.05)' : 'var(--bg-hover)',
+            border: `1px solid ${alertsEnabled ? 'rgba(13,148,136,0.18)' : 'var(--border-mid)'}`,
+            borderRadius: 12, padding: '14px 18px',
+            transition: 'all 0.25s ease',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {/* Telegram Icon */}
+              <div style={{
+                width: 40, height: 40, borderRadius: 12,
+                background: 'linear-gradient(135deg, #229ed9, #0b84c1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0, boxShadow: '0 4px 10px rgba(34,158,217,0.3)',
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                </svg>
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>Crisis Alerts</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>High-confidence negative · sarcastic ≥ 80%</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {/* Status badge */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: alertsEnabled ? 'var(--positive-bg)' : 'var(--neutral-bg)',
+                color: alertsEnabled ? 'var(--positive)' : 'var(--neutral)',
+                border: `1px solid ${alertsEnabled ? 'var(--positive-border)' : 'var(--neutral-border)'}`,
+                borderRadius: 20, padding: '4px 12px', fontSize: '0.7rem', fontWeight: 700,
+              }}>
+                <CheckCircle size={12} />
+                {alertsEnabled ? 'Connected ✓' : 'Disabled'}
+              </div>
+
+              {/* Toggle switch */}
+              <button
+                onClick={() => setAlertsEnabled(v => !v)}
+                style={{
+                  width: 44, height: 24, borderRadius: 12, border: 'none',
+                  background: alertsEnabled ? 'var(--accent-1)' : 'var(--border-strong)',
+                  cursor: 'pointer', position: 'relative', transition: 'background 0.25s ease',
+                  flexShrink: 0,
+                }}
+                aria-label="Toggle Telegram Alerts"
+              >
+                <span style={{
+                  position: 'absolute', top: 3,
+                  left: alertsEnabled ? 23 : 3,
+                  width: 18, height: 18, borderRadius: '50%',
+                  background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                  transition: 'left 0.25s cubic-bezier(0.34,1.56,0.64,1)',
+                  display: 'block',
+                }} />
+              </button>
             </div>
           </div>
         </div>
@@ -74,9 +118,9 @@ export default function Settings() {
               <div key={label} style={{
                 display: 'flex', gap: 16, padding: '10px 14px',
                 background: 'var(--bg-hover)', borderRadius: 10,
-                border: '1px solid var(--border)', flexWrap: 'wrap',
+                border: '1px solid var(--border-mid)', flexWrap: 'wrap',
               }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', minWidth: 130 }}>{label}</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', minWidth: 130, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
                 <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', flex: 1 }}>{value}</span>
               </div>
             ))}
