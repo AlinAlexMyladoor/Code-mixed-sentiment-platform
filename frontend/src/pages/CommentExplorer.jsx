@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Download, Filter, MessageSquare, Search, Cpu, Zap } from 'lucide-react';
+import { Download, Filter, MessageSquare, Search, Cpu, CheckCircle } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, SentimentBadge, Skeleton } from '../components/UI';
 import { api } from '../api/client';
@@ -8,77 +8,91 @@ import { useDemo } from '../context/DemoContext';
 const SENTIMENTS = ['all', 'positive', 'negative', 'neutral', 'sarcastic'];
 const MODELS     = ['all', 'llama_lora', 'heuristic_mvp', 'roberta_cpu'];
 
+/* Clean model metadata — no emojis, professional muted indigo/slate */
 const MODEL_META = {
-  llama_lora:    { label: 'Llama LoRA', color: '#6366f1', bg: 'rgba(99,102,241,0.12)', icon: '🧠' },
-  roberta_cpu:   { label: 'RoBERTa',   color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   icon: '⚡' },
-  heuristic_mvp: { label: 'Heuristic', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', icon: '🔧' },
+  llama_lora:    { label: 'Llama LoRA',  color: '#6366f1', bg: 'rgba(99,102,241,0.08)',  border: 'rgba(99,102,241,0.2)' },
+  roberta_cpu:   { label: 'RoBERTa',    color: '#0891b2', bg: 'rgba(8,145,178,0.08)',    border: 'rgba(8,145,178,0.2)' },
+  heuristic_mvp: { label: 'Heuristic',  color: '#64748b', bg: 'rgba(100,116,139,0.08)', border: 'rgba(100,116,139,0.2)' },
 };
 
-/** Color-coded confidence bar: green ≥80%, yellow 50-80%, red <50% */
+/* Sentiment badge styles — low-saturation, professional */
+const SENTIMENT_BADGE_STYLE = {
+  positive:  { bg: '#f0fdf4', color: '#15803d', border: '1px solid rgba(22,163,74,0.2)' },
+  negative:  { bg: '#fff1f2', color: '#be123c', border: '1px solid rgba(244,63,94,0.2)' },
+  sarcastic: { bg: '#fffbeb', color: '#b45309', border: '1px solid rgba(245,158,11,0.2)' },
+  neutral:   { bg: '#f8fafc', color: '#475569', border: '1px solid rgba(100,116,139,0.2)' },
+};
+
 function ConfidenceBar({ value }) {
   if (value == null) return <span style={{ color: 'var(--text-muted)' }}>—</span>;
   const pct  = Math.round(value * 100);
-  const color = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
+  const color = pct >= 80 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#f43f5e';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 80 }}>
-      <div style={{
-        flex: 1, height: 5, borderRadius: 3,
-        background: 'var(--border)', overflow: 'hidden',
-      }}>
-        <div style={{
-          width: `${pct}%`, height: '100%', borderRadius: 3,
-          background: color, transition: 'width 0.4s ease',
-        }} />
+      <div style={{ flex: 1, height: 4, borderRadius: 3, background: '#f1f5f9', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', borderRadius: 3, background: color, transition: 'width 0.4s ease' }} />
       </div>
-      <span style={{ fontSize: '0.72rem', fontWeight: 700, color, minWidth: 30 }}>
-        {pct}%
-      </span>
+      <span style={{ fontSize: '0.72rem', fontWeight: 700, color, minWidth: 30 }}>{pct}%</span>
     </div>
   );
 }
 
-/** Model badge with color coding */
 function ModelBadge({ source }) {
   const meta = MODEL_META[source] || MODEL_META.heuristic_mvp;
   return (
     <span style={{
       fontSize: '0.62rem', fontWeight: 600,
       background: meta.bg, color: meta.color,
-      border: `1px solid ${meta.color}33`,
-      padding: '2px 7px', borderRadius: 4,
-      whiteSpace: 'nowrap',
-    }}>
-      {meta.icon} {meta.label}
-    </span>
-  );
-}
-
-const INTENT_META = {
-  complaint: { color: '#ef4444', label: 'Complaint' },
-  buying_intent: { color: '#3b82f6', label: 'Buying Intent' },
-  inquiry: { color: '#f59e0b', label: 'Inquiry' },
-  praise: { color: '#10b981', label: 'Praise' },
-  general: { color: '#64748b', label: 'General' },
-};
-
-function IntentBadge({ intent }) {
-  if (!intent) return null;
-  const meta = INTENT_META[intent] || INTENT_META.general;
-  if (intent === 'general') return null; // Don't clutter the UI with general tags
-  return (
-    <span style={{
-      fontSize: '0.60rem', fontWeight: 700,
-      background: `${meta.color}15`, color: meta.color,
-      border: `1px solid ${meta.color}40`,
-      padding: '1px 6px', borderRadius: 12,
-      textTransform: 'uppercase', marginRight: 6,
-      display: 'inline-block', marginBottom: 4
+      border: `1px solid ${meta.border}`,
+      padding: '2px 7px', borderRadius: 5,
+      whiteSpace: 'nowrap', letterSpacing: '0.02em',
     }}>
       {meta.label}
     </span>
   );
 }
 
+function ProfessionalSentimentBadge({ sentiment }) {
+  const s = SENTIMENT_BADGE_STYLE[sentiment] || SENTIMENT_BADGE_STYLE.neutral;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 5,
+      background: s.bg, color: s.color, border: s.border,
+      fontSize: '0.68rem', fontWeight: 700,
+      padding: '3px 9px', borderRadius: 6,
+      textTransform: 'capitalize', whiteSpace: 'nowrap',
+    }}>
+      <span style={{ width: 5, height: 5, borderRadius: '50%', background: s.color, display: 'inline-block', flexShrink: 0 }} />
+      {sentiment}
+    </span>
+  );
+}
+
+const INTENT_META = {
+  complaint:     { color: '#be123c', bg: '#fff1f2', border: 'rgba(244,63,94,0.2)',  label: 'Complaint' },
+  buying_intent: { color: '#1d4ed8', bg: '#eff6ff', border: 'rgba(59,130,246,0.2)', label: 'Buying Intent' },
+  inquiry:       { color: '#b45309', bg: '#fffbeb', border: 'rgba(245,158,11,0.2)', label: 'Inquiry' },
+  praise:        { color: '#15803d', bg: '#f0fdf4', border: 'rgba(34,197,94,0.2)',  label: 'Praise' },
+  general:       { color: '#64748b', bg: '#f8fafc', border: 'rgba(100,116,139,0.2)',label: 'General' },
+};
+
+function IntentBadge({ intent }) {
+  if (!intent || intent === 'general') return null;
+  const meta = INTENT_META[intent] || INTENT_META.general;
+  return (
+    <span style={{
+      fontSize: '0.60rem', fontWeight: 700,
+      background: meta.bg, color: meta.color,
+      border: `1px solid ${meta.border}`,
+      padding: '1px 6px', borderRadius: 4,
+      textTransform: 'uppercase', marginRight: 5,
+      display: 'inline-block', marginBottom: 3,
+      letterSpacing: '0.04em',
+    }}>
+      {meta.label}
+    </span>
+  );
+}
 
 function formatIST(ts) {
   if (!ts) return '—';
@@ -140,7 +154,6 @@ export default function CommentExplorer() {
     try {
       const res = await api.createTicket(commentId);
       if (res.status === 'success') {
-        // Update local state to show the badge
         setComments(comments.map(c => c.id === commentId ? { ...c, ticket_id: res.ticket_id } : c));
       }
     } catch (err) {
@@ -152,13 +165,12 @@ export default function CommentExplorer() {
 
   return (
     <>
-      <TopBar title="Comment Explorer" subtitle={`${total.toLocaleString()} total comments`} />
+      <TopBar title="Comment Explorer" />
       <div className="page-body">
 
         {/* ── Filters ──────────────────────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
-            {/* Search */}
             <form onSubmit={handleSearch} style={{ flex: 1, minWidth: 240 }}>
               <div className="input-group">
                 <span className="input-group-icon"><Search size={14} /></span>
@@ -170,8 +182,6 @@ export default function CommentExplorer() {
                 />
               </div>
             </form>
-
-            {/* Export */}
             <button
               className="btn btn-outline btn-sm"
               onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
@@ -180,10 +190,10 @@ export default function CommentExplorer() {
             </button>
           </div>
 
-          {/* Sentiment filter row */}
+          {/* Sentiment filter */}
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginRight: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Filter size={12} /> SENTIMENT
+            <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, marginRight: 4, display: 'flex', alignItems: 'center', gap: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <Filter size={12} /> Sentiment
             </span>
             {SENTIMENTS.map((s) => (
               <button
@@ -197,10 +207,10 @@ export default function CommentExplorer() {
             ))}
           </div>
 
-          {/* Model filter row */}
+          {/* Model filter */}
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginRight: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Cpu size={12} /> MODEL
+            <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, marginRight: 4, display: 'flex', alignItems: 'center', gap: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <Cpu size={12} /> Model
             </span>
             {MODELS.map((m) => {
               const meta = MODEL_META[m];
@@ -211,14 +221,14 @@ export default function CommentExplorer() {
                   onClick={() => { setModelFilter(m); setPage(1); }}
                   style={{
                     fontSize: '0.7rem', fontWeight: 600,
-                    padding: '3px 10px', borderRadius: 4, cursor: 'pointer',
-                    border: `1px solid ${active && meta ? meta.color : 'var(--border)'}`,
+                    padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
+                    border: `1px solid ${active && meta ? meta.border : '#e2e8f0'}`,
                     background: active && meta ? meta.bg : 'transparent',
-                    color: active && meta ? meta.color : 'var(--text-muted)',
+                    color: active && meta ? meta.color : '#64748b',
                     transition: 'all 0.15s',
                   }}
                 >
-                  {m === 'all' ? 'All Models' : `${MODEL_META[m]?.icon} ${MODEL_META[m]?.label}`}
+                  {m === 'all' ? 'All Models' : MODEL_META[m]?.label}
                 </button>
               );
             })}
@@ -230,7 +240,7 @@ export default function CommentExplorer() {
           {loading ? (
             <div style={{ padding: 24 }}>
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} style={{ marginBottom: 12 }}><Skeleton height={48} /></div>
+                <div key={i} style={{ marginBottom: 12 }}><Skeleton height={52} /></div>
               ))}
             </div>
           ) : comments.length === 0 ? (
@@ -241,87 +251,117 @@ export default function CommentExplorer() {
             />
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="data-table">
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr>
-                    <th>Sentiment</th>
-                    <th>Comment</th>
-                    <th>EN Ratio</th>
-                    <th>Switches</th>
-                    <th>Confidence</th>
-                    <th>Model</th>
-                    <th>Page ID</th>
-                    <th>Time</th>
-                    <th>Actions</th>
+                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                    {['Sentiment', 'Comment', 'Confidence', 'Model', 'Page', 'Time', 'Actions'].map(h => (
+                      <th key={h} style={{
+                        padding: '10px 16px', textAlign: 'left',
+                        fontSize: '0.68rem', fontWeight: 700,
+                        color: '#475569', textTransform: 'uppercase',
+                        letterSpacing: '0.06em', background: '#fff',
+                      }}>{h}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {comments.map((c) => (
-                    <tr key={c.id}>
-                      <td><SentimentBadge sentiment={c.sentiment} /></td>
-                      <td className="td-text" style={{ maxWidth: 320 }}>
+                    <tr
+                      key={c.id}
+                      style={{ borderBottom: '1px solid #f1f5f9', background: '#fff', transition: 'background 0.12s ease' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                    >
+                      {/* Sentiment */}
+                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                        <ProfessionalSentimentBadge sentiment={c.sentiment} />
+                      </td>
+
+                      {/* Comment text with intent + aspects */}
+                      <td style={{ padding: '12px 16px', maxWidth: 340 }}>
                         <div style={{ marginBottom: 4 }}>
                           <IntentBadge intent={c.intent_signal} />
                         </div>
-                        <p title={c.original_text}>{c.original_text}</p>
+                        <p style={{ margin: 0, fontSize: '0.82rem', color: '#1e293b', lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }} title={c.original_text}>
+                          {c.original_text}
+                        </p>
+                        {/* Regional tokens */}
                         {c.regional_tokens_found?.length > 0 && (
-                          <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                          <div style={{ marginTop: 5, display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                             {c.regional_tokens_found.slice(0, 4).map((t) => (
                               <span key={t} style={{
-                                fontSize: '0.62rem', background: 'rgba(99,102,241,0.12)',
-                                color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.25)',
+                                fontSize: '0.6rem', background: 'rgba(99,102,241,0.07)',
+                                color: '#818cf8', border: '1px solid rgba(99,102,241,0.15)',
                                 padding: '1px 5px', borderRadius: 4,
                               }}>{t}</span>
                             ))}
                           </div>
                         )}
+                        {/* Aspect tags — neutral pills, NO emojis */}
                         {c.aspect_sentiments && Object.keys(c.aspect_sentiments).length > 0 && (
-                          <div style={{ marginTop: 6, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                            {Object.entries(c.aspect_sentiments).map(([aspect, sent]) => {
-                              const color = sent === 'positive' ? '#22c55e' : sent === 'negative' ? '#ef4444' : '#64748b';
-                              const dot = sent === 'positive' ? '🟢' : sent === 'negative' ? '🔴' : '⚪';
-                              return (
-                                <span key={aspect} style={{
-                                  fontSize: '0.62rem', background: `${color}15`,
-                                  color, border: `1px solid ${color}33`,
-                                  padding: '2px 6px', borderRadius: 12, fontWeight: 600,
-                                }}>{dot} {aspect}</span>
-                              );
-                            })}
+                          <div style={{ marginTop: 5, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {Object.entries(c.aspect_sentiments).map(([aspect]) => (
+                              <span key={aspect} style={{
+                                fontSize: '0.6rem',
+                                background: '#f1f5f9',
+                                color: '#64748b',
+                                border: '1px solid #e2e8f0',
+                                padding: '1px 6px', borderRadius: 4,
+                                fontWeight: 500,
+                              }}>{aspect}</span>
+                            ))}
                           </div>
                         )}
                       </td>
-                      <td>{c.english_ratio != null ? `${(c.english_ratio * 100).toFixed(0)}%` : '—'}</td>
-                      <td>{c.language_switch_count ?? '—'}</td>
-                      <td><ConfidenceBar value={c.confidence} /></td>
-                      <td><ModelBadge source={c.inference_source} /></td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+
+                      {/* Confidence */}
+                      <td style={{ padding: '12px 16px' }}>
+                        <ConfidenceBar value={c.confidence} />
+                      </td>
+
+                      {/* Model */}
+                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                        <ModelBadge source={c.inference_source} />
+                      </td>
+
+                      {/* Page */}
+                      <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.72rem' }}>
                         {c.page_id ? c.page_id.slice(0, 10) + '…' : '—'}
                       </td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+
+                      {/* Time */}
+                      <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
                         {formatIST(c.created_at)}
                       </td>
-                      <td>
+
+                      {/* Actions */}
+                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                         {c.ticket_id ? (
+                          /* Clean ghost badge — no chunky bg */
                           <span style={{
-                            fontSize: '0.65rem', fontWeight: 700,
-                            background: 'rgba(34,197,94,0.15)', color: '#22c55e',
-                            border: '1px solid rgba(34,197,94,0.3)',
-                            padding: '3px 8px', borderRadius: 4,
-                            whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4
+                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                            fontSize: '0.7rem', fontWeight: 600,
+                            color: '#059669',
                           }}>
-                            ✓ Ticket Created
+                            <CheckCircle size={13} strokeWidth={2} /> Ticket Created
                           </span>
                         ) : (c.sentiment === 'negative' || c.sentiment === 'sarcastic') ? (
                           <button
-                            className="btn btn-outline btn-sm"
-                            style={{ fontSize: '0.65rem', padding: '3px 8px' }}
+                            style={{
+                              fontSize: '0.7rem', fontWeight: 600,
+                              color: '#2563eb', background: 'transparent',
+                              border: '1px solid rgba(37,99,235,0.2)',
+                              padding: '4px 10px', borderRadius: 6,
+                              cursor: 'pointer', transition: 'all 0.15s',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.4)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; }}
                             onClick={() => handleCreateTicket(c.id)}
                           >
                             Create Ticket
                           </button>
                         ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>—</span>
+                          <span style={{ color: '#cbd5e1' }}>—</span>
                         )}
                       </td>
                     </tr>
@@ -335,21 +375,13 @@ export default function CommentExplorer() {
           {totalPages > 1 && (
             <div style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '14px 20px', borderTop: '1px solid var(--border)',
-              fontSize: '0.78rem', color: 'var(--text-muted)',
+              padding: '14px 20px', borderTop: '1px solid #f1f5f9',
+              fontSize: '0.78rem', color: '#94a3b8',
             }}>
               <span>Page {page} of {totalPages} · {total.toLocaleString()} total</span>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  className="btn btn-outline btn-sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                >← Prev</button>
-                <button
-                  className="btn btn-outline btn-sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                >Next →</button>
+                <button className="btn btn-outline btn-sm" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>← Prev</button>
+                <button className="btn btn-outline btn-sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next →</button>
               </div>
             </div>
           )}

@@ -34,7 +34,7 @@ export function MetricCard({ label, value, sub, icon: Icon, iconColor, iconBg, c
         <span className="metric-label">{label}</span>
         {Icon && (
           <div className="metric-icon" style={{ background: iconBg || 'var(--bg-glass)', color: iconColor }}>
-            <Icon size={16} strokeWidth={2} />
+            <Icon size={16} strokeWidth={1.5} />
           </div>
         )}
       </div>
@@ -52,10 +52,12 @@ export function CommentItem({ item, showStats = true }) {
     ? new Date(item.created_at.endsWith('Z') ? item.created_at : item.created_at + 'Z').toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true })
     : '';
 
+  const sentColor = sentimentColor(item.sentiment);
+
   return (
     <div
       className="comment-item"
-      style={{ borderLeft: `3px solid ${sentimentColor(item.sentiment)}` }}
+      style={{ borderLeft: `3px solid ${sentColor}` }}
     >
       <div className="comment-meta">
         <SentimentBadge sentiment={item.sentiment} />
@@ -76,15 +78,26 @@ export function CommentItem({ item, showStats = true }) {
 
       {showStats && (
         <div className="comment-stats" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <span className="stat-chip">EN {((item.english_ratio || 0) * 100).toFixed(0)}%</span>
-            <span className="stat-chip">switches {item.language_switch_count ?? 0}</span>
-            {item.confidence && (
-              <span className="stat-chip">conf {(item.confidence * 100).toFixed(0)}%</span>
-            )}
-            {item.inference_source && (
-              <span className="stat-chip">{item.inference_source}</span>
-            )}
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+            {/* Aspect tags — business-relevant, no tech jargon */}
+            {item.aspect_sentiments && Object.keys(item.aspect_sentiments).length > 0
+              ? Object.entries(item.aspect_sentiments).map(([aspect]) => (
+                  <span key={aspect} style={{
+                    fontSize: '0.6rem',
+                    background: '#f1f5f9', color: '#64748b',
+                    border: '1px solid #e2e8f0',
+                    padding: '1px 6px', borderRadius: 4, fontWeight: 500,
+                  }}>{aspect}</span>
+                ))
+              : item.inference_source && (
+                  <span style={{
+                    fontSize: '0.62rem', fontWeight: 600,
+                    background: 'rgba(99,102,241,0.07)', color: '#818cf8',
+                    border: '1px solid rgba(99,102,241,0.15)',
+                    padding: '1px 6px', borderRadius: 4,
+                  }}>{item.inference_source === 'llama_lora' ? 'Llama LoRA' : item.inference_source === 'roberta_cpu' ? 'RoBERTa' : 'Heuristic'}</span>
+                )
+            }
           </div>
           {item.translation && (
             <button

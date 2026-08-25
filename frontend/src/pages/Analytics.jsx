@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
   PieChart, Pie, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend, LineChart, Line,
@@ -12,8 +13,8 @@ import { useDemo } from '../context/DemoContext';
 const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b', '#ef4444', '#38bdf8'];
 
 const SENTIMENT_COLORS = {
-  positive:  '#22c55e',
-  negative:  '#ef4444',
+  positive:  '#10b981',
+  negative:  '#f43f5e',
   sarcastic: '#f59e0b',
   neutral:   '#64748b',
 };
@@ -105,7 +106,7 @@ export default function Analytics() {
 
   return (
     <>
-      <TopBar title="Analytics" subtitle="Sentiment &amp; Language Intelligence" />
+      <TopBar title="Analytics" />
 
       <div className="page-body">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
@@ -118,9 +119,14 @@ export default function Analytics() {
         </div>
 
         {/* ── Sociolinguistic Insight Cards ─────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <motion.div
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}
+          initial="hidden"
+          animate="show"
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.09 } } }}
+        >
           {/* English Intensity Meter */}
-          <div className="metric-card" style={{ position: 'relative', overflow: 'hidden' }}>
+          <motion.div className="metric-card" style={{ position: 'relative', overflow: 'hidden' }} variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
                 <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', fontWeight: 600, marginBottom: 4 }}>
@@ -148,7 +154,7 @@ export default function Analytics() {
                 borderRadius: 4, transition: 'width 0.8s ease',
               }} />
             </div>
-          </div>
+          </motion.div>
 
           {/* Positive ↔ Sarcastic English contrast */}
           {!loading && activeSentLangCorr.length > 0 && (() => {
@@ -178,7 +184,7 @@ export default function Analytics() {
             );
           })()}
           {/* Model Accuracy Comparison card */}
-          <div className="metric-card" style={{ position: 'relative', overflow: 'hidden' }}>
+          <motion.div className="metric-card" style={{ position: 'relative', overflow: 'hidden' }} variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
                 <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', fontWeight: 600, marginBottom: 4 }}>
@@ -201,8 +207,8 @@ export default function Analytics() {
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
               {[
-                { label: '🧠 Llama LoRA', count: llamaCount, color: '#6366f1' },
-                { label: '🔧 Heuristic', count: heuristicCount, color: '#94a3b8' },
+                { label: 'Llama LoRA', count: llamaCount, color: '#6366f1' },
+                { label: 'Heuristic',  count: heuristicCount, color: '#94a3b8' },
               ].map(m => (
                 <div key={m.label} style={{
                   flex: 1, background: 'var(--bg-glass)', borderRadius: 6,
@@ -220,8 +226,8 @@ export default function Analytics() {
                 borderRadius: 4, transition: 'width 0.8s ease',
               }} />
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         {/* ── Sentiment Trend Over Time ───────────────────────────────── */}
 
         <div className="panel" style={{ marginBottom: 20 }}>

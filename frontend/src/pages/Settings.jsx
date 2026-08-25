@@ -113,15 +113,15 @@ export default function Settings() {
               ['Version',    '1.0.0'],
               ['AI Engine',  'Heuristic · RoBERTa · Llama 3 LoRA'],
               ['Languages',  'Tamil, Malayalam, Hindi, Bengali (Romanized code-mixed)'],
-              ['Real-time',  'WebSocket via Redis Pub/Sub'],
+              ['Real-time',  'Instant Live-Sync'],
             ].map(([label, value]) => (
               <div key={label} style={{
                 display: 'flex', gap: 16, padding: '10px 14px',
                 background: 'var(--bg-hover)', borderRadius: 10,
                 border: '1px solid var(--border-mid)', flexWrap: 'wrap',
               }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', minWidth: 130, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
-                <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', flex: 1 }}>{value}</span>
+                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', minWidth: 130, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', flex: 1, fontWeight: 500 }}>{value}</span>
               </div>
             ))}
           </div>

@@ -3,14 +3,14 @@ import { BarChart2, Brain, Globe, Home, Link2, MessageSquare, Settings, X, Ticke
 import { useDemo } from '../../context/DemoContext';
 
 const NAV = [
-  { label: 'Dashboard',     icon: Home,         to: '/' },
-  { label: 'Analytics',     icon: BarChart2,    to: '/analytics' },
-  { label: 'Comments',      icon: MessageSquare,to: '/comments' },
-  { label: 'Tickets',       icon: Ticket,       to: '/tickets' },
-  { label: 'AI Insights',   icon: Brain,        to: '/ai-insights' },
-  { label: 'Connect Pages', icon: Link2,        to: '/connect' },
-  { label: 'Alert Rules',   icon: Bell,         to: '/alert-rules' },
-  { label: 'Settings',      icon: Settings,     to: '/settings' },
+  { label: 'Dashboard',     icon: Home,          to: '/' },
+  { label: 'Analytics',     icon: BarChart2,     to: '/analytics' },
+  { label: 'Comments',      icon: MessageSquare, to: '/comments' },
+  { label: 'Tickets',       icon: Ticket,        to: '/tickets' },
+  { label: 'AI Insights',   icon: Brain,         to: '/ai-insights' },
+  { label: 'Connect Pages', icon: Link2,         to: '/connect' },
+  { label: 'Alert Rules',   icon: Bell,          to: '/alert-rules' },
+  { label: 'Settings',      icon: Settings,      to: '/settings' },
 ];
 
 export default function Sidebar({ wsStatus }) {
@@ -29,7 +29,7 @@ export default function Sidebar({ wsStatus }) {
         </div>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation — consistent 1.5px stroke */}
       <nav className="sidebar-nav">
         {NAV.map(({ label, icon: Icon, to }) => (
           <NavLink
@@ -38,7 +38,7 @@ export default function Sidebar({ wsStatus }) {
             end={to === '/'}
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
           >
-            <Icon size={16} className="nav-icon" strokeWidth={1.8} />
+            <Icon size={16} className="nav-icon" strokeWidth={1.5} />
             <span className="nav-label">{label}</span>
           </NavLink>
         ))}
@@ -55,32 +55,36 @@ export default function Sidebar({ wsStatus }) {
             onClick={clearDemo}
             title="Exit demo mode"
             style={{
-              background: 'rgba(245,158,11,0.15)',
-              border: '1px solid rgba(245,158,11,0.25)',
+              background: 'rgba(245,158,11,0.12)',
+              border: '1px solid rgba(245,158,11,0.22)',
               borderRadius: 6, cursor: 'pointer',
               padding: '4px 6px', display: 'flex',
             }}
           >
-            <X size={11} color="#f59e0b" />
+            <X size={11} color="#f59e0b" strokeWidth={1.5} />
           </button>
         </div>
       )}
 
-      {/* Footer — connection status */}
+      {/* Footer — WebSocket status with concentric pulse when live */}
       <div className="sidebar-footer">
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 10px', borderRadius: 8,
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid var(--border)',
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '8px 12px', borderRadius: 10,
+          background: 'rgba(255,255,255,0.55)',
+          border: '1px solid rgba(229,231,235,0.7)',
+          backdropFilter: 'blur(8px)',
         }}>
-          <div className={`status-dot ${wsStatus || 'connecting'}`} />
+          {/* Status dot — .live gets concentric ripple via CSS */}
+          <div style={{ position: 'relative', flexShrink: 0, width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className={`status-dot ${wsStatus || 'connecting'}`} />
+          </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '-0.01em' }}>
               {wsStatus === 'live' ? 'Active Data Feed' : wsStatus === 'connecting' ? 'Connecting…' : 'Reconnecting…'}
             </div>
           </div>
-          <Globe size={13} color="var(--text-muted)" />
+          <Globe size={13} color="var(--text-muted)" strokeWidth={1.5} />
         </div>
       </div>
     </aside>

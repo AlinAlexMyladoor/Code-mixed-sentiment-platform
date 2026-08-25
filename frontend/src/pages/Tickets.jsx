@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Ticket, CheckCircle, Clock, Circle, Filter } from 'lucide-react';
+import { Ticket, CheckCircle, Clock, Minus, Filter, PenLine, Sparkles } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, SentimentBadge, Skeleton } from '../components/UI';
 import { api } from '../api/client';
 
 const STATUS_OPTIONS = [
-  { value: 'Open',        icon: Circle,       color: '#ef4444' },
-  { value: 'In Progress', icon: Clock,        color: '#f59e0b' },
-  { value: 'Resolved',    icon: CheckCircle,  color: '#22c55e' },
+  { value: 'Open',        icon: Minus,       color: '#64748b', bg: 'rgba(100,116,139,0.08)', border: 'rgba(100,116,139,0.2)' },
+  { value: 'In Progress', icon: Clock,        color: '#d97706', bg: 'rgba(217,119,6,0.08)',   border: 'rgba(217,119,6,0.2)' },
+  { value: 'Resolved',    icon: CheckCircle,  color: '#059669', bg: 'rgba(5,150,105,0.08)',   border: 'rgba(5,150,105,0.2)' },
 ];
 
 export default function Tickets() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
+  const [draftingId, setDraftingId] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -39,6 +40,7 @@ export default function Tickets() {
   };
 
   const handleDraftReply = async (commentId) => {
+    setDraftingId(commentId);
     try {
       const res = await api.draftReply(commentId);
       if (res.status === 'success') {
@@ -46,6 +48,8 @@ export default function Tickets() {
       }
     } catch (err) {
       alert("Failed to draft reply: " + err.message);
+    } finally {
+      setDraftingId(null);
     }
   };
 
@@ -53,14 +57,14 @@ export default function Tickets() {
 
   return (
     <>
-      <TopBar title="Support Tickets" subtitle={`${tickets.length} total escalated tickets`} />
+      <TopBar title="Support Tickets" />
       <div className="page-body">
         
         {/* Filters */}
         <div className="panel" style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, marginRight: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Filter size={12} /> STATUS FILTER
+            <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, marginRight: 4, display: 'flex', alignItems: 'center', gap: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <Filter size={12} /> Status
             </span>
             {['All', 'Open', 'In Progress', 'Resolved'].map(s => (
               <button
@@ -79,7 +83,7 @@ export default function Tickets() {
           {loading ? (
             <div style={{ padding: 24 }}>
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} style={{ marginBottom: 12 }}><Skeleton height={48} /></div>
+                <div key={i} style={{ marginBottom: 12 }}><Skeleton height={56} /></div>
               ))}
             </div>
           ) : filteredTickets.length === 0 ? (
@@ -93,11 +97,11 @@ export default function Tickets() {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Ticket ID</th>
-                    <th>Status</th>
-                    <th>Sentiment</th>
-                    <th>Comment Details</th>
-                    <th>Created At</th>
+                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Ticket ID</th>
+                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Status</th>
+                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Sentiment</th>
+                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Comment Details</th>
+                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Created At</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -105,19 +109,28 @@ export default function Tickets() {
                     const statusMeta = STATUS_OPTIONS.find(opt => opt.value === t.ticket_status) || STATUS_OPTIONS[0];
                     return (
                       <tr key={t.id}>
-                        <td style={{ fontWeight: 700, color: '#8b5cf6' }}>
-                          🎟️ {t.ticket_id}
+                        {/* Ticket ID — deep slate blue, no emoji */}
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <Ticket size={13} color="#94a3b8" strokeWidth={1.5} />
+                            <span style={{ fontWeight: 700, color: '#1d4ed8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                              {t.ticket_id}
+                            </span>
+                          </div>
                         </td>
+
+                        {/* Status — semantic colors */}
                         <td>
                           <select
                             value={t.ticket_status}
                             onChange={(e) => handleStatusChange(t.ticket_id, e.target.value)}
                             style={{
-                              fontSize: '0.75rem', fontWeight: 600,
-                              background: 'var(--bg-glass)', color: statusMeta.color,
-                              border: `1px solid ${statusMeta.color}40`,
-                              padding: '4px 8px', borderRadius: 6,
-                              outline: 'none', cursor: 'pointer'
+                              fontSize: '0.75rem', fontWeight: 700,
+                              background: statusMeta.bg,
+                              color: statusMeta.color,
+                              border: `1px solid ${statusMeta.border}`,
+                              padding: '5px 10px', borderRadius: 8,
+                              outline: 'none', cursor: 'pointer',
                             }}
                           >
                             {STATUS_OPTIONS.map(opt => (
@@ -125,24 +138,50 @@ export default function Tickets() {
                             ))}
                           </select>
                         </td>
+
                         <td><SentimentBadge sentiment={t.sentiment} /></td>
+
                         <td className="td-text" style={{ maxWidth: 320 }}>
                           <p title={t.original_text}>{t.original_text}</p>
                           {t.draft_reply ? (
-                            <div style={{ marginTop: 8, padding: 8, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 6 }}>
-                              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#6366f1', marginBottom: 4, textTransform: 'uppercase' }}>AI Draft Reply</div>
+                            <div style={{ marginTop: 8, padding: 10, background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8 }}>
+                              <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#6366f1', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Draft Reply</div>
                               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t.draft_reply}</div>
                             </div>
                           ) : (
                             <button
-                              className="btn btn-outline btn-sm"
-                              style={{ marginTop: 8, fontSize: '0.65rem', padding: '3px 8px' }}
                               onClick={() => handleDraftReply(t.id)}
+                              disabled={draftingId === t.id}
+                              style={{
+                                marginTop: 8,
+                                display: 'inline-flex', alignItems: 'center', gap: 5,
+                                fontSize: '0.7rem', fontWeight: 600,
+                                color: draftingId === t.id ? '#94a3b8' : '#0d9488',
+                                background: draftingId === t.id ? '#f1f5f9' : 'transparent',
+                                border: `1px solid ${draftingId === t.id ? '#e2e8f0' : 'rgba(13,148,136,0.25)'}`,
+                                padding: '5px 10px', borderRadius: 8,
+                                cursor: draftingId === t.id ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.15s ease',
+                              }}
+                              onMouseEnter={e => {
+                                if (draftingId !== t.id) {
+                                  e.currentTarget.style.background = 'rgba(13,148,136,0.06)';
+                                  e.currentTarget.style.borderColor = 'rgba(13,148,136,0.4)';
+                                }
+                              }}
+                              onMouseLeave={e => {
+                                if (draftingId !== t.id) {
+                                  e.currentTarget.style.background = 'transparent';
+                                  e.currentTarget.style.borderColor = 'rgba(13,148,136,0.25)';
+                                }
+                              }}
                             >
-                              Draft AI Reply
+                              <Sparkles size={12} />
+                              {draftingId === t.id ? 'Drafting…' : 'Draft AI Reply'}
                             </button>
                           )}
                         </td>
+
                         <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                           {new Date(t.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                         </td>
