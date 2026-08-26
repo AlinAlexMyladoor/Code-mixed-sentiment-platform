@@ -364,22 +364,15 @@ async def business_briefing(db: Session = Depends(get_db)):
     # Build bullet points
     bullets = []
 
-    if sentiment_delta is not None:
-        arrow = "▲" if sentiment_delta >= 0 else "▼"
-        bullets.append(f"{arrow} Positive sentiment shifted {abs(sentiment_delta):.1f}% vs last week ({pos_this:.1f}% → {pos_last:.1f}% last week)")
     if neg_pct > 0:
-        bullets.append(f"🔴 {neg_pct:.1f}% of this week's comments are negative")
+        bullets.append(f"{neg_pct:.1f}% Negative Comments")
     if sarc_pct > 0:
-        bullets.append(f"⚠️ {sarc_pct:.1f}% flagged as sarcastic — review high-risk tickets")
-    if top_token:
-        token_count = token_freq[top_token]
-        bullets.append(f"🗣️ Top regional signal in complaints: '{top_token}' (appears {token_count}x) — high emotional intensity")
-    if high_risk_pct > 0:
-        bullets.append(f"🚨 {high_risk_pct:.1f}% of comments are high-risk (≥80% confidence negative/sarcastic)")
-    if avg_en is not None:
-        bullets.append(f"📊 Average English ratio: {round(avg_en*100)}% — {'mostly English' if avg_en > 0.7 else 'heavy code-mixing detected'}")
-    dominant_model = max(top_source, key=top_source.get) if top_source else "unknown"
-    bullets.append(f"🤖 {total_this} comments processed this week via {dominant_model}")
+        bullets.append(f"{sarc_pct:.1f}% Sarcastic (Action Required)")
+    
+    dominant_model = "Llama LoRA" if (top_source and max(top_source, key=top_source.get) == "llama_lora") else (max(top_source, key=top_source.get) if top_source else "unknown")
+    if dominant_model == "heuristic_mvp": dominant_model = "Heuristic Engine"
+    
+    bullets.append(f"{total_this} Processed ({dominant_model})")
 
     return {
         "generated_at":   _dt.datetime.utcnow().isoformat(),

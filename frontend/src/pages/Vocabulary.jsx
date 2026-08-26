@@ -78,7 +78,7 @@ export default function Vocabulary() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 12, flexWrap: 'wrap' }}>
           <div>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
-              Add brand-specific slang or regional terms to override AI model sentiment and aspect detection in real time.
+              Teach SwaraSense your brand's unique slang and keywords.
             </p>
           </div>
           <button className="btn btn-primary" onClick={() => setAdding(v => !v)}>
@@ -250,11 +250,7 @@ export default function Vocabulary() {
           </div>
         )}
 
-        {/* Info footer */}
-        <div style={{ marginTop: 16, fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <AlertCircle size={12} strokeWidth={1.5} />
-          Changes take effect immediately — no server restart required.
-        </div>
+
       </div>
     </>
   );

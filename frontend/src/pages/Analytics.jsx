@@ -252,7 +252,7 @@ export default function Analytics() {
                     ]}
                   />
                   <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
-                  <Bar dataKey="avg_en_ratio" name="Avg English Ratio" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="avg_en_ratio" name="Avg English Ratio" radius={[6, 6, 0, 0]} legendType="none">
                     {activeSentLangCorr.map((entry, i) => (
                       <Cell key={i} fill={SENTIMENT_COLORS[entry.sentiment] || '#6366f1'} />
                     ))}
@@ -356,10 +356,10 @@ export default function Analytics() {
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '0.78rem' }} />
-                  <Bar dataKey="positive"  fill="#22c55e" radius={[4,4,0,0]} />
-                  <Bar dataKey="negative"  fill="#ef4444" radius={[4,4,0,0]} />
-                  <Bar dataKey="sarcastic" fill="#f59e0b" radius={[4,4,0,0]} />
-                  <Bar dataKey="neutral"   fill="#64748b" radius={[4,4,0,0]} />
+                  <Bar dataKey="positive"  fill={SENTIMENT_COLORS.positive} radius={[4,4,0,0]} />
+                  <Bar dataKey="negative"  fill={SENTIMENT_COLORS.negative} radius={[4,4,0,0]} />
+                  <Bar dataKey="sarcastic" fill={SENTIMENT_COLORS.sarcastic} radius={[4,4,0,0]} />
+                  <Bar dataKey="neutral"   fill={SENTIMENT_COLORS.neutral} radius={[4,4,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -437,10 +437,10 @@ export default function Analytics() {
                     <YAxis type="category" dataKey="brand" tick={{ fill: 'var(--text-primary)', fontSize: 11, fontWeight: 600 }} width={80} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
-                    <Bar dataKey="positive" stackId="a" fill="#22c55e" radius={[0,0,0,0]} />
-                    <Bar dataKey="neutral" stackId="a" fill="#64748b" radius={[0,0,0,0]} />
-                    <Bar dataKey="sarcastic" stackId="a" fill="#f59e0b" radius={[0,0,0,0]} />
-                    <Bar dataKey="negative" stackId="a" fill="#ef4444" radius={[0,4,4,0]} />
+                    <Bar dataKey="positive" stackId="a" fill={SENTIMENT_COLORS.positive} radius={[0,0,0,0]} />
+                    <Bar dataKey="neutral" stackId="a" fill={SENTIMENT_COLORS.neutral} radius={[0,0,0,0]} />
+                    <Bar dataKey="sarcastic" stackId="a" fill={SENTIMENT_COLORS.sarcastic} radius={[0,0,0,0]} />
+                    <Bar dataKey="negative" stackId="a" fill={SENTIMENT_COLORS.negative} radius={[0,4,4,0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

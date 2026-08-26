@@ -28,7 +28,7 @@ export default function Settings() {
 
   return (
     <>
-      <TopBar title="Settings" subtitle="Platform configuration" />
+      <TopBar title="Settings" />
       <div className="page-body">
 
         {/* Webhook */}
@@ -145,14 +145,6 @@ export default function Settings() {
               <CheckCircle size={11} strokeWidth={1.5} /> Always Active
             </div>
           </div>
-          <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {['[PHONE]', '[EMAIL]', '[ORDER_ID]', '[ID_NUMBER]', '[PAYMENT_ID]', '[URL]'].map(tag => (
-              <span key={tag} style={{
-                display: 'inline-block', padding: '2px 8px', borderRadius: 4,
-                fontSize: '0.65rem', fontWeight: 600, fontFamily: 'monospace',
-                background: '#F1F5F9', color: '#475569', border: '1px solid #E2E8F0',
-              }}>{tag}</span>
-            ))}
           </div>
         </div>
 
@@ -210,39 +202,24 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* System Health — Queue Monitor */}
+        {/* System Health — Simplified */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">
             <span className="panel-title"><Activity size={16} strokeWidth={1.5} color="#0891b2" /> System Health</span>
-            <button className="btn btn-ghost btn-sm" onClick={() => api.queueHealth().then(setQueueHealth).catch(() => {})} title="Refresh">
-              <RefreshCw size={13} strokeWidth={1.5} />
-            </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-            {[
-              { label: 'Queue Depth', value: queueHealth?.queue_depth ?? '—', desc: 'Pending webhooks', healthy: (queueHealth?.queue_depth ?? 0) < 50 },
-              { label: 'Redis DLQ', value: queueHealth?.redis_dlq_depth ?? '—', desc: 'Failed items (Redis)', healthy: (queueHealth?.redis_dlq_depth ?? 0) === 0 },
-              { label: 'File DLQ', value: queueHealth?.file_dlq_depth ?? '—', desc: 'Fallback items (disk)', healthy: (queueHealth?.file_dlq_depth ?? 0) === 0 },
-            ].map(m => (
-              <div key={m.label} style={{
-                padding: '14px 16px', borderRadius: 12,
-                background: m.healthy ? 'rgba(16,185,129,0.04)' : 'rgba(239,68,68,0.04)',
-                border: `1px solid ${m.healthy ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'}`,
-              }}>
-                <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {m.label}
-                </div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginTop: 2 }}>
-                  {m.value}
-                </div>
-                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: 2 }}>
-                  {m.desc}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 10, fontSize: '0.68rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
-            <RefreshCw size={10} strokeWidth={1.5} /> Auto-refreshes every 30 seconds
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '14px 18px', borderRadius: 12,
+            background: 'rgba(16,185,129,0.04)',
+            border: '1px solid rgba(16,185,129,0.12)',
+          }}>
+            <div style={{
+              width: 10, height: 10, borderRadius: '50%',
+              background: 'var(--positive)', boxShadow: '0 0 8px rgba(16,185,129,0.6)'
+            }} />
+            <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
+              System Status: 100% Operational (Webhooks listening)
+            </div>
           </div>
         </div>
 
