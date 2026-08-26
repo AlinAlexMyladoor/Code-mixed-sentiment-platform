@@ -64,21 +64,17 @@ function ComingSoonToast({ platform, onClose }) {
 
 /* ─── Integration Card ───────────────────────────────────────────────── */
 function IntegrationCard({ icon, gradient, shadow, title, subtitle, badge, badgeStyle, action }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <div
+      className="hover-3d"
       style={{
         background: '#fff',
-        border: '1px solid #e2e8f0',
-        borderRadius: 20,
+        border: '1px solid var(--border-mid)',
+        borderRadius: 16,
         padding: '24px',
         display: 'flex', flexDirection: 'column', gap: 18,
-        boxShadow: hovered ? '0 12px 32px rgba(0,0,0,0.1)' : '0 2px 8px rgba(0,0,0,0.04)',
-        transform: hovered ? 'translateY(-3px)' : 'none',
-        transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+        boxShadow: '0 2px 10px -3px rgba(6,81,237,0.1)',
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -252,9 +248,9 @@ export default function ConnectPages() {
             badgeStyle={{ background: 'rgba(16,185,129,0.1)', color: '#059669', border: '1px solid rgba(16,185,129,0.25)' }}
             action={
               <button
-                className="btn btn-primary"
+                className="btn btn-gradient hover-3d"
                 onClick={handleConnect}
-                style={{ borderRadius: 10, fontWeight: 700 }}
+                style={{ borderRadius: 10, fontWeight: 700, display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', textAlign: 'center' }}
               >
                 <Link2 size={15} /> Connect
               </button>
@@ -272,9 +268,9 @@ export default function ConnectPages() {
             badgeStyle={{ background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0' }}
             action={
               <button
-                className="btn btn-outline"
+                className="btn btn-outline hover-3d"
                 onClick={() => showComingSoon('Instagram')}
-                style={{ borderRadius: 10, fontWeight: 600 }}
+                style={{ borderRadius: 10, fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', textAlign: 'center' }}
               >
                 <Link2 size={15} /> Connect
               </button>
@@ -292,9 +288,9 @@ export default function ConnectPages() {
             badgeStyle={{ background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0' }}
             action={
               <button
-                className="btn btn-outline"
+                className="btn btn-outline hover-3d"
                 onClick={() => showComingSoon('YouTube')}
-                style={{ borderRadius: 10, fontWeight: 600 }}
+                style={{ borderRadius: 10, fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', textAlign: 'center' }}
               >
                 <Link2 size={15} /> Connect
               </button>
@@ -312,9 +308,9 @@ export default function ConnectPages() {
             badgeStyle={{ background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0' }}
             action={
               <button
-                className="btn btn-outline"
+                className="btn btn-outline hover-3d"
                 onClick={() => showComingSoon('X (Twitter)')}
-                style={{ borderRadius: 10, fontWeight: 600 }}
+                style={{ borderRadius: 10, fontWeight: 600, display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', textAlign: 'center' }}
               >
                 <Link2 size={15} /> Connect
               </button>

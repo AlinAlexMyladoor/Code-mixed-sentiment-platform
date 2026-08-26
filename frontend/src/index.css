@@ -122,10 +122,7 @@ body {
 
 .sidebar-logo-icon {
   width: 32px; height: 32px;
-  background: var(--accent-1);
-  border-radius: var(--r-md);
   display: flex; align-items: center; justify-content: center;
-  color: white;
 }
 
 .sidebar-logo-title {
@@ -213,10 +210,10 @@ body {
 
 /* ─── Cards ─────────────────────────────────────────────────────────────── */
 .card, .panel {
-  background: var(--bg-surface);
+  background: #ffffff;
   border: 1px solid var(--border-mid);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px -3px rgba(6,81,237,0.1);
   padding: 24px;
   margin-bottom: 24px;
 }
@@ -239,10 +236,10 @@ body {
 
 /* ── Metric Card ───────────────────────────────────────────────────────── */
 .metric-card {
-  background: var(--bg-surface);
+  background: #ffffff;
   border: 1px solid var(--border-mid);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px -3px rgba(6,81,237,0.1);
   padding: 20px;
 }
 
@@ -380,6 +377,54 @@ body {
 }
 .input { padding: 8px 12px; width: 100%; outline: none; }
 .input:focus, .input-group:focus-within { border-color: var(--accent-1); box-shadow: 0 0 0 1px var(--accent-1); }
+
+/* ─── Search Bar ─────────────────────────────────────────────────────────── */
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+.search-wrapper svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+.search-input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  background: #ffffff;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  outline: none;
+}
+.search-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+
+/* ─── 3D Hover & Buttons ────────────────────────────────────────────────── */
+.hover-3d {
+  transition: all 0.3s ease-out;
+}
+.hover-3d:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+}
+
+.btn-gradient {
+  background: linear-gradient(to right, #0d9488, #10b981);
+  color: #ffffff;
+  border: none;
+}
+.btn-gradient:hover {
+  opacity: 0.95;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
+}
 
 /* ─── Table ─────────────────────────────────────────────────────────────── */
 .data-table {

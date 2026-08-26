@@ -36,14 +36,23 @@ export default function Settings() {
           <div className="panel-header">
             <span className="panel-title"><Shield size={16} strokeWidth={1.5} /> Webhook Callback URL</span>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div className="input-group" style={{ flex: 1 }}>
+          <div style={{ display: 'flex', position: 'relative' }}>
+            <div className="input-group" style={{ flex: 1, paddingRight: 80 }}>
               <span className="input-group-icon"><Shield size={14} strokeWidth={1.5} /></span>
-              <input className="input" readOnly value={`${API_BASE}/webhook`} />
+              <input className="input" readOnly value={`${API_BASE}/webhook`} style={{ width: '100%' }} />
             </div>
-            <button className="btn btn-outline btn-sm" onClick={copyWebhookUrl}>
-              {copied ? <CheckCircle size={13} color="var(--positive)" strokeWidth={1.5} /> : <Copy size={13} strokeWidth={1.5} />}
-              {copied ? 'Copied!' : 'Copy'}
+            <button
+              style={{
+                position: 'absolute', right: 4, top: 4, bottom: 4,
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: 'var(--bg-hover)', border: 'none', borderRadius: 8,
+                padding: '0 12px', fontSize: '0.75rem', fontWeight: 600,
+                color: copied ? 'var(--positive)' : 'var(--text-secondary)', cursor: 'pointer'
+              }}
+              onClick={copyWebhookUrl}
+            >
+              {copied ? <CheckCircle size={13} strokeWidth={1.5} /> : <Copy size={13} strokeWidth={1.5} />}
+              {copied ? 'Copied' : 'Copy'}
             </button>
           </div>
         </div>
@@ -152,12 +161,20 @@ export default function Settings() {
           <div className="panel-header">
             <span className="panel-title"><Users size={16} strokeWidth={1.5} /> Team & Roles</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: '#f8fafc', padding: '16px 20px', borderRadius: 12, border: '1px solid #f1f5f9'
+          }}>
             <div>
-              <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>Your Role</div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Your Role</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Administrator access</div>
             </div>
-            <div className="badge badge-neutral">Admin</div>
+            <div style={{
+              background: 'rgba(79,70,229,0.1)', color: '#4f46e5',
+              padding: '4px 12px', borderRadius: 20, fontSize: '0.75rem', fontWeight: 700
+            }}>
+              Admin
+            </div>
           </div>
         </div>
 

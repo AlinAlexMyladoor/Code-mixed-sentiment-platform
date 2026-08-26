@@ -166,9 +166,9 @@ export default function Vocabulary() {
         )}
 
         {/* Search */}
-        <div className="input-group" style={{ maxWidth: 340, marginBottom: 16 }}>
-          <span className="input-group-icon"><Search size={14} strokeWidth={1.5} /></span>
-          <input className="input" placeholder="Search terms…" value={search} onChange={e => setSearch(e.target.value)} />
+        <div className="search-wrapper" style={{ maxWidth: 340, marginBottom: 16 }}>
+          <Search size={16} strokeWidth={1.5} />
+          <input className="search-input" placeholder="Search terms…" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
 
         {/* Table */}

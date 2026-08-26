@@ -42,7 +42,7 @@ export default function Sidebar({ wsStatus }) {
           <img src="/logo.png" alt="SwaraSense" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
         </div>
         <div className="sidebar-logo-text">
-          <div className="sidebar-logo-title">SwaraSense</div>
+          <div className="sidebar-logo-title" style={{ color: '#0f172a' }}>SwaraSense</div>
         </div>
       </div>
 

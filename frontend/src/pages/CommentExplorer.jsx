@@ -172,10 +172,10 @@ export default function CommentExplorer() {
         <div className="panel" style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
             <form onSubmit={handleSearch} style={{ flex: 1, minWidth: 240 }}>
-              <div className="input-group">
-                <span className="input-group-icon"><Search size={14} /></span>
+              <div className="search-wrapper">
+                <Search size={16} />
                 <input
-                  className="input"
+                  className="search-input"
                   placeholder="Search comment text…"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
