@@ -145,7 +145,6 @@ export default function Settings() {
               <CheckCircle size={11} strokeWidth={1.5} /> Always Active
             </div>
           </div>
-          </div>
         </div>
 
         {/* Team & Roles */}
