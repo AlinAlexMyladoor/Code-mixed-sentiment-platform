@@ -111,7 +111,7 @@ export default function Analytics() {
       <div className="page-body">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
           <button 
-            className="btn bg-gradient-to-r from-teal-600 to-emerald-500 text-white font-medium border-0 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-300 rounded-xl px-5 py-2.5" 
+            className="btn bg-slate-900 hover:bg-slate-800 text-white font-medium border-0 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-500/20 transition-all duration-300 rounded-xl px-5 py-2.5" 
             onClick={() => window.open(`${API_BASE}/api/reports/latest`, '_blank')}
           >
             Generate Executive Briefing
