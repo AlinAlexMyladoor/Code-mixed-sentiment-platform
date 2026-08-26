@@ -208,6 +208,32 @@ export default function ConnectPages() {
           }
         `}</style>
 
+        {/* Get Started Banner */}
+        {!loading && pages.length === 0 && (
+          <div style={{
+            background: 'linear-gradient(135deg, #0d9488, #0f766e)',
+            borderRadius: 20, padding: '24px 28px', color: '#fff',
+            marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            boxShadow: '0 10px 30px rgba(13,148,136,0.3)',
+          }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>Get Started with SwaraSense</h2>
+              <p style={{ margin: '6px 0 0', opacity: 0.9, fontSize: '0.88rem' }}>Connect your first Meta page to start analyzing code-mixed comments in real-time.</p>
+            </div>
+            <button
+              onClick={handleConnect}
+              style={{
+                background: '#fff', color: '#0f766e', fontWeight: 700, border: 'none',
+                padding: '12px 24px', borderRadius: 12, cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
+                display: 'flex', alignItems: 'center', gap: 8,
+              }}
+            >
+              <Link2 size={16} /> Connect Now
+            </button>
+          </div>
+        )}
+
         {/* ── 2×2 Integration Grid ─────────────────────────────── */}
         <div style={{
           display: 'grid',

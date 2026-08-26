@@ -106,6 +106,103 @@ MULTISPACE      = re.compile(r"\s+")
 QUESTION_RE     = re.compile(r"\?{2,}")          # multiple ? → frustration
 CAPS_RE         = re.compile(r"\b[A-Z]{4,}\b")   # all-caps words
 
+# ─────────────────────────────────────────────
+# PII Redaction — applied BEFORE inference & DB save
+# ─────────────────────────────────────────────
+
+_PII_PATTERNS: list[tuple[re.Pattern, str]] = [
+    # Phone numbers (Indian 10-digit, international, +91 prefix)
+    (re.compile(r"\+?(?:91[-\s]?)?[6-9]\d{9}\b"), "[PHONE]"),
+    (re.compile(r"\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b"), "[PHONE]"),
+    # Email addresses
+    (re.compile(r"\b[\w.%+\-]+@[\w.\-]+\.[A-Za-z]{2,}\b", re.IGNORECASE), "[EMAIL]"),
+    # Indian Aadhaar-style 12-digit IDs
+    (re.compile(r"\b\d{4}[\s\-]?\d{4}[\s\-]?\d{4}\b"), "[ID_NUMBER]"),
+    # Order / tracking IDs (e.g. #ORD-12345, ORDER-ABC123)
+    (re.compile(r"\b(?:#|ORDER[-_]?|ORD[-_]?|TXN[-_]?|AWB[-_]?)\w{4,}\b", re.IGNORECASE), "[ORDER_ID]"),
+    # UPI IDs
+    (re.compile(r"\b[\w.\-]+@(?:okaxis|okhdfcbank|okicici|oksbi|ybl|upi)\b", re.IGNORECASE), "[PAYMENT_ID]"),
+    # URLs (strip before saving)
+    (re.compile(r"https?://\S+|www\.\S+"), "[URL]"),
+]
+
+
+def redact_pii(text: str) -> str:
+    """
+    Mask personally identifiable information before saving to DB or running inference.
+    Returns the redacted string; original is preserved separately for audit.
+    """
+    for pattern, replacement in _PII_PATTERNS:
+        text = pattern.sub(replacement, text)
+    return text
+
+
+# ─────────────────────────────────────────────
+# Custom Vocabulary Cache — dynamic, no restart needed
+# ─────────────────────────────────────────────
+
+import threading
+
+_vocab_lock  = threading.RLock()
+# Dict[term_lower -> {"forced_sentiment": str|None, "forced_aspect": str|None}]
+_vocab_cache: dict[str, dict] = {}
+
+
+def vocab_load_from_db() -> None:
+    """Populate cache from DB at startup. Called once by lifespan."""
+    try:
+        from database import SessionLocal
+        from models import CustomVocabulary as _VocabModel
+        db = SessionLocal()
+        try:
+            rows = db.query(_VocabModel).all()
+            with _vocab_lock:
+                _vocab_cache.clear()
+                for row in rows:
+                    _vocab_cache[row.term.lower()] = {
+                        "forced_sentiment": row.forced_sentiment,
+                        "forced_aspect":    row.forced_aspect,
+                    }
+        finally:
+            db.close()
+    except Exception:
+        pass  # Graceful — if DB not ready yet, cache stays empty
+
+
+def vocab_set(term: str, forced_sentiment: str | None, forced_aspect: str | None) -> None:
+    """Upsert a term into the live cache (called by POST /api/vocabulary)."""
+    with _vocab_lock:
+        _vocab_cache[term.lower()] = {
+            "forced_sentiment": forced_sentiment,
+            "forced_aspect":    forced_aspect,
+        }
+
+
+def vocab_delete(term: str) -> None:
+    """Remove a term from the live cache (called by DELETE /api/vocabulary/{id})."""
+    with _vocab_lock:
+        _vocab_cache.pop(term.lower(), None)
+
+
+def vocab_apply(text: str, result_dict: dict) -> dict:
+    """
+    Check comment text against vocabulary cache.
+    If a custom term is found, override sentiment and/or aspect_sentiments.
+    Returns the (possibly mutated) result_dict.
+    """
+    text_lower = text.lower()
+    with _vocab_lock:
+        snapshot = dict(_vocab_cache)
+    for term, overrides in snapshot.items():
+        if term in text_lower:
+            if overrides.get("forced_sentiment"):
+                result_dict["sentiment"] = overrides["forced_sentiment"]
+            if overrides.get("forced_aspect"):
+                aspects = result_dict.get("aspect_sentiments") or {}
+                aspects[overrides["forced_aspect"]] = overrides.get("forced_sentiment") or aspects.get(overrides["forced_aspect"], "neutral")
+                result_dict["aspect_sentiments"] = aspects
+    return result_dict
+
 
 @dataclass
 class AnalysisResult:
@@ -633,12 +730,23 @@ def extract_aspects_and_intent(text: str) -> tuple[dict[str, str], str]:
 
 
 def analyze_comment(text: str) -> AnalysisResult:
-    cleaned   = normalize_text(text)
+    # 1. Redact PII — the returned `text` is the safe, display-ready version.
+    #    The caller (worker.py) retains the raw original in original_text_raw.
+    redacted  = redact_pii(text)
+    cleaned   = normalize_text(redacted)
     entities  = extract_entities_with_boundary_logic(cleaned)
     sentiment, confidence, source, signals, sarc_score = classify_sarcasm_and_sentiment(cleaned)
     english_ratio, switch_count = detect_language_switching(cleaned)
     regional  = find_regional_tokens(cleaned)
     aspects, intent = extract_aspects_and_intent(cleaned)
+
+    # 2. Apply custom vocabulary overrides (dynamic cache — no restart needed).
+    overridden = vocab_apply(redacted, {
+        "sentiment":        sentiment,
+        "aspect_sentiments": aspects,
+    })
+    sentiment = overridden["sentiment"]
+    aspects   = overridden["aspect_sentiments"]
 
     return AnalysisResult(
         sentiment=sentiment,

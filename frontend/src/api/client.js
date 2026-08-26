@@ -78,6 +78,14 @@ export const api = {
   disconnectPage: (pageId) => request('DELETE', `/auth/meta/pages/${pageId}`),
   refreshPageToken: (pageId) => request('POST', `/auth/meta/pages/${pageId}/refresh-token`),
 
+  // ─── Custom Vocabulary ─────────────────────────────────────────────────
+  getVocabulary: () => request('GET', '/api/vocabulary'),
+  createVocabularyTerm: (data) => request('POST', '/api/vocabulary', data),
+  deleteVocabularyTerm: (termId) => request('DELETE', `/api/vocabulary/${termId}`),
+
+  // ─── Queue & System Health ─────────────────────────────────────────────
+  queueHealth: () => request('GET', '/api/health/queue'),
+
   // ─── Diagnostics ───────────────────────────────────────────────────────
   // Confirms PostgreSQL is healthy and returns live row_count of persisted comments.
   dbHealth: () => request('GET', '/api/health/db'),

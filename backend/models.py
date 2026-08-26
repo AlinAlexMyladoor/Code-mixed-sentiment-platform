@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, DateTime, Float, Integer, String, JSON, Boolean, Text
+from sqlalchemy import Column, DateTime, Float, Integer, String, JSON, Boolean, Text, UniqueConstraint
 
 from database import Base
 
@@ -12,7 +12,7 @@ class User(Base):
     email         = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     full_name     = Column(String, nullable=True)
-    role          = Column(String, default="user")      # user | admin
+    role          = Column(String, default="agent")     # admin | manager | agent
     is_active     = Column(Boolean, default=True)
     created_at    = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
@@ -78,7 +78,8 @@ class ProcessedComment(Base):
     platform_id           = Column(String, index=True)
     page_id               = Column(String, index=True, nullable=True)
     parent_comment_id     = Column(String, nullable=True)
-    original_text         = Column(Text)
+    original_text         = Column(Text)                  # PII-redacted display text
+    original_text_raw     = Column(Text, nullable=True)    # Raw pre-redaction text (backend-only audit trail)
     extracted_entities    = Column(JSON)
     sentiment             = Column(String, index=True)
     english_ratio         = Column(Float)
@@ -106,3 +107,22 @@ class AlertRule(Base):
     channel       = Column(String, default="Telegram") # Telegram, Slack, Email
     is_active     = Column(Boolean, default=True)
     created_at    = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class CustomVocabulary(Base):
+    """
+    Brand-specific dialect / slang override dictionary.
+    When a term is found in a comment, its forced_sentiment and forced_aspect
+    override the model output — applied dynamically (no server restart required).
+    """
+    __tablename__ = "custom_vocabulary"
+    __table_args__ = (UniqueConstraint("term", name="uq_vocab_term"),)
+
+    id               = Column(Integer, primary_key=True, index=True)
+    term             = Column(String, nullable=False, index=True)   # e.g. "thokke"
+    forced_sentiment = Column(String, nullable=True)                # "negative" | "positive" | "sarcastic" | "neutral"
+    forced_aspect    = Column(String, nullable=True)                # "delivery" | "product" | ...
+    description      = Column(String, nullable=True)                # Human-readable note
+    created_by       = Column(Integer, nullable=True)               # user_id reference
+    created_at       = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at       = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)

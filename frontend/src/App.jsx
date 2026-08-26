@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Layout/Sidebar';
 import { useWebSocket } from './hooks/useWebSocket';
 import { DemoProvider } from './context/DemoContext';
+import { RBACProvider } from './context/RBACContext';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
 import CommentExplorer from './pages/CommentExplorer';
@@ -11,6 +12,7 @@ import AIInsights from './pages/AIInsights';
 import ConnectPages from './pages/ConnectPages';
 import AlertRules from './pages/AlertRules';
 import Settings from './pages/Settings';
+import Vocabulary from './pages/Vocabulary';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import './index.css';
 
@@ -33,6 +35,7 @@ function AppShell() {
           <Route path="/connect"     element={<ConnectPages />} />
           <Route path="/alert-rules" element={<AlertRules />} />
           <Route path="/settings"    element={<Settings />} />
+          <Route path="/vocabulary"  element={<Vocabulary />} />
         </Routes>
       </main>
     </div>
@@ -42,12 +45,14 @@ function AppShell() {
 export default function App() {
   return (
     <DemoProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/*" element={<AppShell />} />
-        </Routes>
-      </BrowserRouter>
+      <RBACProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/*" element={<AppShell />} />
+          </Routes>
+        </BrowserRouter>
+      </RBACProvider>
     </DemoProvider>
   );
 }

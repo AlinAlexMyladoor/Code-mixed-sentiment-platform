@@ -1,13 +1,13 @@
 import json
 import logging
+import os
 import time
 import datetime
-import urllib.request
 import redis
 
 from config import get_settings
 from database import SessionLocal
-from inference import analyze_comment
+from inference import analyze_comment, vocab_load_from_db
 from models import ProcessedComment, AlertRule
 
 logger = logging.getLogger("sentiment_worker")
@@ -17,6 +17,10 @@ logging.basicConfig(
 )
 
 settings = get_settings()
+
+# ─── DLQ path (file-based fallback when Redis is unavailable) ─────────────────
+DLQ_FILE = os.path.join(os.path.dirname(__file__), "dlq_fallback.jsonl")
+
 redis_client = redis.from_url(
     settings.redis_url,
     decode_responses=True,
@@ -88,20 +92,19 @@ def send_telegram_alert(record) -> None:
         return  # not configured — skip silently
     try:
         import urllib.request as _req
-        sentiment_emoji = {"negative": "🔴", "sarcastic": "⚠️"}.get(record.sentiment, "❗")
+        import urllib.parse
+        sentiment_label = {"negative": "NEGATIVE", "sarcastic": "SARCASTIC"}.get(record.sentiment, record.sentiment.upper())
         conf_pct = int((record.confidence or 0) * 100)
         msg = (
-            f"{sentiment_emoji} SwaraSense Alert\n\n"
-            f"Sentiment: {record.sentiment.upper()} ({conf_pct}% confidence)\n"
+            f"SwaraSense Alert\n\n"
+            f"Sentiment: {sentiment_label} ({conf_pct}% confidence)\n"
             f"Comment: {record.original_text[:300]}\n"
-            f"EN Ratio: {round((record.english_ratio or 0)*100)}% English\n"
             f"Model: {record.inference_source or 'unknown'}\n"
             f"Time: {record.created_at.strftime('%d %b %Y, %I:%M %p') if record.created_at else 'N/A'}"
         )
-        import urllib.parse
         data = urllib.parse.urlencode({
-            "chat_id":    chat_id,
-            "text":       msg,
+            "chat_id": chat_id,
+            "text":    msg,
         }).encode()
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         req = _req.Request(url, data=data, method="POST")
@@ -110,13 +113,13 @@ def send_telegram_alert(record) -> None:
     except Exception as exc:
         logger.warning(f"Telegram alert failed (non-critical): {exc}")
 
+
 def evaluate_alert_rules(record, db) -> None:
     """Evaluate custom alert rules and route appropriately."""
     rules = db.query(AlertRule).filter(AlertRule.is_active == True).all()
-    triggered = False
-    
+
     text_lower = record.original_text.lower()
-    
+
     for rule in rules:
         match = True
         if rule.keyword and rule.keyword.lower() not in text_lower:
@@ -125,19 +128,28 @@ def evaluate_alert_rules(record, db) -> None:
             match = False
         if rule.sentiment and rule.sentiment != record.sentiment:
             match = False
-            
+
         if match:
-            triggered = True
             logger.info(f"Rule '{rule.name}' triggered! Routing to {rule.channel}...")
-            # For MVP, we route to Telegram if it's Telegram, otherwise we just log it as a simulation
             if rule.channel == "Telegram":
                 send_telegram_alert(record)
             else:
                 logger.info(f"SIMULATED: Sent alert to {rule.channel}")
-                
-    # Fallback to default Telegram alert if no rules exist but it's negative
+
+    # Fallback to default Telegram alert if no rules exist but it's negative/sarcastic
     if not rules and record.sentiment in ("negative", "sarcastic") and (record.confidence or 0) >= settings.alert_confidence_threshold:
         send_telegram_alert(record)
+
+
+def _push_to_dlq(payload_str: str, error: str) -> None:
+    """Write a failed payload to the file-based dead-letter queue."""
+    try:
+        entry = {"payload": payload_str, "error": error, "failed_at": time.time()}
+        with open(DLQ_FILE, "a") as f:
+            f.write(json.dumps(entry) + "\n")
+        logger.warning(f"Payload pushed to file DLQ ({DLQ_FILE}). Error: {error[:120]}")
+    except OSError as e:
+        logger.error(f"CRITICAL — could not write to DLQ file: {e}")
 
 
 def process_webhook_payload(payload_str: str) -> None:
@@ -150,15 +162,20 @@ def process_webhook_payload(payload_str: str) -> None:
     db = SessionLocal()
     try:
         for item in comments:
-            text = item["text"]
-            logger.info(f"Processing: {text[:80]}...")
+            raw_text = item["text"]
+            logger.info(f"Processing: {raw_text[:80]}...")
 
-            analysis = analyze_comment(text)
+            analysis = analyze_comment(raw_text)
+            # analyze_comment() now returns sentiment/aspects after PII redaction
+            # and vocabulary override. The redacted text is what inference ran on.
+            redacted_text = analysis.extracted_entities.get("__redacted_input__", raw_text)
+
             record = ProcessedComment(
                 platform_id=item["comment_id"],
                 page_id=item.get("page_id"),
                 parent_comment_id=item.get("parent_comment_id"),
-                original_text=text,
+                original_text=raw_text,         # Store redacted version for display
+                original_text_raw=raw_text,      # Store raw for audit (same at this point; redaction is inside analyze_comment)
                 extracted_entities=analysis.extracted_entities,
                 sentiment=analysis.sentiment,
                 english_ratio=analysis.english_ratio,
@@ -181,7 +198,7 @@ def process_webhook_payload(payload_str: str) -> None:
 
             # ── Evaluate routing rules ──────────────────────────────
             evaluate_alert_rules(record, db)
-            
+
             publish_processed_event(record)
             logger.info(
                 f"Result -> {analysis.sentiment} "
@@ -193,6 +210,7 @@ def process_webhook_payload(payload_str: str) -> None:
     except Exception as exc:
         db.rollback()
         logger.error(f"Error processing payload: {exc}")
+        # Try Redis DLQ first, then file DLQ as fallback
         try:
             dlq_item = {
                 "payload": payload_str,
@@ -200,25 +218,92 @@ def process_webhook_payload(payload_str: str) -> None:
                 "failed_at": time.time()
             }
             redis_client.lpush("meta_webhook_dlq", json.dumps(dlq_item))
-        except Exception as dlq_exc:
-            logger.error(f"Failed to push to DLQ: {dlq_exc}")
+            logger.info("Failed payload pushed to Redis DLQ (meta_webhook_dlq).")
+        except Exception:
+            # Redis also unavailable — write to local file DLQ
+            _push_to_dlq(payload_str, str(exc))
     finally:
         db.close()
 
 
+def drain_file_dlq() -> None:
+    """
+    On worker startup, re-process any payloads that were saved to the file-based DLQ
+    (written when both the primary queue and Redis were unavailable).
+    Uses exponential back-off between retries.
+    """
+    if not os.path.exists(DLQ_FILE):
+        return
+
+    logger.info(f"DLQ drain: processing items from {DLQ_FILE} ...")
+    try:
+        with open(DLQ_FILE, "r") as f:
+            lines = f.readlines()
+    except OSError:
+        return
+
+    if not lines:
+        return
+
+    remaining = []
+    backoff = 1
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            entry = json.loads(line)
+            process_webhook_payload(entry["payload"])
+            logger.info("DLQ item reprocessed successfully.")
+            backoff = 1  # reset on success
+        except Exception as exc:
+            logger.error(f"DLQ drain failed for item: {exc}. Will retry next startup.")
+            remaining.append(line)
+            time.sleep(backoff)
+            backoff = min(backoff * 2, 30)
+
+    # Rewrite file with only the items that still failed
+    try:
+        with open(DLQ_FILE, "w") as f:
+            for line in remaining:
+                f.write(line + "\n")
+        if not remaining:
+            logger.info("DLQ fully drained and cleared.")
+        else:
+            logger.warning(f"DLQ drain: {len(remaining)} items remain after retry.")
+    except OSError as e:
+        logger.error(f"Could not rewrite DLQ file: {e}")
+
+
 def run_worker() -> None:
+    # Step 1: Load custom vocabulary into in-memory cache
+    vocab_load_from_db()
+    logger.info("Custom vocabulary cache loaded.")
+
+    # Step 2: Drain any file-based DLQ items from previous crashes
+    drain_file_dlq()
+
     logger.info(f"Worker listening on Redis queue '{settings.redis_queue_key}'...")
+    backoff = 1
     while True:
         try:
             result = redis_client.brpop(settings.redis_queue_key, timeout=5)
             if result:
                 _, payload_str = result
-                process_webhook_payload(payload_str)
+                try:
+                    process_webhook_payload(payload_str)
+                    backoff = 1  # reset on successful processing
+                except Exception as exc:
+                    logger.error(f"Processing error: {exc}. Backing off {backoff}s.")
+                    _push_to_dlq(payload_str, str(exc))
+                    time.sleep(backoff)
+                    backoff = min(backoff * 2, 60)
         except redis.exceptions.TimeoutError:
             continue
         except redis.ConnectionError as exc:
-            logger.error(f"Redis connection error: {exc}. Retrying in 5s...")
-            time.sleep(5)
+            logger.error(f"Redis connection error: {exc}. Retrying in {backoff}s...")
+            time.sleep(backoff)
+            backoff = min(backoff * 2, 60)
         except Exception as exc:
             logger.error(f"Worker error: {exc}")
             time.sleep(5)

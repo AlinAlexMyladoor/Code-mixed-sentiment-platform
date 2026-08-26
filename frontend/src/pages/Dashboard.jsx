@@ -13,6 +13,7 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import { useMetrics } from '../hooks/useMetrics';
 import { useDemo } from '../context/DemoContext';
 import { api } from '../api/client';
+import Onboarding from './Onboarding';
 
 const CHART_COLORS = {
   positive: '#10b981',
@@ -46,6 +47,13 @@ export default function Dashboard() {
   const { metrics, loading, refetch } = useMetrics(15000);
   const [wsComments, setWsComments] = useState([]);
   const { isDemoMode, demoComments, demoMetrics } = useDemo();
+  const [pagesCount, setPagesCount] = useState(null);
+
+  useEffect(() => {
+    if (!isDemoMode) {
+      api.connectedPages().then(pages => setPagesCount(pages.length)).catch(() => setPagesCount(0));
+    }
+  }, [isDemoMode]);
 
   const onWsMessage = useCallback((msg) => {
     if (msg.type === 'comment_processed' && msg.data) {
@@ -101,6 +109,12 @@ export default function Dashboard() {
       </div>
     );
   };
+
+  const totalComments = s?.total_comments || 0;
+
+  if (!isDemoMode && !loading && pagesCount === 0 && totalComments === 0) {
+    return <Onboarding />;
+  }
 
   return (
     <>

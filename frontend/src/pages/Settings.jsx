@@ -1,17 +1,30 @@
-import { useState } from 'react';
-import { Bell, CheckCircle, Copy, ExternalLink, FileText, Shield, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bell, CheckCircle, Copy, ExternalLink, FileText, Shield, Zap, Lock, Users, Activity, RefreshCw } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
-import { API_BASE } from '../api/client';
+import { API_BASE, api } from '../api/client';
+import { useAuth } from '../context/RBACContext';
 
 export default function Settings() {
   const [copied, setCopied] = useState(false);
   const [alertsEnabled, setAlertsEnabled] = useState(true);
+  const { role } = useAuth();
+
+  // Queue health state (auto-refreshes every 30s)
+  const [queueHealth, setQueueHealth] = useState(null);
+  useEffect(() => {
+    const fetch = () => api.queueHealth().then(setQueueHealth).catch(() => {});
+    fetch();
+    const interval = setInterval(fetch, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const copyWebhookUrl = () => {
     navigator.clipboard.writeText(`${API_BASE}/webhook`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const roleLabel = { admin: 'Administrator', manager: 'Manager', agent: 'Agent', demo: 'Demo Mode' }[role] || 'Demo Mode';
 
   return (
     <>
@@ -21,15 +34,15 @@ export default function Settings() {
         {/* Webhook */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">
-            <span className="panel-title"><Shield size={16} /> Webhook Callback URL</span>
+            <span className="panel-title"><Shield size={16} strokeWidth={1.5} /> Webhook Callback URL</span>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <div className="input-group" style={{ flex: 1 }}>
-              <span className="input-group-icon"><Shield size={14} /></span>
+              <span className="input-group-icon"><Shield size={14} strokeWidth={1.5} /></span>
               <input className="input" readOnly value={`${API_BASE}/webhook`} />
             </div>
             <button className="btn btn-outline btn-sm" onClick={copyWebhookUrl}>
-              {copied ? <CheckCircle size={13} color="var(--positive)" /> : <Copy size={13} />}
+              {copied ? <CheckCircle size={13} color="var(--positive)" strokeWidth={1.5} /> : <Copy size={13} strokeWidth={1.5} />}
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
@@ -38,9 +51,8 @@ export default function Settings() {
         {/* Telegram Alerting */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">
-            <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bell size={16} color="#0284c7" /> Telegram Alerting</span>
+            <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bell size={16} color="#0284c7" strokeWidth={1.5} /> Telegram Alerting</span>
           </div>
-          {/* Status + Toggle row */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: alertsEnabled ? 'rgba(13,148,136,0.05)' : 'var(--bg-hover)',
@@ -49,7 +61,6 @@ export default function Settings() {
             transition: 'all 0.25s ease',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Telegram Icon */}
               <div style={{
                 width: 40, height: 40, borderRadius: 12,
                 background: 'linear-gradient(135deg, #229ed9, #0b84c1)',
@@ -62,12 +73,11 @@ export default function Settings() {
               </div>
               <div>
                 <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>Crisis Alerts</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>High-confidence negative · sarcastic ≥ 80%</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>High-confidence negative + sarcastic at 80%+ confidence</div>
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Status badge */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 background: alertsEnabled ? 'var(--positive-bg)' : 'var(--neutral-bg)',
@@ -75,11 +85,9 @@ export default function Settings() {
                 border: `1px solid ${alertsEnabled ? 'var(--positive-border)' : 'var(--neutral-border)'}`,
                 borderRadius: 20, padding: '4px 12px', fontSize: '0.7rem', fontWeight: 700,
               }}>
-                <CheckCircle size={12} />
-                {alertsEnabled ? 'Connected ✓' : 'Disabled'}
+                <CheckCircle size={12} strokeWidth={1.5} />
+                {alertsEnabled ? 'Connected' : 'Disabled'}
               </div>
-
-              {/* Toggle switch */}
               <button
                 onClick={() => setAlertsEnabled(v => !v)}
                 style={{
@@ -103,10 +111,145 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Privacy & Compliance — Always-on PII Redaction Status */}
+        <div className="panel" style={{ marginBottom: 18 }}>
+          <div className="panel-header">
+            <span className="panel-title"><Lock size={16} strokeWidth={1.5} color="#4f46e5" /> Privacy & Compliance</span>
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '14px 18px', borderRadius: 12,
+            background: 'rgba(79,70,229,0.04)',
+            border: '1px solid rgba(79,70,229,0.12)',
+          }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 12,
+              background: 'rgba(79,70,229,0.08)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <Shield size={18} color="#4f46e5" strokeWidth={1.5} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.88rem' }}>PII Redaction Engine</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                Phone numbers, emails, order IDs, UPI IDs, and government IDs are automatically masked before storage and display.
+              </div>
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              background: 'var(--positive-bg)', color: 'var(--positive)',
+              border: '1px solid var(--positive-border)',
+              borderRadius: 20, padding: '4px 12px',
+              fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.05em',
+            }}>
+              <CheckCircle size={11} strokeWidth={1.5} /> Always Active
+            </div>
+          </div>
+          <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {['[PHONE]', '[EMAIL]', '[ORDER_ID]', '[ID_NUMBER]', '[PAYMENT_ID]', '[URL]'].map(tag => (
+              <span key={tag} style={{
+                display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+                fontSize: '0.65rem', fontWeight: 600, fontFamily: 'monospace',
+                background: '#F1F5F9', color: '#475569', border: '1px solid #E2E8F0',
+              }}>{tag}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Team & Roles */}
+        <div className="panel" style={{ marginBottom: 18 }}>
+          <div className="panel-header">
+            <span className="panel-title"><Users size={16} strokeWidth={1.5} color="#0d9488" /> Team & Roles</span>
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '14px 18px', borderRadius: 12,
+            background: 'rgba(13,148,136,0.04)',
+            border: '1px solid rgba(13,148,136,0.12)',
+          }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+                Your Role
+              </div>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
+                {roleLabel}
+              </div>
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              background: role === 'admin' ? 'rgba(79,70,229,0.08)' : role === 'manager' ? 'rgba(13,148,136,0.08)' : 'rgba(100,116,139,0.08)',
+              color: role === 'admin' ? '#4f46e5' : role === 'manager' ? '#0d9488' : '#64748b',
+              border: `1px solid ${role === 'admin' ? 'rgba(79,70,229,0.18)' : role === 'manager' ? 'rgba(13,148,136,0.18)' : 'rgba(100,116,139,0.18)'}`,
+              borderRadius: 20, padding: '4px 14px',
+              fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            }}>
+              {role === 'demo' ? 'Demo' : role}
+            </div>
+          </div>
+          <div style={{ marginTop: 12, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-mid)' }}>
+                  <th style={{ textAlign: 'left', padding: '6px 0', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.65rem' }}>Role</th>
+                  <th style={{ textAlign: 'left', padding: '6px 0', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.65rem' }}>Access</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Admin', 'Full platform access, settings, team management'],
+                  ['Manager', 'Dashboard, Analytics, AI Insights, Alert Rules, Vocabulary'],
+                  ['Agent', 'Tickets, Comment Explorer, Draft AI Replies'],
+                ].map(([r, access]) => (
+                  <tr key={r} style={{ borderBottom: '1px solid var(--border-mid)' }}>
+                    <td style={{ padding: '7px 0', fontWeight: 600, color: 'var(--text-primary)' }}>{r}</td>
+                    <td style={{ padding: '7px 0', color: 'var(--text-muted)' }}>{access}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* System Health — Queue Monitor */}
+        <div className="panel" style={{ marginBottom: 18 }}>
+          <div className="panel-header">
+            <span className="panel-title"><Activity size={16} strokeWidth={1.5} color="#0891b2" /> System Health</span>
+            <button className="btn btn-ghost btn-sm" onClick={() => api.queueHealth().then(setQueueHealth).catch(() => {})} title="Refresh">
+              <RefreshCw size={13} strokeWidth={1.5} />
+            </button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+            {[
+              { label: 'Queue Depth', value: queueHealth?.queue_depth ?? '—', desc: 'Pending webhooks', healthy: (queueHealth?.queue_depth ?? 0) < 50 },
+              { label: 'Redis DLQ', value: queueHealth?.redis_dlq_depth ?? '—', desc: 'Failed items (Redis)', healthy: (queueHealth?.redis_dlq_depth ?? 0) === 0 },
+              { label: 'File DLQ', value: queueHealth?.file_dlq_depth ?? '—', desc: 'Fallback items (disk)', healthy: (queueHealth?.file_dlq_depth ?? 0) === 0 },
+            ].map(m => (
+              <div key={m.label} style={{
+                padding: '14px 16px', borderRadius: 12,
+                background: m.healthy ? 'rgba(16,185,129,0.04)' : 'rgba(239,68,68,0.04)',
+                border: `1px solid ${m.healthy ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'}`,
+              }}>
+                <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {m.label}
+                </div>
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)', marginTop: 2 }}>
+                  {m.value}
+                </div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                  {m.desc}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 10, fontSize: '0.68rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <RefreshCw size={10} strokeWidth={1.5} /> Auto-refreshes every 30 seconds
+          </div>
+        </div>
+
         {/* Platform Info */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">
-            <span className="panel-title"><Zap size={16} /> Platform</span>
+            <span className="panel-title"><Zap size={16} strokeWidth={1.5} /> Platform</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
@@ -130,13 +273,13 @@ export default function Settings() {
         {/* Legal */}
         <div className="panel">
           <div className="panel-header">
-            <span className="panel-title"><FileText size={16} /> Legal</span>
+            <span className="panel-title"><FileText size={16} strokeWidth={1.5} /> Legal</span>
           </div>
           <p style={{ fontSize: '0.83rem', color: 'var(--text-secondary)', margin: '0 0 14px', lineHeight: 1.7 }}>
             SwaraSense processes social media comment data solely for sentiment analysis on behalf of authorised page administrators. No data is sold or shared with third parties.
           </p>
           <a href="/privacy" target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-            <ExternalLink size={13} /> Privacy Policy
+            <ExternalLink size={13} strokeWidth={1.5} /> Privacy Policy
           </a>
         </div>
 

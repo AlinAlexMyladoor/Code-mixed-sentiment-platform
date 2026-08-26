@@ -19,7 +19,8 @@ import uvicorn
 
 from config import get_settings
 from database import SessionLocal, engine, Base
-from models import ProcessedComment
+from models import ProcessedComment, CustomVocabulary
+from inference import vocab_load_from_db, vocab_set, vocab_delete
 from mongodb_store import store_raw_webhook
 from routes.meta_auth import router as meta_auth_router
 from routes.auth import router as auth_router
@@ -126,6 +127,8 @@ async def lifespan(app: FastAPI):
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS ticket_id VARCHAR;"))
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS ticket_status VARCHAR;"))
             conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS draft_reply VARCHAR;"))
+            # original_text_raw — PII audit trail
+            conn.execute(text("ALTER TABLE processed_comments ADD COLUMN IF NOT EXISTS original_text_raw TEXT;"))
             # Auto-migrate alert_rules table if not exists
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS alert_rules (
@@ -139,12 +142,29 @@ async def lifespan(app: FastAPI):
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             '''))
-            logger.info("Auto-migrated schema columns and tables (alert_rules).")
+            # Auto-migrate custom_vocabulary table
+            conn.execute(text('''
+                CREATE TABLE IF NOT EXISTS custom_vocabulary (
+                    id SERIAL PRIMARY KEY,
+                    term VARCHAR NOT NULL,
+                    forced_sentiment VARCHAR,
+                    forced_aspect VARCHAR,
+                    description VARCHAR,
+                    created_by INTEGER,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    CONSTRAINT uq_vocab_term UNIQUE (term)
+                );
+            '''))
+            logger.info("Auto-migrated schema columns and tables (alert_rules, custom_vocabulary, PII fields).")
     except Exception as exc:
         logger.warning(f"Auto-migration skipped or failed: {exc}")
 
     listener_task = asyncio.create_task(redis_pubsub_listener())
     worker_task = asyncio.create_task(asyncio.to_thread(run_worker))
+    # Load custom vocabulary cache into inference engine
+    vocab_load_from_db()
+    logger.info("Custom vocabulary cache pre-loaded from DB.")
     logger.info("Platform started. Tables created.")
     yield
     listener_task.cancel()
@@ -565,6 +585,171 @@ def delete_alert_rule(rule_id: int):
         return {"status": "success"}
     finally:
         db.close()
+
+# ─── RBAC — Role-Based Access Control ─────────────────────────────────────
+from typing import Callable
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
+
+
+def require_role(allowed_roles: list[str]) -> Callable:
+    """
+    FastAPI dependency factory that checks the authenticated user's role.
+    Usage: @app.get("/protected", dependencies=[Depends(require_role(["admin", "manager"]))])
+    Gracefully degrades: if no token is present (unauthenticated), access is allowed
+    to avoid breaking the demo/open-access mode. Enforce strictly when auth middleware
+    is enabled end-to-end.
+    """
+    async def _check(token: str = Depends(oauth2_scheme)):
+        if not token:
+            return  # Open access / demo mode — skip role enforcement
+        try:
+            payload = decode_token(token)
+            role = payload.get("role", "agent")
+            if role not in allowed_roles:
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"Access denied. Required roles: {allowed_roles}. Your role: {role}"
+                )
+        except HTTPException:
+            raise
+        except Exception:
+            pass  # Token parse failure — allow degraded access
+    return _check
+
+
+# ─── Custom Vocabulary CRUD ────────────────────────────────────────────────
+from pydantic import BaseModel as PydanticBase
+
+
+class VocabCreate(PydanticBase):
+    term: str
+    forced_sentiment: str | None = None
+    forced_aspect: str | None = None
+    description: str | None = None
+
+
+class VocabOut(PydanticBase):
+    id: int
+    term: str
+    forced_sentiment: str | None
+    forced_aspect: str | None
+    description: str | None
+    created_at: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
+@app.get("/api/vocabulary", response_model=list[VocabOut],
+         dependencies=[Depends(require_role(["admin", "manager"]))])
+def list_vocabulary():
+    """List all custom vocabulary terms."""
+    db = SessionLocal()
+    try:
+        rows = db.query(CustomVocabulary).order_by(CustomVocabulary.created_at.desc()).all()
+        return [
+            VocabOut(
+                id=r.id, term=r.term,
+                forced_sentiment=r.forced_sentiment,
+                forced_aspect=r.forced_aspect,
+                description=r.description,
+                created_at=r.created_at.isoformat() if r.created_at else None,
+            ) for r in rows
+        ]
+    finally:
+        db.close()
+
+
+@app.post("/api/vocabulary", response_model=VocabOut, status_code=201,
+          dependencies=[Depends(require_role(["admin", "manager"]))])
+def create_vocabulary_term(body: VocabCreate):
+    """Add a new term to the brand vocabulary (takes effect immediately)."""
+    db = SessionLocal()
+    try:
+        existing = db.query(CustomVocabulary).filter(CustomVocabulary.term == body.term.lower()).first()
+        if existing:
+            raise HTTPException(status_code=409, detail=f"Term '{body.term}' already exists.")
+        row = CustomVocabulary(
+            term=body.term.lower(),
+            forced_sentiment=body.forced_sentiment,
+            forced_aspect=body.forced_aspect,
+            description=body.description,
+        )
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+        # Update live inference cache immediately — no restart needed
+        vocab_set(row.term, row.forced_sentiment, row.forced_aspect)
+        logger.info(f"Vocabulary term '{row.term}' added and cache updated.")
+        return VocabOut(
+            id=row.id, term=row.term,
+            forced_sentiment=row.forced_sentiment,
+            forced_aspect=row.forced_aspect,
+            description=row.description,
+            created_at=row.created_at.isoformat() if row.created_at else None,
+        )
+    finally:
+        db.close()
+
+
+@app.delete("/api/vocabulary/{term_id}",
+            dependencies=[Depends(require_role(["admin", "manager"]))])
+def delete_vocabulary_term(term_id: int):
+    """Remove a vocabulary term (takes effect immediately)."""
+    db = SessionLocal()
+    try:
+        row = db.query(CustomVocabulary).filter(CustomVocabulary.id == term_id).first()
+        if not row:
+            raise HTTPException(status_code=404, detail="Term not found")
+        term = row.term
+        db.delete(row)
+        db.commit()
+        # Remove from live inference cache immediately
+        vocab_delete(term)
+        logger.info(f"Vocabulary term '{term}' deleted and cache updated.")
+        return {"status": "success", "deleted_term": term}
+    finally:
+        db.close()
+
+
+# ─── Queue Health ────────────────────────────────────────────────────────────
+import os as _os
+
+
+@app.get("/api/health/queue")
+def queue_health():
+    """
+    Returns the current depth of the Redis processing queue and the file-based DLQ.
+    Used by the Settings dashboard to monitor pipeline health in real time.
+    """
+    dlq_file = _os.path.join(_os.path.dirname(__file__), "dlq_fallback.jsonl")
+    try:
+        client = get_sync_redis()
+        queue_depth = client.llen(settings.redis_queue_key)
+        redis_dlq_depth = client.llen("meta_webhook_dlq")
+    except Exception:
+        queue_depth = -1
+        redis_dlq_depth = -1
+
+    file_dlq_depth = 0
+    if _os.path.exists(dlq_file):
+        try:
+            with open(dlq_file) as f:
+                file_dlq_depth = sum(1 for line in f if line.strip())
+        except OSError:
+            pass
+
+    return {
+        "status":          "healthy" if queue_depth >= 0 else "degraded",
+        "queue_depth":     queue_depth,
+        "redis_dlq_depth": redis_dlq_depth,
+        "file_dlq_depth":  file_dlq_depth,
+        "total_dlq":       max(0, redis_dlq_depth) + file_dlq_depth,
+    }
+
 
 # ─── Dead Letter Queue (DLQ) ───────────────────────────────────────────────
 @app.get("/api/dlq")
