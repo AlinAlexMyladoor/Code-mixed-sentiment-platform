@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Download, Filter, MessageSquare, Search, Cpu, CheckCircle, Trash2 } from 'lucide-react';
+import { Download, Filter, MessageSquare, Search, Cpu, CheckCircle, Trash2, ChevronDown } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, SentimentBadge, Skeleton } from '../components/UI';
 import { api } from '../api/client';
@@ -201,37 +201,54 @@ export default function CommentExplorer() {
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'row', gap: 24, alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
                   <Trash2 size={14} color="#ef4444" />
-                  <select
-                    value=""
-                    onChange={(e) => {
-                      const days = parseInt(e.target.value, 10);
-                      if (!isNaN(days)) {
-                        if (window.confirm("Are you sure you want to permanently delete these comments? This action cannot be undone.")) {
-                          handlePurge(days);
-                        }
-                      }
-                      e.target.value = "";
-                    }}
-                    style={{
-                      color: '#ef4444',
-                      fontSize: '0.875rem',
-                      fontWeight: 500,
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      outline: 'none',
-                      padding: 0
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#b91c1c'}
-                    onMouseLeave={e => e.currentTarget.style.color = '#ef4444'}
+                  <div 
+                    style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                    onMouseEnter={e => e.currentTarget.children[0].style.color = '#b91c1c'}
+                    onMouseLeave={e => e.currentTarget.children[0].style.color = '#ef4444'}
                   >
-                    <option value="" disabled>Purge Old Data</option>
-                    <option value="7">Delete &gt; 1 Week Old</option>
-                    <option value="30">Delete &gt; 1 Month Old</option>
-                    <option value="90">Delete &gt; 3 Months Old</option>
-                  </select>
+                    <span style={{ 
+                      color: '#ef4444', 
+                      fontSize: '0.875rem', 
+                      fontWeight: 500, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 4,
+                      pointerEvents: 'none',
+                      transition: 'color 0.2s'
+                    }}>
+                      Purge Old Data <ChevronDown size={14} />
+                    </span>
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        const days = parseInt(e.target.value, 10);
+                        if (!isNaN(days)) {
+                          if (window.confirm("Are you sure you want to permanently delete these comments? This action cannot be undone.")) {
+                            handlePurge(days);
+                          }
+                        }
+                        e.target.value = "";
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        opacity: 0,
+                        cursor: 'pointer',
+                        appearance: 'none'
+                      }}
+                      title="Purge Old Data"
+                    >
+                      <option value="" disabled>Purge Old Data</option>
+                      <option value="7">Delete &gt; 1 Week Old</option>
+                      <option value="30">Delete &gt; 1 Month Old</option>
+                      <option value="90">Delete &gt; 3 Months Old</option>
+                    </select>
+                  </div>
                 </div>
                 <button
                   className="btn btn-outline"
