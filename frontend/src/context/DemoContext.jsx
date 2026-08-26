@@ -12,8 +12,8 @@ const STORAGE_KEY = 'swarasense_demo';
 export const INITIAL_DEMO_COMMENTS = [
   {
     id: 'demo-1', platform_id: 'd1', page_id: 'demo-page',
-    original_text: 'Bhai yeh product ekdum bakwaas hai, paise waste ho gaye mere!',
-    translation: 'Brother, this product is absolute nonsense, my money got wasted!',
+    original_text: 'Bhai yeh product ekdum broken hai, mera refund karo!',
+    translation: 'Brother, this product is absolutely broken, refund me!',
     sentiment: 'negative', confidence: 0.91, english_ratio: 0.28,
     language_switch_count: 3, sarcasm_score: 0.05,
     inference_source: 'heuristic_mvp',
@@ -48,8 +48,8 @@ export const INITIAL_DEMO_COMMENTS = [
   },
   {
     id: 'demo-5', platform_id: 'd5', page_id: 'demo-page',
-    original_text: 'Yaar yeh fraud company hai! Mera paisa wapas karo, bilkul cheating hai!',
-    translation: 'Man, this is a fraud company! Return my money, this is absolute cheating!',
+    original_text: 'Yaar yeh scam hai! Worst support ever, bilkul cheating hai!',
+    translation: 'Man, this is a scam! Worst support ever, absolute cheating!',
     sentiment: 'negative', confidence: 0.95, english_ratio: 0.32,
     language_switch_count: 3, sarcasm_score: 0.10,
     inference_source: 'heuristic_mvp',
