@@ -227,7 +227,7 @@ export default function CommentExplorer() {
                     onMouseEnter={e => e.currentTarget.style.color = '#b91c1c'}
                     onMouseLeave={e => e.currentTarget.style.color = '#ef4444'}
                   >
-                    <option value="" disabled>Purge Old Data...</option>
+                    <option value="" disabled>Purge Old Data</option>
                     <option value="7">Delete &gt; 1 Week Old</option>
                     <option value="30">Delete &gt; 1 Month Old</option>
                     <option value="90">Delete &gt; 3 Months Old</option>
