@@ -185,20 +185,21 @@ export default function CommentExplorer() {
 
         {/* ── Filters ──────────────────────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
-                <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
-                <input
-                  className="live-search-input"
-                  placeholder="Search comment text…"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                />
-              </div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-start', marginBottom: 12 }}>
+            <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
+              <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                className="live-search-input"
+                placeholder="Search comment text…"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
               <button
                 className="btn btn-outline btn-sm"
                 onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
@@ -206,8 +207,6 @@ export default function CommentExplorer() {
               >
                 <Download size={13} /> Export CSV
               </button>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 className="btn btn-ghost btn-sm"
                 style={{ 
