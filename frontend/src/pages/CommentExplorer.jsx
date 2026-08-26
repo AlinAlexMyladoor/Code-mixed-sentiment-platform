@@ -144,6 +144,7 @@ export default function CommentExplorer() {
   useEffect(() => { load(); }, [load]);
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
     try {
       await api.deleteComment(id);
       setComments(comments.filter(c => c.id !== id));
@@ -273,10 +274,10 @@ export default function CommentExplorer() {
                   <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
                     {['Sentiment', 'Comment', 'Confidence', 'Model', 'Page', 'Time', 'Actions'].map(h => (
                       <th key={h} style={{
-                        padding: '10px 16px', textAlign: 'left',
+                        padding: '12px 20px', textAlign: 'left',
                         fontSize: '0.75rem', fontWeight: 600,
                         color: '#64748b', textTransform: 'uppercase',
-                        letterSpacing: '0.05em', background: '#fff',
+                        letterSpacing: '0.05em', background: '#f8fafc',
                       }}>{h}</th>
                     ))}
                   </tr>
@@ -290,16 +291,16 @@ export default function CommentExplorer() {
                       onMouseLeave={e => e.currentTarget.style.background = '#fff'}
                     >
                       {/* Sentiment */}
-                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                         <ProfessionalSentimentBadge sentiment={c.sentiment} />
                       </td>
 
                       {/* Comment text with intent + aspects */}
-                      <td style={{ padding: '12px 16px', maxWidth: 340 }}>
-                        <div style={{ marginBottom: 4 }}>
+                      <td style={{ padding: '16px 20px', maxWidth: 360 }}>
+                        <div style={{ marginBottom: 6 }}>
                           <IntentBadge intent={c.intent_signal} />
                         </div>
-                        <p style={{ margin: 0, fontSize: '0.82rem', color: '#1e293b', lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }} title={c.original_text}>
+                        <p style={{ margin: 0, fontSize: '0.875rem', color: '#1e293b', lineHeight: 1.6, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }} title={c.original_text}>
                           {c.original_text}
                         </p>
                         {/* Regional tokens */}
@@ -332,61 +333,63 @@ export default function CommentExplorer() {
                       </td>
 
                       {/* Confidence */}
-                      <td style={{ padding: '12px 16px' }}>
+                      <td style={{ padding: '16px 20px' }}>
                         <ConfidenceBar value={c.confidence} />
                       </td>
 
                       {/* Model */}
-                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
                         <ModelBadge source={c.inference_source} />
                       </td>
 
                       {/* Page */}
-                      <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.72rem' }}>
+                      <td style={{ padding: '16px 20px', color: '#64748b', fontSize: '0.75rem' }}>
                         {c.page_id ? c.page_id.slice(0, 10) + '…' : '—'}
                       </td>
 
                       {/* Time */}
-                      <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '16px 20px', color: '#64748b', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                         {formatIST(c.created_at)}
                       </td>
 
                       {/* Actions */}
-                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          {c.ticket_id ? (
-                            /* Clean ghost badge — no chunky bg */
-                            <span style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 4,
-                              fontSize: '0.7rem', fontWeight: 600,
-                              color: '#059669',
-                            }}>
-                              <CheckCircle size={13} strokeWidth={2} /> Ticket Created
-                            </span>
-                          ) : (c.sentiment === 'negative' || c.sentiment === 'sarcastic') ? (
-                            <button
-                              style={{
-                                fontSize: '0.7rem', fontWeight: 600,
-                                color: '#2563eb', background: 'transparent',
-                                border: '1px solid rgba(37,99,235,0.2)',
-                                padding: '4px 10px', borderRadius: 6,
-                                cursor: 'pointer', transition: 'all 0.15s',
-                              }}
-                              onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.4)'; }}
-                              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; }}
-                              onClick={() => handleCreateTicket(c.id)}
-                            >
-                              Create Ticket
-                            </button>
-                          ) : (
-                            <span style={{ color: '#cbd5e1' }}>—</span>
-                          )}
+                      <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 140, gap: 12 }}>
+                          <div>
+                            {c.ticket_id ? (
+                              /* Clean ghost badge — no chunky bg */
+                              <span style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 4,
+                                fontSize: '0.75rem', fontWeight: 600,
+                                color: '#059669',
+                              }}>
+                                <CheckCircle size={14} strokeWidth={2} /> Ticket Created
+                              </span>
+                            ) : (c.sentiment === 'negative' || c.sentiment === 'sarcastic') ? (
+                              <button
+                                style={{
+                                  fontSize: '0.75rem', fontWeight: 600,
+                                  color: '#2563eb', background: 'transparent',
+                                  border: '1px solid rgba(37,99,235,0.2)',
+                                  padding: '4px 12px', borderRadius: 6,
+                                  cursor: 'pointer', transition: 'all 0.15s',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.4)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; }}
+                                onClick={() => handleCreateTicket(c.id)}
+                              >
+                                Create Ticket
+                              </button>
+                            ) : (
+                              <span style={{ color: '#cbd5e1' }}>—</span>
+                            )}
+                          </div>
                           <button
                             className="action-icon-btn"
                             title="Delete Comment"
                             onClick={() => handleDelete(c.id)}
                           >
-                            <Trash2 size={15} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
