@@ -71,14 +71,35 @@ export default function Dashboard() {
     return [...wsComments, ...base.filter((c) => !ids.has(c.id))].slice(0, 40);
   }, [isDemoMode, demoComments, wsComments, metrics]);
 
-  /* Urgent = Negative OR Sarcastic AND confidence >= 0.80 */
-  const urgentItems = useMemo(
-    () => displayFeed.filter(
-      (c) => (c.sentiment === 'negative' || c.sentiment === 'sarcastic') &&
-             (c.confidence == null || c.confidence >= 0.8)
-    ),
-    [displayFeed],
-  );
+  /* Urgent = Smart Severity Sorting */
+  const urgentItems = useMemo(() => {
+    const HIGH_RISK_KEYWORDS = ['refund', 'scam', 'broken', 'support', 'worst'];
+    
+    const calculateSeverity = (c) => {
+      let severity = (c.confidence || 0) * 100;
+      
+      // Check high risk keywords in aspects or original text
+      if (c.aspect_sentiments) {
+        const aspects = Object.keys(c.aspect_sentiments).map(a => a.toLowerCase());
+        const hasRisk = aspects.some(a => HIGH_RISK_KEYWORDS.some(k => a.includes(k)));
+        if (hasRisk) severity += 50;
+      } else if (c.original_text) {
+        const text = c.original_text.toLowerCase();
+        const hasRisk = HIGH_RISK_KEYWORDS.some(k => text.includes(k));
+        if (hasRisk) severity += 50;
+      }
+      
+      if (c.sentiment === 'negative') {
+        severity += 20;
+      }
+      return severity;
+    };
+
+    return displayFeed
+      .map(c => ({ ...c, severity: calculateSeverity(c) }))
+      .filter(c => c.severity >= 80 && (c.sentiment === 'negative' || c.sentiment === 'sarcastic'))
+      .sort((a, b) => b.severity - a.severity);
+  }, [displayFeed]);
 
   const s = isDemoMode ? demoMetrics?.metricsData?.summary : metrics?.summary;
   const rawTrend = isDemoMode ? (demoMetrics?.metricsData?.trend || []) : (metrics?.trend || []);

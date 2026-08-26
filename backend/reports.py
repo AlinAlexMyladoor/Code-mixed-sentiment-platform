@@ -194,13 +194,24 @@ def generate_weekly_report():
         ))
         elements.append(Spacer(1, 8))
 
-        friction_points = [
-            "Delivery Delays  —  Comments expressing late or missed deliveries",
-            "Product Defects  —  Reports of quality issues or damaged goods",
-            "Support Wait Times  —  Complaints about slow or unresponsive customer service",
-            "Pricing Concerns  —  Negative sentiment around cost or value perception",
-            "Order Accuracy  —  Incorrect or incomplete orders",
-        ]
+        aspect_counts = {}
+        recent_negative_comments = db.query(ProcessedComment.aspect_sentiments).filter(
+            ProcessedComment.created_at >= seven_days_ago,
+            ProcessedComment.sentiment.in_(["negative", "sarcastic"])
+        ).all()
+
+        for (aspects,) in recent_negative_comments:
+            if aspects and isinstance(aspects, dict):
+                for aspect in aspects.keys():
+                    aspect_counts[aspect] = aspect_counts.get(aspect, 0) + 1
+
+        top_aspects = sorted(aspect_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+        
+        if not top_aspects:
+            friction_points = ["No major friction points detected this week."]
+        else:
+            friction_points = [f"{aspect.capitalize()} - {count} complaints" for aspect, count in top_aspects]
+
         for point in friction_points:
             elements.append(Paragraph(f"•  {point}", bullet_style))
 
