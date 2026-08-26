@@ -111,7 +111,7 @@ export default function Analytics() {
       <div className="page-body">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
           <button 
-            className="btn btn-dark hover-3d" 
+            className="btn btn-premium hover-3d" 
             onClick={() => window.open(`${API_BASE}/api/reports/latest`, '_blank')}
             style={{ fontWeight: 700, padding: '10px 20px', borderRadius: '10px' }}
           >

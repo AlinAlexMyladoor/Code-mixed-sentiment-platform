@@ -434,14 +434,14 @@ body {
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
 }
 
-.btn-dark {
-  background: #0f172a;
+.btn-premium {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
   color: #fff;
   border: none;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
 }
-.btn-dark:hover {
-  background: #1e293b;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.3);
+.btn-premium:hover {
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
 }
 
 /* ─── Table ─────────────────────────────────────────────────────────────── */
