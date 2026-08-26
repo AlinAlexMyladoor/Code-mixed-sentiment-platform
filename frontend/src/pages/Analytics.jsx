@@ -10,7 +10,7 @@ import { EmptyState, Skeleton } from '../components/UI';
 import { api, API_BASE } from '../api/client';
 import { useDemo } from '../context/DemoContext';
 
-const CHART_COLORS = ['#111827', '#374151', '#6B7280', '#9CA3AF', '#D1D5DB'];
+const CHART_COLORS = ['#0EA5E9', '#8B5CF6', '#10B981', '#F59E0B', '#F43F5E', '#6366F1'];
 
 const SENTIMENT_COLORS = {
   positive:  '#10B981',
@@ -109,12 +109,13 @@ export default function Analytics() {
       <TopBar title="Analytics" />
 
       <div className="page-body">
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
           <button 
-            className="btn btn-primary" 
+            className="btn btn-gradient hover-3d" 
             onClick={() => window.open(`${API_BASE}/api/reports/latest`, '_blank')}
+            style={{ fontWeight: 700, padding: '10px 20px', borderRadius: '10px' }}
           >
-            Download Weekly Report (PDF)
+            Generate Executive Briefing
           </button>
         </div>
 
@@ -228,12 +229,12 @@ export default function Analytics() {
             </div>
           </motion.div>
         </motion.div>
+        
         {/* ── Sentiment Trend Over Time ───────────────────────────────── */}
-
-        <div className="panel" style={{ marginBottom: 20 }}>
+        <div className="panel hover-3d" style={{ marginBottom: 20 }}>
           <div className="panel-header">
             <span className="panel-title"><TrendingUp size={16} /> Sentiment Trend Over Time</span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly avg English ratio per sentiment</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly avg English ratio per sentiment</span>
           </div>
           <div style={{ minHeight: 260 }}>
             {loading ? <Skeleton height={260} /> : activeSentLangCorr.length === 0 ? (
@@ -242,8 +243,8 @@ export default function Analytics() {
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={activeSentLangCorr} barGap={6} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="sentiment" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
-                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11 }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} domain={[0, 1]} />
+                  <XAxis dataKey="sentiment" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} />
+                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} domain={[0, 1]} />
                   <Tooltip
                     content={<CustomTooltip />}
                     formatter={(v, name) => [
@@ -251,7 +252,7 @@ export default function Analytics() {
                       name === 'avg_en_ratio' ? 'Avg English Ratio' : 'Comment Count',
                     ]}
                   />
-                  <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
+                  <Legend wrapperStyle={{ fontSize: '0.8rem', fontWeight: 500, paddingTop: 10 }} />
                   <Bar dataKey="avg_en_ratio" name="Avg English Ratio" radius={[6, 6, 0, 0]} legendType="none">
                     {activeSentLangCorr.map((entry, i) => (
                       <Cell key={i} fill={SENTIMENT_COLORS[entry.sentiment] || '#6366f1'} />
@@ -264,141 +265,45 @@ export default function Analytics() {
           </div>
         </div>
 
-        {/* ── Sentiment–Language Correlation Chart ──────────────────────── */}
-        <div className="panel" style={{ marginBottom: 20 }}>
-          <div className="panel-header">
-            <span className="panel-title"><Activity size={16} /> Sentiment ↔ Language Correlation</span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Avg English ratio per sentiment class</span>
-          </div>
-          <div style={{ minHeight: 220 }}>
-            {loading ? <Skeleton height={220} /> : activeSentLangCorr.length === 0 ? (
-              <EmptyState icon={Activity} title="No correlation data yet" desc="Process code-mixed comments to reveal language-sentiment patterns." />
-            ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={activeSentLangCorr} barGap={4}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis
-                    dataKey="sentiment"
-                    tick={{ fill: 'var(--text-muted)', fontSize: 11, textTransform: 'capitalize' }}
-                  />
-                  <YAxis
-                    tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
-                    tickFormatter={v => `${(v * 100).toFixed(0)}%`}
-                    domain={[0, 1]}
-                  />
-                  <Tooltip
-                    content={<CustomTooltip />}
-                    formatter={(v, name) => [
-                      name === 'avg_en_ratio' ? `${(v * 100).toFixed(1)}%` : v.toFixed(2),
-                      name === 'avg_en_ratio' ? 'Avg English Ratio' : 'Avg Lang Switches',
-                    ]}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
-                  <Bar dataKey="avg_en_ratio" name="Avg English Ratio" radius={[6, 6, 0, 0]}>
-                    {activeSentLangCorr.map((entry, i) => (
-                      <Cell key={i} fill={SENTIMENT_COLORS[entry.sentiment] || '#6366f1'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </div>
-
         {/* ── Language switching over time ───────────────────────────────── */}
-        <div className="panel" style={{ marginBottom: 20 }}>
+        <div className="panel hover-3d" style={{ marginBottom: 20 }}>
           <div className="panel-header">
             <span className="panel-title"><Globe size={16} /> Language-Switching Over Time</span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly buckets</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly buckets</span>
           </div>
           <div style={{ minHeight: 260 }}>
             {loading ? <Skeleton height={260} /> : activeLangSwitch.length === 0 ? (
               <EmptyState icon={Globe} title="No language data yet" desc="Process some code-mixed comments to see switching patterns." />
             ) : (
               <ResponsiveContainer width="100%" height={260}>
-                <AreaChart data={activeLangSwitch}>
+                <AreaChart data={activeLangSwitch} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="enGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="#0EA5E9" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="swGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#ec4899" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
+                      <stop offset="5%"  stopColor="#8B5CF6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="hour" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickFormatter={(v) => v.slice(11, 16)} />
-                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="hour" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} tickFormatter={(v) => v.slice(11, 16)} />
+                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ fontSize: '0.78rem' }} />
-                  <Area type="monotone" dataKey="avg_en_ratio"  name="Avg English Ratio"    stroke="#6366f1" fill="url(#enGrad)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="avg_switches"  name="Avg Lang Switches"    stroke="#ec4899" fill="url(#swGrad)" strokeWidth={2} />
+                  <Legend wrapperStyle={{ fontSize: '0.8rem', fontWeight: 500, paddingTop: 10 }} />
+                  <Area type="monotone" dataKey="avg_en_ratio"  name="Avg English Ratio"    stroke="#0EA5E9" fill="url(#enGrad)" strokeWidth={3} />
+                  <Area type="monotone" dataKey="avg_switches"  name="Avg Lang Switches"    stroke="#8B5CF6" fill="url(#swGrad)" strokeWidth={3} />
                 </AreaChart>
               </ResponsiveContainer>
             )}
           </div>
         </div>
 
-        <div className="two-col">
-          {/* English Ratio by Sentiment Band */}
-          <div className="panel">
-            <div className="panel-header">
-              <span className="panel-title"><BarChart2 size={16} /> Sentiment by English Ratio Band</span>
-            </div>
-            {loading ? <Skeleton height={240} /> : bandData.length === 0 ? (
-              <EmptyState icon={BarChart2} title="No data" desc="Process comments to see band analysis." />
-            ) : (
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={bandData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="band" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
-                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ fontSize: '0.78rem' }} />
-                  <Bar dataKey="positive"  fill={SENTIMENT_COLORS.positive} radius={[4,4,0,0]} />
-                  <Bar dataKey="negative"  fill={SENTIMENT_COLORS.negative} radius={[4,4,0,0]} />
-                  <Bar dataKey="sarcastic" fill={SENTIMENT_COLORS.sarcastic} radius={[4,4,0,0]} />
-                  <Bar dataKey="neutral"   fill={SENTIMENT_COLORS.neutral} radius={[4,4,0,0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
 
-          {/* Inference Sources Pie */}
-          <div className="panel">
-            <div className="panel-header">
-              <span className="panel-title"><Layers size={16} /> Inference Source Distribution</span>
-            </div>
-            {loading ? <Skeleton height={240} /> : sourcePieData.length === 0 ? (
-              <EmptyState icon={Layers} title="No source data" />
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie data={sourcePieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
-                      {sourcePieData.map((_, i) => (
-                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
-                  {sourcePieData.map((d, i) => (
-                    <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                      <div style={{ width: 10, height: 10, borderRadius: 2, background: CHART_COLORS[i % CHART_COLORS.length] }} />
-                      {d.name} ({d.value})
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* ── Competitive Benchmarking & Share of Voice ───────────────────── */}
-        <div className="panel">
+        <div className="panel hover-3d">
           <div className="panel-header">
             <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Hash size={16} color="#6366f1" /> Competitive Benchmarking & Share-of-Voice</span>
             <button
@@ -413,11 +318,11 @@ export default function Analytics() {
           ) : (
             <div className="two-col" style={{ alignItems: 'flex-start' }}>
               {/* Share of Voice Pie Chart */}
-              <div style={{ background: 'var(--bg-glass)', borderRadius: 12, padding: 16, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 12, width: '100%', textAlign: 'center' }}>Share of Voice (Mention Volume)</div>
-                <ResponsiveContainer width="100%" height={200}>
+              <div style={{ background: '#f8fafc', borderRadius: 12, padding: 20, border: '1px solid var(--border-mid)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16, width: '100%', textAlign: 'center' }}>Share of Voice (Mention Volume)</div>
+                <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
-                    <Pie data={activeBrands} dataKey="count" nameKey="brand" cx="50%" cy="50%" innerRadius={50} outerRadius={80} label={({ brand, percent }) => `${brand} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                    <Pie data={activeBrands} dataKey="count" nameKey="brand" cx="50%" cy="50%" innerRadius={55} outerRadius={85} label={({ brand, percent }) => `${brand} ${(percent * 100).toFixed(0)}%`} labelLine={false} stroke="none">
                       {activeBrands.map((_, i) => (
                         <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                       ))}
@@ -428,19 +333,19 @@ export default function Analytics() {
               </div>
 
               {/* Sentiment Breakdown Stacked Bar Chart */}
-              <div style={{ background: 'var(--bg-glass)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 12, width: '100%', textAlign: 'center' }}>Sentiment by Brand</div>
+              <div style={{ background: '#f8fafc', borderRadius: 12, padding: 20, border: '1px solid var(--border-mid)' }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16, width: '100%', textAlign: 'center' }}>Sentiment by Brand</div>
                 <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={activeBrands.map(b => ({ brand: b.brand, ...b.sentiment_breakdown }))} layout="vertical" barSize={16}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} />
-                    <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
-                    <YAxis type="category" dataKey="brand" tick={{ fill: 'var(--text-primary)', fontSize: 11, fontWeight: 600 }} width={80} />
+                  <BarChart data={activeBrands.map(b => ({ brand: b.brand, ...b.sentiment_breakdown }))} layout="vertical" barSize={20} margin={{ left: -20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-mid)" horizontal={true} vertical={false} />
+                    <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} />
+                    <YAxis type="category" dataKey="brand" tick={{ fill: 'var(--text-primary)', fontSize: 12, fontWeight: 700 }} width={80} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ fontSize: '0.75rem' }} />
+                    <Legend wrapperStyle={{ fontSize: '0.8rem', fontWeight: 500, paddingTop: 10 }} />
                     <Bar dataKey="positive" stackId="a" fill={SENTIMENT_COLORS.positive} radius={[0,0,0,0]} />
                     <Bar dataKey="neutral" stackId="a" fill={SENTIMENT_COLORS.neutral} radius={[0,0,0,0]} />
                     <Bar dataKey="sarcastic" stackId="a" fill={SENTIMENT_COLORS.sarcastic} radius={[0,0,0,0]} />
-                    <Bar dataKey="negative" stackId="a" fill={SENTIMENT_COLORS.negative} radius={[0,4,4,0]} />
+                    <Bar dataKey="negative" stackId="a" fill={SENTIMENT_COLORS.negative} radius={[0,6,6,0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
