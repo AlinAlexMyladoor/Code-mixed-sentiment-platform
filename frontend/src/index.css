@@ -434,14 +434,20 @@ body {
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
 }
 
-.btn-premium {
-  background: linear-gradient(135deg, #4f46e5, #4338ca);
-  color: #fff;
+.btn-teal-premium {
+  background: linear-gradient(to right, #0d9488, #059669);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  padding: 10px 20px;
   border: none;
-  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+  cursor: pointer;
 }
-.btn-premium:hover {
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+.btn-teal-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.3), 0 4px 6px -2px rgba(20, 184, 166, 0.15);
 }
 
 /* ─── Table ─────────────────────────────────────────────────────────────── */

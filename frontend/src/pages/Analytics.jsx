@@ -111,9 +111,8 @@ export default function Analytics() {
       <div className="page-body">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
           <button 
-            className="btn btn-premium hover-3d" 
+            className="btn btn-teal-premium hover-3d" 
             onClick={() => window.open(`${API_BASE}/api/reports/latest`, '_blank')}
-            style={{ fontWeight: 700, padding: '10px 20px', borderRadius: '10px' }}
           >
             Generate Executive Briefing
           </button>
@@ -304,10 +303,10 @@ export default function Analytics() {
               <div style={{ background: '#f8fafc', borderRadius: 12, padding: 20, border: '1px solid var(--border-mid)' }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16, width: '100%', textAlign: 'center' }}>Sentiment by Brand</div>
                 <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={activeBrands.map(b => ({ brand: b.brand, ...b.sentiment_breakdown }))} layout="vertical" barSize={20} margin={{ left: 10 }}>
+                  <BarChart data={activeBrands.map(b => ({ brand: b.brand, ...b.sentiment_breakdown }))} layout="vertical" barSize={20} margin={{ left: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border-mid)" horizontal={true} vertical={false} />
                     <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} />
-                    <YAxis type="category" dataKey="brand" tick={{ fill: 'var(--text-primary)', fontSize: 12, fontWeight: 700 }} width={100} />
+                    <YAxis type="category" dataKey="brand" tick={{ fill: 'var(--text-primary)', fontSize: 12, fontWeight: 700 }} width={120} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: '0.8rem', fontWeight: 500, paddingTop: 10 }} />
                     <Bar dataKey="positive" stackId="a" fill={SENTIMENT_COLORS.positive} radius={[0,0,0,0]} />
