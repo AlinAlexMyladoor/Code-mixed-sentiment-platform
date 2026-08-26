@@ -13,10 +13,10 @@ import { useDemo } from '../context/DemoContext';
 const CHART_COLORS = ['#0EA5E9', '#8B5CF6', '#10B981', '#F59E0B', '#F43F5E', '#6366F1'];
 
 const SENTIMENT_COLORS = {
-  positive:  '#10B981',
-  negative:  '#EF4444',
-  sarcastic: '#F59E0B',
-  neutral:   '#6B7280',
+  positive:  '#10B981', // Emerald
+  negative:  '#F43F5E', // Rose
+  sarcastic: '#F59E0B', // Amber
+  neutral:   '#64748B', // Slate
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -111,7 +111,7 @@ export default function Analytics() {
       <div className="page-body">
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
           <button 
-            className="btn btn-gradient hover-3d" 
+            className="btn bg-gradient-to-r from-teal-600 to-emerald-500 text-white border-0 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300" 
             onClick={() => window.open(`${API_BASE}/api/reports/latest`, '_blank')}
             style={{ fontWeight: 700, padding: '10px 20px', borderRadius: '10px' }}
           >
@@ -230,40 +230,7 @@ export default function Analytics() {
           </motion.div>
         </motion.div>
         
-        {/* ── Sentiment Trend Over Time ───────────────────────────────── */}
-        <div className="panel hover-3d" style={{ marginBottom: 20 }}>
-          <div className="panel-header">
-            <span className="panel-title"><TrendingUp size={16} /> Sentiment Trend Over Time</span>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Last 48 hours · hourly avg English ratio per sentiment</span>
-          </div>
-          <div style={{ minHeight: 260 }}>
-            {loading ? <Skeleton height={260} /> : activeSentLangCorr.length === 0 ? (
-              <EmptyState icon={TrendingUp} title="No trend data yet" desc="Process more comments across multiple hours to reveal trends." />
-            ) : (
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={activeSentLangCorr} barGap={6} barCategoryGap="30%">
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="sentiment" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} />
-                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} tickFormatter={v => `${(v * 100).toFixed(0)}%`} domain={[0, 1]} />
-                  <Tooltip
-                    content={<CustomTooltip />}
-                    formatter={(v, name) => [
-                      name === 'avg_en_ratio' ? `${(v * 100).toFixed(1)}%` : v,
-                      name === 'avg_en_ratio' ? 'Avg English Ratio' : 'Comment Count',
-                    ]}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '0.8rem', fontWeight: 500, paddingTop: 10 }} />
-                  <Bar dataKey="avg_en_ratio" name="Avg English Ratio" radius={[6, 6, 0, 0]} legendType="none">
-                    {activeSentLangCorr.map((entry, i) => (
-                      <Cell key={i} fill={SENTIMENT_COLORS[entry.sentiment] || '#6366f1'} />
-                    ))}
-                  </Bar>
-                  <Bar dataKey="count" name="Comment Count" radius={[6, 6, 0, 0]} fill="#6366f144" />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </div>
+
 
         {/* ── Language switching over time ───────────────────────────────── */}
         <div className="panel hover-3d" style={{ marginBottom: 20 }}>
@@ -322,12 +289,13 @@ export default function Analytics() {
                 <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16, width: '100%', textAlign: 'center' }}>Share of Voice (Mention Volume)</div>
                 <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
-                    <Pie data={activeBrands} dataKey="count" nameKey="brand" cx="50%" cy="50%" innerRadius={55} outerRadius={85} label={({ brand, percent }) => `${brand} ${(percent * 100).toFixed(0)}%`} labelLine={false} stroke="none">
+                    <Pie data={activeBrands} dataKey="count" nameKey="brand" cx="50%" cy="50%" innerRadius={55} outerRadius={85} stroke="none">
                       {activeBrands.map((_, i) => (
                         <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip content={<CustomTooltip />} />
+                    <Legend wrapperStyle={{ fontSize: '0.75rem', fontWeight: 500, paddingTop: 15 }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>

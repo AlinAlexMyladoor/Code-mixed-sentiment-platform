@@ -113,13 +113,11 @@ export const DEMO_LANG_SWITCH = [
 ];
 
 export const DEMO_BRANDS = [
-  { entity: 'product', count: 6 },
-  { entity: 'delivery', count: 4 },
-  { entity: 'quality', count: 4 },
-  { entity: 'service', count: 3 },
-  { entity: 'price', count: 3 },
-  { entity: 'support', count: 2 },
-  { entity: 'packaging', count: 2 },
+  { brand: 'Swara Brand', count: 6, sentiment_breakdown: { positive: 3, neutral: 1, sarcastic: 1, negative: 1 } },
+  { brand: 'Competitor A', count: 4, sentiment_breakdown: { positive: 1, neutral: 1, sarcastic: 1, negative: 1 } },
+  { brand: 'Local Brand X', count: 4, sentiment_breakdown: { positive: 2, neutral: 0, sarcastic: 1, negative: 1 } },
+  { brand: 'Competitor B', count: 3, sentiment_breakdown: { positive: 0, neutral: 1, sarcastic: 0, negative: 2 } },
+  { brand: 'Brand Y', count: 3, sentiment_breakdown: { positive: 1, neutral: 1, sarcastic: 1, negative: 0 } },
 ];
 
 // ── Helper: load from / save to localStorage ────────────────────────────────

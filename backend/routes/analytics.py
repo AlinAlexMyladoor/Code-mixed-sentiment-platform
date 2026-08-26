@@ -107,7 +107,24 @@ async def brand_mentions(
             sent = c.sentiment or "neutral"
             brand_map[brand][sent] = brand_map[brand].get(sent, 0) + 1
 
-    sorted_brands = sorted(brand_map.items(), key=lambda x: x[1]["count"], reverse=True)[:limit]
+    # Map synthetic adjectives to realistic brand placeholders as requested
+    realistic_placeholders = ["Swara Brand", "Competitor A", "Local Brand X", "Competitor B", "Brand Y"]
+    
+    mapped_brand_map = {}
+    for idx, (b_name, b_data) in enumerate(sorted(brand_map.items(), key=lambda x: x[1]["count"], reverse=True)):
+        new_name = realistic_placeholders[idx % len(realistic_placeholders)] if idx < 5 else f"Brand {idx}"
+        
+        # Merge if multiple map to the same (though here they won't due to the index logic, just safe-guarding)
+        if new_name not in mapped_brand_map:
+            mapped_brand_map[new_name] = {"count": 0, "positive": 0, "negative": 0, "neutral": 0, "sarcastic": 0}
+        
+        mapped_brand_map[new_name]["count"] += b_data["count"]
+        mapped_brand_map[new_name]["positive"] += b_data["positive"]
+        mapped_brand_map[new_name]["negative"] += b_data["negative"]
+        mapped_brand_map[new_name]["neutral"] += b_data["neutral"]
+        mapped_brand_map[new_name]["sarcastic"] += b_data["sarcastic"]
+
+    sorted_brands = sorted(mapped_brand_map.items(), key=lambda x: x[1]["count"], reverse=True)[:limit]
 
     return [
         BrandMention(
