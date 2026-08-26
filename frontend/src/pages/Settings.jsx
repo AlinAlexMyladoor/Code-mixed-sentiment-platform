@@ -163,18 +163,18 @@ export default function Settings() {
                 Your Role
               </div>
               <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
-                {roleLabel}
+                Administrator
               </div>
             </div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
-              background: role === 'admin' ? 'rgba(79,70,229,0.08)' : role === 'manager' ? 'rgba(13,148,136,0.08)' : 'rgba(100,116,139,0.08)',
-              color: role === 'admin' ? '#4f46e5' : role === 'manager' ? '#0d9488' : '#64748b',
-              border: `1px solid ${role === 'admin' ? 'rgba(79,70,229,0.18)' : role === 'manager' ? 'rgba(13,148,136,0.18)' : 'rgba(100,116,139,0.18)'}`,
+              background: 'rgba(13,148,136,0.08)',
+              color: '#0d9488',
+              border: '1px solid rgba(13,148,136,0.2)',
               borderRadius: 20, padding: '4px 14px',
               fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
             }}>
-              {role === 'demo' ? 'Demo' : role}
+              Admin
             </div>
           </div>
           <div style={{ marginTop: 12, fontSize: '0.72rem', color: 'var(--text-muted)' }}>

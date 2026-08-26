@@ -47,17 +47,17 @@ export default function Sidebar({ wsStatus }) {
         </div>
       </div>
 
-      {/* Role indicator */}
+      {/* Role indicator — always show Admin in teal */}
       <div style={{ padding: '6px 14px 2px' }}>
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 5,
           fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.08em',
           textTransform: 'uppercase',
-          background: roleMeta.bg, color: roleMeta.color,
-          border: `1px solid ${roleMeta.border}`,
+          background: 'rgba(13,148,136,0.08)', color: '#0d9488',
+          border: '1px solid rgba(13,148,136,0.2)',
           borderRadius: 20, padding: '3px 9px',
         }}>
-          {roleMeta.label}
+          Admin
         </span>
       </div>
 

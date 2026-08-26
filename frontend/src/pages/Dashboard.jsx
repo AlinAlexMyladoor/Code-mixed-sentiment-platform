@@ -16,10 +16,17 @@ import { api } from '../api/client';
 import Onboarding from './Onboarding';
 
 const CHART_COLORS = {
-  positive: '#10b981',
-  negative: '#f43f5e',
+  positive: '#059669',
+  negative: '#e11d48',
   sarcastic: '#d97706',
-  neutral:   '#64748b',
+  neutral:   '#475569',
+};
+
+const CHART_FILLS = {
+  positive: 'rgba(5, 150, 105, 0.15)',
+  negative: 'rgba(225, 29, 72, 0.15)',
+  sarcastic: 'rgba(217, 119, 6, 0.15)',
+  neutral:   'rgba(71, 85, 105, 0.15)',
 };
 
 /* Framer Motion stagger variants */
@@ -73,25 +80,20 @@ export default function Dashboard() {
 
   /* Urgent = Smart Severity Sorting */
   const urgentItems = useMemo(() => {
-    const HIGH_RISK_KEYWORDS = ['refund', 'scam', 'broken', 'support', 'worst'];
-    
+    const HIGH_RISK_KEYWORDS = ['refund', 'scam', 'broken', 'support', 'worst', 'sue', 'fake', 'fraud', 'cheat', 'terrible'];
+
     const calculateSeverity = (c) => {
       let severity = (c.confidence || 0) * 100;
-      
-      // Check high risk keywords in aspects or original text
-      if (c.aspect_sentiments) {
-        const aspects = Object.keys(c.aspect_sentiments).map(a => a.toLowerCase());
-        const hasRisk = aspects.some(a => HIGH_RISK_KEYWORDS.some(k => a.includes(k)));
-        if (hasRisk) severity += 50;
-      } else if (c.original_text) {
-        const text = c.original_text.toLowerCase();
-        const hasRisk = HIGH_RISK_KEYWORDS.some(k => text.includes(k));
-        if (hasRisk) severity += 50;
-      }
-      
-      if (c.sentiment === 'negative') {
-        severity += 20;
-      }
+
+      // Check high risk keywords in aspects AND original text
+      const text = (c.original_text || '').toLowerCase();
+      const aspects = c.aspect_sentiments ? Object.keys(c.aspect_sentiments).map(a => a.toLowerCase()) : [];
+      const combined = [...aspects, text];
+      const hasRisk = combined.some(s => HIGH_RISK_KEYWORDS.some(k => s.includes(k)));
+      if (hasRisk) severity += 50;
+
+      if (c.sentiment === 'negative') severity += 20;
+
       return severity;
     };
 
@@ -142,7 +144,7 @@ export default function Dashboard() {
       <TopBar
         title="Dashboard"
         subtitle="Real-time comment intelligence"
-        urgentCount={s?.urgent_alerts || 0}
+        urgentCount={urgentItems.length}
         onRefresh={refetch}
       />
 
@@ -219,20 +221,21 @@ export default function Dashboard() {
                   <defs>
                     {Object.entries(CHART_COLORS).map(([key, color]) => (
                       <linearGradient key={key} id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={color} stopOpacity={0.22} />
+                        <stop offset="5%" stopColor={color} stopOpacity={0.2} />
                         <stop offset="95%" stopColor={color} stopOpacity={0} />
                       </linearGradient>
                     ))}
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
-                  <XAxis dataKey="hour" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="hour" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: '0.73rem', color: '#64748b', paddingTop: 8 }} />
                   {Object.entries(CHART_COLORS).map(([key, color]) => (
                     <Area key={key} type="monotone" dataKey={key}
                       stroke={color} fill={`url(#grad-${key})`} strokeWidth={2}
-                      dot={false} activeDot={{ r: 4, fill: color }} />
+                      dot={false} activeDot={{ r: 4, fill: color }}
+                    />
                   ))}
                 </AreaChart>
               </ResponsiveContainer>
@@ -310,10 +313,10 @@ export default function Dashboard() {
 
 /* ─── Feed Item: replaces tech pills with aspect tags + Create Ticket hover ── */
 const SENTIMENT_COLORS = {
-  positive:  '#10b981',
-  negative:  '#f43f5e',
+  positive:  '#059669',
+  negative:  '#e11d48',
   sarcastic: '#d97706',
-  neutral:   '#64748b',
+  neutral:   '#475569',
 };
 
 function FeedItem({ item }) {

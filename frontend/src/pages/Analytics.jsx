@@ -13,10 +13,10 @@ import { useDemo } from '../context/DemoContext';
 const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b', '#ef4444', '#38bdf8'];
 
 const SENTIMENT_COLORS = {
-  positive:  '#10b981',
-  negative:  '#f43f5e',
-  sarcastic: '#f59e0b',
-  neutral:   '#64748b',
+  positive:  '#059669',
+  negative:  '#e11d48',
+  sarcastic: '#d97706',
+  neutral:   '#475569',
 };
 
 const CustomTooltip = ({ active, payload, label }) => {

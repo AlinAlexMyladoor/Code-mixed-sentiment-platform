@@ -256,7 +256,7 @@ export default function ConnectPages() {
                 onClick={handleConnect}
                 style={{ borderRadius: 10, fontWeight: 700 }}
               >
-                <Link2 size={15} /> Connect with Meta
+                <Link2 size={15} /> Connect
               </button>
             }
           />
