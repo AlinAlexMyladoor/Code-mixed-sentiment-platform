@@ -452,10 +452,11 @@ body {
 
 /* ─── Filters & Search (Comment Explorer) ───────────────────────────────── */
 .filter-active {
-  background: #f0fdf4;
-  color: #0f766e;
-  border-color: #99f6e4;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  background: #f0fdfa; /* teal-50 */
+  color: #0f766e; /* teal-700 */
+  border-color: #5eead4; /* teal-300 */
+  font-weight: 500; /* font-medium */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
   transition: all 0.2s;
 }
 .filter-inactive {

@@ -201,24 +201,22 @@ export default function CommentExplorer() {
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'row', gap: 24, alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
-                  <Trash2 size={14} color="#ef4444" />
+                <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                   <div 
-                    style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-                    onMouseEnter={e => e.currentTarget.children[0].style.color = '#b91c1c'}
-                    onMouseLeave={e => e.currentTarget.children[0].style.color = '#ef4444'}
+                    style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'pointer', height: '40px', padding: '0 16px', backgroundColor: '#fef2f2', color: '#dc2626', borderRadius: '0.75rem', border: '1px solid transparent', transition: 'background-color 0.2s', gap: 8 }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#fee2e2'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fef2f2'}
                   >
+                    <Trash2 size={16} />
                     <span style={{ 
-                      color: '#ef4444', 
                       fontSize: '0.875rem', 
                       fontWeight: 500, 
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: 4,
-                      pointerEvents: 'none',
-                      transition: 'color 0.2s'
+                      pointerEvents: 'none'
                     }}>
-                      Purge Old Data <ChevronDown size={14} />
+                      Purge Old Data <ChevronDown size={16} />
                     </span>
                     <select
                       value=""
@@ -402,7 +400,7 @@ export default function CommentExplorer() {
 
                       {/* Actions */}
                       <td style={{ padding: '16px 20px', whiteSpace: 'nowrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 140, gap: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', minWidth: 140, gap: 16 }}>
                           <div>
                             {c.ticket_id ? (
                               /* Clean ghost badge — no chunky bg */
