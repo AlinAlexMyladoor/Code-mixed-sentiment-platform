@@ -154,10 +154,9 @@ export default function CommentExplorer() {
     }
   };
 
-  const handlePurge = async () => {
-    if (!window.confirm("Are you sure you want to purge all comments older than 30 days?")) return;
+  const handlePurge = async (days) => {
     try {
-      const res = await api.purgeComments(30);
+      const res = await api.purgeComments(days);
       alert(`Purged ${res.deleted_count || 0} old comments.`);
       load();
     } catch (err) {
@@ -185,48 +184,62 @@ export default function CommentExplorer() {
 
         {/* ── Filters ──────────────────────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-start', marginBottom: 12 }}>
-            <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
-              <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                className="live-search-input"
-                placeholder="Search comment text…"
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
-                style={{ width: 145, display: 'flex', justifyContent: 'center', gap: 6 }}
-              >
-                <Download size={13} /> Export CSV
-              </button>
-              <button
-                className="btn btn-ghost btn-sm"
-                style={{ 
-                  color: '#ef4444', 
-                  fontSize: '0.75rem', 
-                  fontWeight: 600,
-                  padding: '6px 10px',
-                  width: 145,
-                  transition: 'all 0.2s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6
-                }}
-                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#fef2f2'; }}
-                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                onClick={handlePurge}
-              >
-                <Trash2 size={14} /> Purge Old Data
-              </button>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+              <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
+                <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                <input
+                  className="live-search-input"
+                  placeholder="Search comment text…"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+                <button
+                  className="btn btn-outline btn-sm"
+                  onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
+                  style={{ width: 155, display: 'flex', justifyContent: 'center', gap: 6 }}
+                >
+                  <Download size={13} /> Export CSV
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Trash2 size={13} color="#ef4444" />
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      const days = parseInt(e.target.value, 10);
+                      if (!isNaN(days)) {
+                        if (window.confirm("Are you sure you want to permanently delete these comments? This action cannot be undone.")) {
+                          handlePurge(days);
+                        }
+                      }
+                      e.target.value = "";
+                    }}
+                    style={{
+                      color: '#ef4444',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      padding: '2px 0'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#b91c1c'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#ef4444'}
+                  >
+                    <option value="" disabled>Purge Old Data...</option>
+                    <option value="7">Delete &gt; 1 Week Old</option>
+                    <option value="30">Delete &gt; 1 Month Old</option>
+                    <option value="90">Delete &gt; 3 Months Old</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
