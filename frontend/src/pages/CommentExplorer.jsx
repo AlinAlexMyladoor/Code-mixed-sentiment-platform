@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Download, Filter, MessageSquare, Search, Cpu, CheckCircle } from 'lucide-react';
+import { Download, Filter, MessageSquare, Search, Cpu, CheckCircle, Trash2 } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
 import { EmptyState, SentimentBadge, Skeleton } from '../components/UI';
 import { api } from '../api/client';
@@ -111,7 +111,6 @@ export default function CommentExplorer() {
   const [search, setSearch]         = useState('');
   const [sentiment, setSentiment]   = useState('all');
   const [modelFilter, setModelFilter] = useState('all');
-  const [searchInput, setSearchInput] = useState('');
 
   const perPage = 20;
 
@@ -144,10 +143,25 @@ export default function CommentExplorer() {
 
   useEffect(() => { load(); }, [load]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSearch(searchInput);
-    setPage(1);
+  const handleDelete = async (id) => {
+    try {
+      await api.deleteComment(id);
+      setComments(comments.filter(c => c.id !== id));
+      setTotal(t => Math.max(0, t - 1));
+    } catch (err) {
+      alert("Failed to delete comment: " + err.message);
+    }
+  };
+
+  const handlePurge = async () => {
+    if (!window.confirm("Are you sure you want to purge all comments older than 30 days?")) return;
+    try {
+      const res = await api.purgeComments(30);
+      alert(`Purged ${res.deleted_count || 0} old comments.`);
+      load();
+    } catch (err) {
+      alert("Failed to purge comments: " + err.message);
+    }
   };
 
   const handleCreateTicket = async (commentId) => {
@@ -170,18 +184,26 @@ export default function CommentExplorer() {
 
         {/* ── Filters ──────────────────────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>
-            <form onSubmit={handleSearch} style={{ flex: 1, minWidth: 240 }}>
-              <div className="search-wrapper">
-                <Search size={16} />
-                <input
-                  className="search-input"
-                  placeholder="Search comment text…"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                />
-              </div>
-            </form>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 24 }}>
+            <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
+              <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                className="live-search-input"
+                placeholder="Search comment text…"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+            <button
+              className="btn btn-ghost btn-sm"
+              style={{ color: '#64748b' }}
+              onClick={handlePurge}
+            >
+              <Trash2 size={13} /> Purge Old Data
+            </button>
             <button
               className="btn btn-outline btn-sm"
               onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
@@ -198,9 +220,9 @@ export default function CommentExplorer() {
             {SENTIMENTS.map((s) => (
               <button
                 key={s}
-                className={`btn btn-sm ${sentiment === s ? 'btn-primary' : 'btn-outline'}`}
+                className={`btn btn-sm ${sentiment === s ? 'filter-active' : 'filter-inactive'}`}
                 onClick={() => { setSentiment(s); setPage(1); }}
-                style={{ textTransform: 'capitalize' }}
+                style={{ textTransform: 'capitalize', borderRadius: '9999px', padding: '4px 12px' }}
               >
                 {s}
               </button>
@@ -213,19 +235,14 @@ export default function CommentExplorer() {
               <Cpu size={12} /> Model
             </span>
             {MODELS.map((m) => {
-              const meta = MODEL_META[m];
               const active = modelFilter === m;
               return (
                 <button
                   key={m}
                   onClick={() => { setModelFilter(m); setPage(1); }}
+                  className={`btn btn-sm ${active ? 'filter-active' : 'filter-inactive'}`}
                   style={{
-                    fontSize: '0.7rem', fontWeight: 600,
-                    padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
-                    border: `1px solid ${active && meta ? meta.border : '#e2e8f0'}`,
-                    background: active && meta ? meta.bg : 'transparent',
-                    color: active && meta ? meta.color : '#64748b',
-                    transition: 'all 0.15s',
+                    borderRadius: '9999px', padding: '4px 12px',
                   }}
                 >
                   {m === 'all' ? 'All Models' : MODEL_META[m]?.label}
@@ -257,9 +274,9 @@ export default function CommentExplorer() {
                     {['Sentiment', 'Comment', 'Confidence', 'Model', 'Page', 'Time', 'Actions'].map(h => (
                       <th key={h} style={{
                         padding: '10px 16px', textAlign: 'left',
-                        fontSize: '0.68rem', fontWeight: 700,
-                        color: '#475569', textTransform: 'uppercase',
-                        letterSpacing: '0.06em', background: '#fff',
+                        fontSize: '0.75rem', fontWeight: 600,
+                        color: '#64748b', textTransform: 'uppercase',
+                        letterSpacing: '0.05em', background: '#fff',
                       }}>{h}</th>
                     ))}
                   </tr>
@@ -336,33 +353,42 @@ export default function CommentExplorer() {
 
                       {/* Actions */}
                       <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                        {c.ticket_id ? (
-                          /* Clean ghost badge — no chunky bg */
-                          <span style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 4,
-                            fontSize: '0.7rem', fontWeight: 600,
-                            color: '#059669',
-                          }}>
-                            <CheckCircle size={13} strokeWidth={2} /> Ticket Created
-                          </span>
-                        ) : (c.sentiment === 'negative' || c.sentiment === 'sarcastic') ? (
-                          <button
-                            style={{
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          {c.ticket_id ? (
+                            /* Clean ghost badge — no chunky bg */
+                            <span style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: '0.7rem', fontWeight: 600,
-                              color: '#2563eb', background: 'transparent',
-                              border: '1px solid rgba(37,99,235,0.2)',
-                              padding: '4px 10px', borderRadius: 6,
-                              cursor: 'pointer', transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.4)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; }}
-                            onClick={() => handleCreateTicket(c.id)}
+                              color: '#059669',
+                            }}>
+                              <CheckCircle size={13} strokeWidth={2} /> Ticket Created
+                            </span>
+                          ) : (c.sentiment === 'negative' || c.sentiment === 'sarcastic') ? (
+                            <button
+                              style={{
+                                fontSize: '0.7rem', fontWeight: 600,
+                                color: '#2563eb', background: 'transparent',
+                                border: '1px solid rgba(37,99,235,0.2)',
+                                padding: '4px 10px', borderRadius: 6,
+                                cursor: 'pointer', transition: 'all 0.15s',
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.4)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'; }}
+                              onClick={() => handleCreateTicket(c.id)}
+                            >
+                              Create Ticket
+                            </button>
+                          ) : (
+                            <span style={{ color: '#cbd5e1' }}>—</span>
+                          )}
+                          <button
+                            className="action-icon-btn"
+                            title="Delete Comment"
+                            onClick={() => handleDelete(c.id)}
                           >
-                            Create Ticket
+                            <Trash2 size={15} />
                           </button>
-                        ) : (
-                          <span style={{ color: '#cbd5e1' }}>—</span>
-                        )}
+                        </div>
                       </td>
                     </tr>
                   ))}

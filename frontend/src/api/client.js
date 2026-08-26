@@ -46,6 +46,8 @@ export const api = {
 
   // ─── Comments & Tickets ────────────────────────────────────────────────
   comments: (params) => request('GET', '/api/comments', null, params),
+  deleteComment: (id) => request('DELETE', `/api/comments/${id}`),
+  purgeComments: (days = 30) => request('DELETE', `/api/comments/purge?days=${days}`),
   createTicket: (commentId) => request('POST', `/api/comments/${commentId}/ticket`),
   draftReply: (commentId) => request('POST', `/api/comments/${commentId}/draft-reply`),
   getTickets: () => request('GET', '/api/tickets'),

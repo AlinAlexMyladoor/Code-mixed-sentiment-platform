@@ -450,6 +450,54 @@ body {
   box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.3), 0 4px 6px -2px rgba(20, 184, 166, 0.15);
 }
 
+/* ─── Filters & Search (Comment Explorer) ───────────────────────────────── */
+.filter-active {
+  background: #f0fdf4;
+  color: #0f766e;
+  border-color: #99f6e4;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+}
+.filter-inactive {
+  background: #ffffff;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+.filter-inactive:hover {
+  background: #f8fafc;
+  color: #1e293b;
+}
+.live-search-input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+.live-search-input:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+.action-icon-btn {
+  color: #9ca3af;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+.action-icon-btn:hover {
+  color: #ef4444;
+}
+
 /* ─── Table ─────────────────────────────────────────────────────────────── */
 .data-table {
   width: 100%;
