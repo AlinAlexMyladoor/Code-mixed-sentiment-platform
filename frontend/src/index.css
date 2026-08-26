@@ -427,12 +427,21 @@ body {
 
 .btn-gradient {
   background: linear-gradient(to right, #0d9488, #10b981);
-  color: #ffffff;
+  color: #fff;
   border: none;
 }
 .btn-gradient:hover {
-  opacity: 0.95;
-  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.btn-dark {
+  background: #0f172a;
+  color: #fff;
+  border: none;
+}
+.btn-dark:hover {
+  background: #1e293b;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.3);
 }
 
 /* ─── Table ─────────────────────────────────────────────────────────────── */
