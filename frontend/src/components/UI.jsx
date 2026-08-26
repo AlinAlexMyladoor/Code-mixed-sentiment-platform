@@ -29,7 +29,7 @@ export function SentimentBadge({ sentiment }) {
 
 export function MetricCard({ label, value, sub, icon: Icon, iconColor, iconBg, cardClass = '' }) {
   return (
-    <div className={`card card-pad ${cardClass}`} style={{ position: 'relative', overflow: 'hidden' }}>
+    <div className={`card hover-3d card-pad ${cardClass}`} style={{ position: 'relative', overflow: 'hidden' }}>
       <div className="metric-header">
         <span className="metric-label">{label}</span>
         {Icon && (
