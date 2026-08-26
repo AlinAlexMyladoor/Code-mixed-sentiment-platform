@@ -185,7 +185,7 @@ export default function CommentExplorer() {
 
         {/* ── Filters ──────────────────────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 24 }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-start', marginBottom: 24 }}>
             <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
               <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
               <input
@@ -198,19 +198,35 @@ export default function CommentExplorer() {
                 }}
               />
             </div>
-            <button
-              className="btn btn-ghost btn-sm"
-              style={{ color: '#64748b' }}
-              onClick={handlePurge}
-            >
-              <Trash2 size={13} /> Purge Old Data
-            </button>
-            <button
-              className="btn btn-outline btn-sm"
-              onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
-            >
-              <Download size={13} /> Export CSV
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
+                style={{ width: 145, display: 'flex', justifyContent: 'center', gap: 6 }}
+              >
+                <Download size={13} /> Export CSV
+              </button>
+              <button
+                className="btn btn-ghost btn-sm"
+                style={{ 
+                  color: '#ef4444', 
+                  fontSize: '0.75rem', 
+                  fontWeight: 600,
+                  padding: '6px 10px',
+                  width: 145,
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6
+                }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#fef2f2'; }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                onClick={handlePurge}
+              >
+                <Trash2 size={14} /> Purge Old Data
+              </button>
+            </div>
           </div>
 
           {/* Sentiment filter */}
