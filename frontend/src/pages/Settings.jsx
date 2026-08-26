@@ -150,75 +150,25 @@ export default function Settings() {
         {/* Team & Roles */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">
-            <span className="panel-title"><Users size={16} strokeWidth={1.5} color="#0d9488" /> Team & Roles</span>
+            <span className="panel-title"><Users size={16} strokeWidth={1.5} /> Team & Roles</span>
           </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 14,
-            padding: '14px 18px', borderRadius: 12,
-            background: 'rgba(13,148,136,0.04)',
-            border: '1px solid rgba(13,148,136,0.12)',
-          }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                Your Role
-              </div>
-              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
-                Administrator
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>Your Role</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Administrator access</div>
             </div>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-              background: 'rgba(13,148,136,0.08)',
-              color: '#0d9488',
-              border: '1px solid rgba(13,148,136,0.2)',
-              borderRadius: 20, padding: '4px 14px',
-              fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-            }}>
-              Admin
-            </div>
-          </div>
-          <div style={{ marginTop: 12, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border-mid)' }}>
-                  <th style={{ textAlign: 'left', padding: '6px 0', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.65rem' }}>Role</th>
-                  <th style={{ textAlign: 'left', padding: '6px 0', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.65rem' }}>Access</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['Admin', 'Full platform access, settings, team management'],
-                  ['Manager', 'Dashboard, Analytics, AI Insights, Alert Rules, Vocabulary'],
-                  ['Agent', 'Tickets, Comment Explorer, Draft AI Replies'],
-                ].map(([r, access]) => (
-                  <tr key={r} style={{ borderBottom: '1px solid var(--border-mid)' }}>
-                    <td style={{ padding: '7px 0', fontWeight: 600, color: 'var(--text-primary)' }}>{r}</td>
-                    <td style={{ padding: '7px 0', color: 'var(--text-muted)' }}>{access}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="badge badge-neutral">Admin</div>
           </div>
         </div>
 
         {/* System Health — Simplified */}
         <div className="panel" style={{ marginBottom: 18 }}>
           <div className="panel-header">
-            <span className="panel-title"><Activity size={16} strokeWidth={1.5} color="#0891b2" /> System Health</span>
+            <span className="panel-title"><Activity size={16} strokeWidth={1.5} /> System Health</span>
           </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 14,
-            padding: '14px 18px', borderRadius: 12,
-            background: 'rgba(16,185,129,0.04)',
-            border: '1px solid rgba(16,185,129,0.12)',
-          }}>
-            <div style={{
-              width: 10, height: 10, borderRadius: '50%',
-              background: 'var(--positive)', boxShadow: '0 0 8px rgba(16,185,129,0.6)'
-            }} />
-            <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
-              System Status: 100% Operational (Webhooks listening)
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--positive)' }} />
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>100% Operational (Webhooks listening)</div>
           </div>
         </div>
 

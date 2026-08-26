@@ -143,14 +143,11 @@ export default function Dashboard() {
     <>
       <TopBar
         title="Dashboard"
-        subtitle="Real-time comment intelligence"
         urgentCount={urgentItems.length}
         onRefresh={refetch}
       />
 
       <div className="page-body">
-        {/* Ambient radial glow — decorative lighting effect */}
-        <div className="dashboard-glow" aria-hidden="true" />
 
         {/* ── Metric Cards ──────────────────────────────────────────────── */}
         <motion.div
@@ -218,22 +215,14 @@ export default function Dashboard() {
             ) : (
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart data={trend} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
-                  <defs>
-                    {Object.entries(CHART_COLORS).map(([key, color]) => (
-                      <linearGradient key={key} id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={color} stopOpacity={0.2} />
-                        <stop offset="95%" stopColor={color} stopOpacity={0} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
-                  <XAxis dataKey="hour" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-mid)" vertical={false} />
+                  <XAxis dataKey="hour" tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ fontSize: '0.73rem', color: '#64748b', paddingTop: 8 }} />
+                  <Legend wrapperStyle={{ fontSize: '0.73rem', color: 'var(--text-secondary)', paddingTop: 8 }} />
                   {Object.entries(CHART_COLORS).map(([key, color]) => (
                     <Area key={key} type="monotone" dataKey={key}
-                      stroke={color} fill={`url(#grad-${key})`} strokeWidth={2}
+                      stroke={color} fill={CHART_FILLS[key]} strokeWidth={2}
                       dot={false} activeDot={{ r: 4, fill: color }}
                     />
                   ))}

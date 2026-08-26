@@ -10,13 +10,13 @@ import { EmptyState, Skeleton } from '../components/UI';
 import { api, API_BASE } from '../api/client';
 import { useDemo } from '../context/DemoContext';
 
-const CHART_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f59e0b', '#ef4444', '#38bdf8'];
+const CHART_COLORS = ['#111827', '#374151', '#6B7280', '#9CA3AF', '#D1D5DB'];
 
 const SENTIMENT_COLORS = {
-  positive:  '#059669',
-  negative:  '#e11d48',
-  sarcastic: '#d97706',
-  neutral:   '#475569',
+  positive:  '#10B981',
+  negative:  '#EF4444',
+  sarcastic: '#F59E0B',
+  neutral:   '#6B7280',
 };
 
 const CustomTooltip = ({ active, payload, label }) => {

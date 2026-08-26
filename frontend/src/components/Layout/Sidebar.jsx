@@ -43,23 +43,10 @@ export default function Sidebar({ wsStatus }) {
         </div>
         <div className="sidebar-logo-text">
           <div className="sidebar-logo-title">SwaraSense</div>
-          <div className="sidebar-logo-subtitle">Sentiment Intelligence</div>
         </div>
       </div>
 
-      {/* Role indicator — always show Admin in teal */}
-      <div style={{ padding: '6px 14px 2px' }}>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 5,
-          fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          background: 'rgba(13,148,136,0.08)', color: '#0d9488',
-          border: '1px solid rgba(13,148,136,0.2)',
-          borderRadius: 20, padding: '3px 9px',
-        }}>
-          Admin
-        </span>
-      </div>
+
 
       {/* Navigation — RBAC-filtered, consistent 1.5px strokes */}
       <nav className="sidebar-nav">
@@ -76,27 +63,7 @@ export default function Sidebar({ wsStatus }) {
         ))}
       </nav>
 
-      {/* Demo mode banner */}
-      {isDemoMode && (
-        <div className="demo-banner">
-          <div>
-            <div className="demo-banner-label">Demo Active</div>
-            <div className="demo-banner-sub">Sample data loaded</div>
-          </div>
-          <button
-            onClick={clearDemo}
-            title="Exit demo mode"
-            style={{
-              background: 'rgba(245,158,11,0.12)',
-              border: '1px solid rgba(245,158,11,0.22)',
-              borderRadius: 6, cursor: 'pointer',
-              padding: '4px 6px', display: 'flex',
-            }}
-          >
-            <X size={11} color="#f59e0b" strokeWidth={1.5} />
-          </button>
-        </div>
-      )}
+
 
       {/* Footer — WebSocket status with concentric pulse when live */}
       <div className="sidebar-footer">

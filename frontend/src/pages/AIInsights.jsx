@@ -84,24 +84,20 @@ export default function AIInsights() {
 
         {/* ── AI Business Briefing ─────────────────────────────────────── */}
         {!loading && briefing && (
-          <div className="panel" style={{ marginBottom: 20, border: '1px solid #8b5cf633', background: 'var(--bg-glass)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)' }} />
+          <div className="panel" style={{ marginBottom: 20 }}>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <div style={{ background: 'rgba(139,92,246,0.15)', padding: 8, borderRadius: 10 }}>
-                <Sparkles size={20} color="#8b5cf6" />
-              </div>
               <div>
-                <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>AI Weekly Briefing</h2>
+                <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>Weekly Briefing</h2>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
                   Generated from {briefing.total_comments} comments over the last 7 days
                 </div>
               </div>
               
               {briefing.sentiment_delta !== null && (
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, background: briefing.sentiment_delta > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', padding: '6px 12px', borderRadius: 20 }}>
-                  <TrendingUp size={14} color={briefing.sentiment_delta > 0 ? '#22c55e' : '#ef4444'} style={{ transform: briefing.sentiment_delta < 0 ? 'rotate(180deg)' : 'none' }} />
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: briefing.sentiment_delta > 0 ? '#22c55e' : '#ef4444' }}>
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, background: briefing.sentiment_delta > 0 ? 'var(--positive-bg)' : 'var(--negative-bg)', padding: '6px 12px', borderRadius: 20 }}>
+                  <TrendingUp size={14} color={briefing.sentiment_delta > 0 ? 'var(--positive)' : 'var(--negative)'} style={{ transform: briefing.sentiment_delta < 0 ? 'rotate(180deg)' : 'none' }} />
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: briefing.sentiment_delta > 0 ? 'var(--positive)' : 'var(--negative)' }}>
                     {briefing.sentiment_delta > 0 ? '+' : ''}{briefing.sentiment_delta}% Sentiment
                   </span>
                 </div>
@@ -180,63 +176,7 @@ export default function AIInsights() {
           </div>
         )}
 
-        {/* ── Model Performance Summary Table ──────────────────────────── */}
-        <div className="panel" style={{ marginBottom: 20 }}>
-          <div className="panel-header">
-            <span className="panel-title"><Activity size={16} /> Model Performance Summary</span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{total.toLocaleString()} comments processed</span>
-          </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Model</th>
-                  <th>Accuracy</th>
-                  <th>Latency</th>
-                  <th>Best For</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {INFERENCE_MODES.map(m => {
-                  const isActive = m.id === activeMode;
-                  return (
-                    <tr key={m.id}>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 30, height: 30, borderRadius: 8, background: `${m.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <m.icon size={15} color={m.color} />
-                          </div>
-                          <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{m.name}</span>
-                        </div>
-                      </td>
-                      <td style={{ fontWeight: 700, color: m.color }}>{m.accuracy}</td>
-                      <td style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{m.latency}</td>
-                      <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{m.bestFor}</td>
-                      <td>
-                        {isActive ? (
-                          <span style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 5,
-                            fontSize: '0.65rem', fontWeight: 700,
-                            background: `${m.color}15`,
-                            color: m.color,
-                            border: `1px solid ${m.color}35`,
-                            padding: '3px 9px', borderRadius: 20,
-                          }}>
-                            <span style={{ width: 5, height: 5, borderRadius: '50%', background: m.color, display: 'inline-block' }} />
-                            Active
-                          </span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>—</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+
 
       </div>
     </>
