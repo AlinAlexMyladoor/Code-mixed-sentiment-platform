@@ -185,7 +185,7 @@ export default function CommentExplorer() {
         {/* ── Filters ──────────────────────────────────────────────── */}
         <div className="panel" style={{ marginBottom: 20 }}>
           <div style={{ marginBottom: 12 }}>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 12 }}>
               <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
                 <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
                 <input
@@ -196,19 +196,13 @@ export default function CommentExplorer() {
                     setSearch(e.target.value);
                     setPage(1);
                   }}
+                  style={{ height: '40px', boxSizing: 'border-box', margin: 0 }}
                 />
               </div>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
-                <button
-                  className="btn btn-outline btn-sm"
-                  onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
-                  style={{ width: 155, display: 'flex', justifyContent: 'center', gap: 6 }}
-                >
-                  <Download size={13} /> Export CSV
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 24, alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Trash2 size={13} color="#ef4444" />
+                  <Trash2 size={14} color="#ef4444" />
                   <select
                     value=""
                     onChange={(e) => {
@@ -222,13 +216,13 @@ export default function CommentExplorer() {
                     }}
                     style={{
                       color: '#ef4444',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
                       background: 'transparent',
                       border: 'none',
                       cursor: 'pointer',
                       outline: 'none',
-                      padding: '2px 0'
+                      padding: 0
                     }}
                     onMouseEnter={e => e.currentTarget.style.color = '#b91c1c'}
                     onMouseLeave={e => e.currentTarget.style.color = '#ef4444'}
@@ -239,6 +233,13 @@ export default function CommentExplorer() {
                     <option value="90">Delete &gt; 3 Months Old</option>
                   </select>
                 </div>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => api.exportComments({ sentiment: sentiment === 'all' ? null : sentiment })}
+                  style={{ height: '40px', width: 145, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, boxSizing: 'border-box', margin: 0, padding: '0 16px' }}
+                >
+                  <Download size={14} /> Export CSV
+                </button>
               </div>
             </div>
           </div>
