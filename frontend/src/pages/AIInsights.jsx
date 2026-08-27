@@ -84,7 +84,7 @@ export default function AIInsights() {
 
         {/* ── AI Business Briefing ─────────────────────────────────────── */}
         {!loading && briefing && (
-          <div className="panel" style={{ marginBottom: 20 }}>
+          <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border-0" style={{ marginBottom: 20, padding: 24 }}>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <div>
@@ -146,29 +146,21 @@ export default function AIInsights() {
 
         {/* ── Trending Friction Points ──────────────────────────────────── */}
         {!loading && clusters.length > 0 && (
-          <div className="panel" style={{ marginBottom: 20 }}>
-            <div className="panel-header">
-              <span className="panel-title"><AlertTriangle size={16} color="#f59e0b" /> Trending Friction Points</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Top clustered negative aspects</span>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5" style={{ marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <AlertTriangle size={18} color="#ef4444" />
+              <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>Trending Friction Points</h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {clusters.map((cluster, idx) => (
-                <div key={idx} style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'capitalize' }}>
-                      {cluster.topic.replace('_', ' ')}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#ef4444', background: 'rgba(239,68,68,0.1)', padding: '2px 8px', borderRadius: 12 }}>
-                      {cluster.count} Complaints
-                    </div>
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottom: idx === clusters.length - 1 ? 'none' : '1px dashed #e2e8f0' }}>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', textTransform: 'capitalize', display: 'flex', alignItems: 'center', flex: 1 }}>
+                    {cluster.topic.replace('_', ' ')}
+                    <span style={{ flex: 1, borderBottom: '2px dotted #e2e8f0', margin: '0 16px', opacity: 0.5 }}></span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase' }}>Recent Examples:</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {cluster.examples.map((ex, i) => (
-                      <div key={i} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'var(--bg-glass)', padding: '8px 12px', borderRadius: 8, borderLeft: '2px solid #f59e0b' }}>
-                        "{ex}"
-                      </div>
-                    ))}
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ef4444' }}>
+                    {cluster.count} Complaints
                   </div>
                 </div>
               ))}

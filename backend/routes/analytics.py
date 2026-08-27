@@ -420,7 +420,7 @@ async def narrative_clusters(db: Session = Depends(get_db)):
 
     comments = db.query(ProcessedComment).filter(
         ProcessedComment.created_at >= since,
-        ProcessedComment.sentiment.in_(["negative", "sarcastic"])
+        ProcessedComment.sentiment.in_(["negative", "sarcastic", "Negative", "Sarcastic", "NEGATIVE", "SARCASTIC"])
     ).all()
 
     # Cluster by aspect
