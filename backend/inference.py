@@ -833,7 +833,10 @@ Key Friction Points: {intent}
                     }
                 )
                 resp.raise_for_status()
-                return resp.json()["choices"][0]["message"]["content"].strip()
+                reply_text = resp.json()["choices"][0]["message"]["content"].strip()
+                import re
+                reply_text = re.sub(r'<think>.*?</think>', '', reply_text, flags=re.DOTALL).strip()
+                return reply_text
         else:
             # Local Inference server fallback if Groq API key is missing
             local_url = os.getenv("INFERENCE_URL", "").replace("/analyze", "/generate")
