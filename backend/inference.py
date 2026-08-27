@@ -21,13 +21,8 @@ import httpx
 # ─────────────────────────────────────────────
 
 SARCASM_CUES = (
-    "yeah right", "sure sure", "wow what a", "brilliant idea", "great job",
-    "as if", "totally", "love how", "nice one", "oh really", "oh wow",
-    "thanks a lot", "amazing job", "wonderful", "how wonderful", "so helpful",
-    "so useful", "so great", "perfectly done", "oh perfect", "wow so good",
-    "very helpful", "super helpful", "excellent service", "such a deal",
-    "what a bargain", "best ever", "totally worth it", "incredible value",
-    "really impressive", "mind blowing", "who could have thought",
+    "yeah right", "sure sure", "wow what a", "as if", "oh really", "oh wow",
+    "who could have thought",
 )
 
 NEGATIVE_CUES = (
@@ -38,6 +33,7 @@ NEGATIVE_CUES = (
     "unresponsive", "ignored", "cheated", "lied", "stealing", "robbery",
     "overpriced", "regret", "mistake", "failure", "disaster", "catastrophe",
     "appalling", "unacceptable", "shocking", "outrageous", "ridiculous",
+    "garbage", "crashing", "crash", "stopped working", "bug",
     # Romanized negative cues — Tamil
     "romba mosam", "ketta", "bayangara mosam", "waste panra", "illa da seri",
     "paavam", "enna da idhu", "theriyama", "kelvi kekka mudiyala",
@@ -56,7 +52,12 @@ POSITIVE_CUES = (
     "best", "awesome", "perfect", "wonderful", "superb", "outstanding",
     "brilliant", "delighted", "pleased", "satisfied", "impressed", "loved",
     "recommend", "beautiful", "gorgeous", "fast", "quick", "reliable",
-    "trustworthy", "honest", "genuine", "quality", "premium", "fresh",
+    "trustworthy", "honest", "genuine",
+    "great job", "totally", "love how", "nice one", "thanks a lot", "amazing job", 
+    "how wonderful", "so helpful", "so useful", "so great", "perfectly done", 
+    "oh perfect", "wow so good", "very helpful", "super helpful", "excellent service", 
+    "such a deal", "what a bargain", "best ever", "totally worth it", "incredible value", 
+    "really impressive", "mind blowing", "masterpiece", "genius",
     # Romanized positive cues — Tamil
     "romba nalla", "super ah iruku", "nalla irundhuchu", "en mela trust",
     "sema", "ipdi irukanum", "kollam", "anbudan", "mela sontham",
@@ -420,8 +421,8 @@ def _tonal_incongruity_score(text: str, pos_score: float, neg_score: float) -> f
         return 0.0
     lower = text.lower()
     # Positive words + negative tone markers together
-    neg_markers = sum(1 for m in ("terrible", "worst", "broken", "failed", "late", "wrong") if m in lower)
-    if pos_score >= 2 and neg_markers >= 1:
+    neg_markers = sum(1 for m in ("terrible", "worst", "broken", "failed", "late", "wrong", "crash", "garbage", "waste") if m in lower)
+    if pos_score >= 1 and neg_markers >= 1:
         return min(0.6, 0.25 * pos_score + 0.15 * neg_markers)
     return 0.0
 
@@ -633,6 +634,10 @@ def classify_sarcasm_and_sentiment(text: str) -> tuple[str, float, str, list[str
             ps = sum(1 for c in POSITIVE_CUES if c in lower)
             ns = sum(1 for c in NEGATIVE_CUES if c in lower)
             sarc_sc, sarc_sigs = compute_sarcasm_score(text, ps, ns)
+            
+            if sarc_sc >= 0.35 and sentiment in ("positive", "neutral"):
+                return "sarcastic", min(0.92, conf * 0.7 + sarc_sc * 0.3), "llama_lora_sarcasm", sarc_sigs, sarc_sc
+                
             return sentiment, conf, "llama_lora", sarc_sigs, sarc_sc
 
     if mode == "roberta":
