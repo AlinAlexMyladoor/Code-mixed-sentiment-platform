@@ -802,10 +802,19 @@ Key Friction Points: {intent}
                 
                 # Default to the first available model, but prefer any active Llama chat model
                 target_model = valid_models[0]
+                found_llama = False
                 for m_id in valid_models:
                     if "llama" in m_id.lower():
                         target_model = m_id
+                        found_llama = True
                         break
+                
+                # If no Llama model is available, prefer Qwen or GPT-OSS over random third-party models
+                if not found_llama:
+                    for m_id in valid_models:
+                        if "qwen" in m_id.lower() or "gpt-oss" in m_id.lower():
+                            target_model = m_id
+                            break
                         
                 resp = client.post(
                     "https://api.groq.com/openai/v1/chat/completions",
