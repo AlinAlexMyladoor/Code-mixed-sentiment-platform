@@ -162,9 +162,20 @@ export default function Vocabulary() {
         <div style={{ background: '#ffffff', borderRadius: '1rem', boxShadow: '0 2px 10px -3px rgba(6,81,237,0.1)', border: 'none', padding: '32px', marginTop: '16px' }}>
           {/* Toolbar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-            <div className="search-wrapper" style={{ flex: '1', maxWidth: '448px' }}>
-              <Search size={16} strokeWidth={1.5} />
-              <input className="search-input" placeholder="Search terms…" value={search} onChange={e => setSearch(e.target.value)} />
+            <div style={{ flex: '1', maxWidth: '448px', position: 'relative' }}>
+              <Search size={16} strokeWidth={1.5} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input 
+                placeholder="Search terms…" 
+                value={search} 
+                onChange={e => setSearch(e.target.value)} 
+                style={{ 
+                  width: '100%', boxSizing: 'border-box', padding: '10px 14px 10px 40px', 
+                  borderRadius: '10px', border: '1px solid #e2e8f0', background: '#ffffff', 
+                  color: '#334155', outline: 'none', transition: 'all 0.2s', fontSize: '0.9rem' 
+                }}
+                onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
+                onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+              />
             </div>
             
             <button 
@@ -187,7 +198,7 @@ export default function Vocabulary() {
           {loading ? (
             <Skeleton height={220} />
           ) : filtered.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 20px 40px 20px' }}>
               <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '50%', color: '#94a3b8', marginBottom: '16px' }}>
                 <BookOpen size={32} strokeWidth={1.5} />
               </div>
