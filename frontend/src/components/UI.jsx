@@ -21,7 +21,7 @@ export const sentimentBadgeClass = (s) => {
 
 export function SentimentBadge({ sentiment }) {
   return (
-    <span className={sentimentBadgeClass(sentiment)}>
+    <span className={sentimentBadgeClass(sentiment)} style={{ textTransform: 'capitalize' }}>
       {sentiment}
     </span>
   );

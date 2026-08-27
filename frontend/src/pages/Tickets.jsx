@@ -61,7 +61,7 @@ export default function Tickets() {
       <div className="page-body">
         
         {/* Filters */}
-        <div className="panel" style={{ marginBottom: 20 }}>
+        <div className="panel" style={{ marginBottom: 20, padding: '12px 20px' }}>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, marginRight: 4, display: 'flex', alignItems: 'center', gap: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               <Filter size={12} /> Status
@@ -69,7 +69,8 @@ export default function Tickets() {
             {['All', 'Open', 'In Progress', 'Resolved'].map(s => (
               <button
                 key={s}
-                className={`btn btn-sm ${filter === s ? 'btn-primary' : 'btn-outline'}`}
+                className={`btn btn-sm ${filter === s ? 'filter-active' : 'filter-inactive'}`}
+                style={{ borderRadius: '9999px', padding: '4px 12px' }}
                 onClick={() => setFilter(s)}
               >
                 {s}
@@ -97,11 +98,11 @@ export default function Tickets() {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Ticket ID</th>
-                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Status</th>
-                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Sentiment</th>
-                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Comment Details</th>
-                    <th style={{ color: '#475569', fontWeight: 700, letterSpacing: '0.04em' }}>Created At</th>
+                    <th style={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: '#64748b', fontWeight: 600 }}>Ticket ID</th>
+                    <th style={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: '#64748b', fontWeight: 600 }}>Status</th>
+                    <th style={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: '#64748b', fontWeight: 600 }}>Sentiment</th>
+                    <th style={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: '#64748b', fontWeight: 600 }}>Comment Details</th>
+                    <th style={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: '#64748b', fontWeight: 600 }}>Created At</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -113,7 +114,11 @@ export default function Tickets() {
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <Ticket size={13} color="#94a3b8" strokeWidth={1.5} />
-                            <span style={{ fontWeight: 700, color: '#1d4ed8', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+                            <span 
+                              style={{ fontWeight: 600, color: '#0d9488', fontSize: '0.82rem', fontFamily: 'monospace', cursor: 'pointer', transition: 'color 0.2s' }}
+                              onMouseEnter={e => e.currentTarget.style.color = '#0f766e'}
+                              onMouseLeave={e => e.currentTarget.style.color = '#0d9488'}
+                            >
                               {t.ticket_id}
                             </span>
                           </div>
@@ -154,25 +159,23 @@ export default function Tickets() {
                               disabled={draftingId === t.id}
                               style={{
                                 marginTop: 8,
-                                display: 'inline-flex', alignItems: 'center', gap: 5,
-                                fontSize: '0.7rem', fontWeight: 600,
-                                color: draftingId === t.id ? '#94a3b8' : '#0d9488',
-                                background: draftingId === t.id ? '#f1f5f9' : 'transparent',
-                                border: `1px solid ${draftingId === t.id ? '#e2e8f0' : 'rgba(13,148,136,0.25)'}`,
-                                padding: '5px 10px', borderRadius: 8,
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                fontSize: '0.875rem', fontWeight: 500,
+                                color: draftingId === t.id ? '#94a3b8' : '#047857',
+                                background: draftingId === t.id ? '#f1f5f9' : '#ecfdf5',
+                                border: `1px solid ${draftingId === t.id ? '#e2e8f0' : '#d1fae5'}`,
+                                padding: '6px 12px', borderRadius: '0.5rem',
                                 cursor: draftingId === t.id ? 'not-allowed' : 'pointer',
                                 transition: 'all 0.15s ease',
                               }}
                               onMouseEnter={e => {
                                 if (draftingId !== t.id) {
-                                  e.currentTarget.style.background = 'rgba(13,148,136,0.06)';
-                                  e.currentTarget.style.borderColor = 'rgba(13,148,136,0.4)';
+                                  e.currentTarget.style.background = '#d1fae5';
                                 }
                               }}
                               onMouseLeave={e => {
                                 if (draftingId !== t.id) {
-                                  e.currentTarget.style.background = 'transparent';
-                                  e.currentTarget.style.borderColor = 'rgba(13,148,136,0.25)';
+                                  e.currentTarget.style.background = '#ecfdf5';
                                 }
                               }}
                             >
