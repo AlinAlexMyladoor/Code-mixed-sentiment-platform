@@ -797,10 +797,11 @@ Key Friction Points: {intent}
                 if not models:
                     raise Exception("Groq returned no active models for this API key.")
                 
-                # Default to the first available model, but prefer any active Llama model
+                # Default to the first available model, but prefer any active Llama chat model
                 target_model = models[0]["id"]
                 for m in models:
-                    if "llama" in m["id"].lower():
+                    model_id = m["id"].lower()
+                    if "llama" in model_id and "guard" not in model_id:
                         target_model = m["id"]
                         break
                         
