@@ -765,22 +765,6 @@ def analyze_comment(text: str) -> AnalysisResult:
 def generate_draft_reply(text: str, sentiment: str, intent: str, lang_ratio: float) -> str:
     """Generates a contextual draft reply based on sentiment and intent using an LLM."""
     
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        snippet = text[:30] + "..." if len(text) > 30 else text
-        if intent in ["support_request", "complaint"]:
-            if sentiment in ["negative", "sarcastic"]:
-                return f"We sincerely apologize for the inconvenience regarding '{snippet}'. Could you please share your order details via DM so we can investigate?"
-            return f"Thank you for reaching out about '{snippet}'. Please share your details via DM and our support team will assist you."
-            
-        if sentiment == "positive":
-            return f"Thank you so much! We're thrilled to hear you had a great experience with '{snippet}'."
-            
-        if sentiment in ["negative", "sarcastic"]:
-            return f"We're really sorry to hear this. Your feedback ('{snippet}') has been noted and we are working hard to improve."
-            
-        return f"Thank you for your comment: '{snippet}'. We appreciate you taking the time to share your thoughts."
-
     system_prompt = f"""
 You are a professional, empathetic customer support agent for a premium brand. 
 Write a short, single-paragraph reply to the customer's comment. 
@@ -796,23 +780,44 @@ Customer Comment: "{text}"
 Detected Sentiment: {sentiment}
 Key Friction Points: {intent}
 """
+    
+    import httpx
+    api_key = os.getenv("GROQ_API_KEY")
+    
     try:
-        import httpx
-        with httpx.Client(timeout=10.0) as client:
-            resp = client.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": "llama3-8b-8192",
-                    "messages": [{"role": "system", "content": system_prompt}],
-                    "temperature": 0.7,
-                    "max_tokens": 150
-                }
-            )
-            resp.raise_for_status()
-            return resp.json()["choices"][0]["message"]["content"].strip()
-    except Exception:
-        return "Thank you for your comment. We have noted your feedback."
+        if api_key:
+            with httpx.Client(timeout=15.0) as client:
+                resp = client.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": "llama3-8b-8192",
+                        "messages": [{"role": "system", "content": system_prompt}],
+                        "temperature": 0.8,
+                        "max_tokens": 150
+                    }
+                )
+                resp.raise_for_status()
+                return resp.json()["choices"][0]["message"]["content"].strip()
+        else:
+            # Local Inference server fallback if Groq API key is missing
+            local_url = os.getenv("INFERENCE_URL", "").replace("/analyze", "/generate")
+            if not local_url:
+                return "[Error] GROQ_API_KEY is not set. Please add it to your environment variables to enable AI generation."
+                
+            with httpx.Client(timeout=15.0) as client:
+                resp = client.post(
+                    local_url,
+                    json={
+                        "prompt": system_prompt,
+                        "temperature": 0.8,
+                        "max_tokens": 150
+                    }
+                )
+                resp.raise_for_status()
+                return resp.json().get("text", "Error: No text generated").strip()
+    except Exception as e:
+        return f"[AI Generation Failed] {str(e)}. Please check your API keys."
