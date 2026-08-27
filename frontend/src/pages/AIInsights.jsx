@@ -155,27 +155,37 @@ export default function AIInsights() {
         {/* ── Trending Friction Points ──────────────────────────────────── */}
         {!loading && clusters.length > 0 && (
           <div style={{ background: '#ffffff', borderRadius: '1rem', boxShadow: '0 2px 10px -3px rgba(6,81,237,0.1)', border: 'none', padding: '24px', marginTop: '24px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <AlertTriangle size={18} color="#ef4444" />
-              <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>Trending Friction Points</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <AlertTriangle size={18} color="#ef4444" />
+                <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>Trending Friction Points</h2>
+              </div>
+              <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Ranked by volume</span>
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {clusters.map((cluster, idx) => (
-                <div key={idx} style={{ 
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-                  padding: '16px 0', 
-                  borderBottom: idx === clusters.length - 1 ? 'none' : '1px solid #f8fafc' 
-                }}>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 500, color: '#334155', textTransform: 'capitalize' }}>
-                    {cluster.topic.replace('_', ' ')}
+                <div 
+                  key={idx} 
+                  style={{ 
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                    padding: '14px 12px', 
+                    borderBottom: idx === clusters.length - 1 ? 'none' : '1px solid #f1f5f9',
+                    borderRadius: '8px',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(248, 250, 252, 0.75)'}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <div style={{ fontSize: '0.875rem', fontWeight: 500, color: '#334155', textTransform: 'capitalize' }}>
+                    {cluster.topic.toLowerCase() === 'uncategorized' ? 'General Feedback' : cluster.topic.replace('_', ' ')}
                   </div>
                   <div style={{ 
-                    background: '#fef2f2', color: '#dc2626', 
+                    background: '#fff1f2', color: '#e11d48', border: '1px solid #ffe4e6',
                     padding: '4px 12px', borderRadius: '9999px', 
-                    fontSize: '0.875rem', fontWeight: 600 
+                    fontSize: '0.75rem', fontWeight: 600 
                   }}>
-                    {cluster.count} Complaints
+                    {cluster.count} {cluster.count === 1 ? 'Complaint' : 'Complaints'}
                   </div>
                 </div>
               ))}
