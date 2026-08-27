@@ -809,12 +809,17 @@ Key Friction Points: {intent}
                         found_llama = True
                         break
                 
-                # If no Llama model is available, prefer Qwen or GPT-OSS over random third-party models
+                # If no Llama model is available, prefer GPT-OSS, then Qwen
                 if not found_llama:
                     for m_id in valid_models:
-                        if "qwen" in m_id.lower() or "gpt-oss" in m_id.lower():
+                        if "gpt-oss" in m_id.lower():
                             target_model = m_id
                             break
+                    else:
+                        for m_id in valid_models:
+                            if "qwen" in m_id.lower():
+                                target_model = m_id
+                                break
                         
                 resp = client.post(
                     "https://api.groq.com/openai/v1/chat/completions",
@@ -825,7 +830,7 @@ Key Friction Points: {intent}
                     json={
                         "model": target_model,
                         "messages": [
-                            {"role": "system", "content": "You are a professional, empathetic customer support agent for a premium brand."},
+                            {"role": "system", "content": "You are a professional, empathetic customer support agent for a premium brand. DO NOT output any <think> blocks or reasoning process. Output ONLY the final reply text directly."},
                             {"role": "user", "content": system_prompt}
                         ],
                         "temperature": 0.8,
@@ -834,8 +839,15 @@ Key Friction Points: {intent}
                 )
                 resp.raise_for_status()
                 reply_text = resp.json()["choices"][0]["message"]["content"].strip()
+                
                 import re
+                # Strip closed <think>...</think> blocks
                 reply_text = re.sub(r'<think>.*?</think>', '', reply_text, flags=re.DOTALL).strip()
+                # Strip unclosed <think>... blocks if it got truncated
+                reply_text = re.sub(r'<think>.*', '', reply_text, flags=re.DOTALL).strip()
+                
+                if not reply_text:
+                    return "[Error] AI generated a reasoning trace but ran out of space before providing the final answer. Please try again."
                 return reply_text
         else:
             # Local Inference server fallback if Groq API key is missing
