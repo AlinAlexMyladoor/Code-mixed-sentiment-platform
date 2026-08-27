@@ -222,7 +222,7 @@ export default function Vocabulary() {
               </p>
             </div>
           ) : (
-            <div className="panel" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: 'none' }}>
+            <div className="panel table-responsive" style={{ padding: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch', border: '1px solid #e2e8f0', boxShadow: 'none' }}>
             <motion.table className="data-table" variants={gridVariants} initial="hidden" animate="show">
               <thead>
                 <tr>

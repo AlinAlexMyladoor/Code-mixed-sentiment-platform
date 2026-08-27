@@ -1,11 +1,22 @@
-import { Bell, RefreshCw } from 'lucide-react';
+import { Bell, RefreshCw, Menu } from 'lucide-react';
+import { useMobileMenu } from '../../App';
 
 export default function TopBar({ title, subtitle, urgentCount = 0, onRefresh }) {
+  const { setMobileMenuOpen } = useMobileMenu();
+
   return (
     <div className="topbar">
-      <div className="topbar-left">
-        <span className="topbar-title">{title}</span>
-        {subtitle && <span className="topbar-sub">{subtitle}</span>}
+      <div className="topbar-left" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
+        <button 
+          className="mobile-menu-btn" 
+          onClick={() => setMobileMenuOpen(true)}
+        >
+          <Menu size={20} strokeWidth={1.5} />
+        </button>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span className="topbar-title">{title}</span>
+          {subtitle && <span className="topbar-sub">{subtitle}</span>}
+        </div>
       </div>
 
       <div className="topbar-right">

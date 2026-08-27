@@ -115,8 +115,8 @@ export default function Tickets() {
               desc={filter === 'All' ? "You haven't escalated any comments into support tickets yet." : `No tickets match the '${filter}' filter.`}
             />
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="data-table">
+            <div className="table-responsive">
+              <table className="data-table" style={{ minWidth: '800px' }}>
                 <thead>
                   <tr>
                     <th style={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', color: '#64748b', fontWeight: 600 }}>Ticket ID</th>

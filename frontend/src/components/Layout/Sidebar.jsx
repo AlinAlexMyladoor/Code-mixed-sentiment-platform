@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
 import { useAuth } from '../../context/RBACContext';
+import { useMobileMenu } from '../../App';
 
 /* Grouped nav definition with required permission per item */
 const NAV_GROUPS = [
@@ -36,6 +37,7 @@ const NAV_GROUPS = [
 export default function Sidebar({ wsStatus }) {
   const { isDemoMode, clearDemo } = useDemo();
   const { can, role } = useAuth();
+  const { isMobileMenuOpen, setMobileMenuOpen } = useMobileMenu();
 
   /* Role badge styling */
   const roleMeta = {
@@ -46,7 +48,7 @@ export default function Sidebar({ wsStatus }) {
   }[role] || { label: 'Demo', color: '#d97706', bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.18)' };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
       {/* Logo */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: '12px',
@@ -97,6 +99,7 @@ export default function Sidebar({ wsStatus }) {
                       e.currentTarget.style.color = '#475569';
                     }
                   }}
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   <Icon size={18} strokeWidth={1.5} style={{ opacity: 0.9 }} />
                   <span>{label}</span>

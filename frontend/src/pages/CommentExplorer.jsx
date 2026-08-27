@@ -314,8 +314,8 @@ export default function CommentExplorer() {
               desc="Try adjusting your filters or send some test webhooks."
             />
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div className="table-responsive">
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
                     {['Sentiment', 'Comment', 'Confidence', 'Model', 'Page', 'Time', 'Actions'].map(h => (

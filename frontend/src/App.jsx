@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, createContext, useContext } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Layout/Sidebar';
 import { useWebSocket } from './hooks/useWebSocket';
@@ -16,15 +16,24 @@ import Vocabulary from './pages/Vocabulary';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import './index.css';
 
+export const MobileMenuContext = createContext();
+export const useMobileMenu = () => useContext(MobileMenuContext);
+
 function AppShell() {
   const [wsStatus, setWsStatus] = useState('connecting');
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const onWsMessage = useCallback(() => {}, []);
   const status = useWebSocket(onWsMessage);
   if (status !== wsStatus) setWsStatus(status);
 
   return (
-    <div className="app-shell">
-      <Sidebar wsStatus={wsStatus} />
+    <MobileMenuContext.Provider value={{ isMobileMenuOpen, setMobileMenuOpen }}>
+      <div className="app-shell">
+        <Sidebar wsStatus={wsStatus} />
+        {isMobileMenuOpen && (
+          <div className="mobile-backdrop" onClick={() => setMobileMenuOpen(false)}></div>
+        )}
       <main className="main-content">
         <Routes>
           <Route path="/"            element={<Dashboard />} />
@@ -39,6 +48,7 @@ function AppShell() {
         </Routes>
       </main>
     </div>
+    </MobileMenuContext.Provider>
   );
 }
 

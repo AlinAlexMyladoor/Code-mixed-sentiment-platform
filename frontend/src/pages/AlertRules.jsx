@@ -186,7 +186,8 @@ export default function AlertRules() {
               </div>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="table-responsive">
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: '700px' }}>
               {/* Header row */}
               <div style={{
                 display: 'grid', gridTemplateColumns: '1fr 2fr 140px 44px',
@@ -269,6 +270,7 @@ export default function AlertRules() {
                 </div>
               ))}
             </div>
+          </div>
           )}
         </div>
       </div>
