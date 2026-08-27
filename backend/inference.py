@@ -761,3 +761,18 @@ def analyze_comment(text: str) -> AnalysisResult:
         aspect_sentiments=aspects,
         intent_signal=intent,
     )
+
+def generate_draft_reply(text: str, sentiment: str, intent: str, lang_ratio: float) -> str:
+    """Generates a contextual draft reply based on sentiment and intent."""
+    if intent in ["support_request", "complaint"]:
+        if sentiment in ["negative", "sarcastic"]:
+            return "We sincerely apologize for the inconvenience you've faced. Could you please share your order details or account email via DM so our support team can investigate this immediately?"
+        return "Thank you for reaching out! Please share your details via DM and our support team will assist you shortly."
+        
+    if sentiment == "positive":
+        return "Thank you so much for your wonderful feedback! We're thrilled to hear you had a great experience."
+        
+    if sentiment in ["negative", "sarcastic"]:
+        return "We're really sorry to hear about your experience. Your feedback has been noted and we are working hard to improve."
+        
+    return "Thank you for your comment. We appreciate you taking the time to share your thoughts."
