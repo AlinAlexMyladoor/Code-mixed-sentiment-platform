@@ -242,6 +242,7 @@ export default function CommentExplorer() {
                       title="Purge Old Data"
                     >
                       <option value="" disabled>Purge Old Data</option>
+                      <option value="0">Delete All Data</option>
                       <option value="7">Delete &gt; 1 Week Old</option>
                       <option value="30">Delete &gt; 1 Month Old</option>
                       <option value="90">Delete &gt; 3 Months Old</option>
