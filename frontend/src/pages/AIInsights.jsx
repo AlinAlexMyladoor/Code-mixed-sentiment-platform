@@ -110,7 +110,9 @@ export default function AIInsights() {
                   <AlertTriangle size={14} color="#f59e0b" /> Top Complaint Signal
                 </div>
                 <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  {briefing.top_complaint || "No major complaints detected"}
+                  {clusters && clusters.length > 0 
+                    ? `Top Issue: ${clusters[0].topic.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`
+                    : (briefing.top_complaint || "No major complaints detected")}
                 </div>
               </div>
               <div style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
@@ -146,20 +148,27 @@ export default function AIInsights() {
 
         {/* ── Trending Friction Points ──────────────────────────────────── */}
         {!loading && clusters.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5" style={{ marginBottom: 20 }}>
+          <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] p-6" style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <AlertTriangle size={18} color="#ef4444" />
               <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>Trending Friction Points</h2>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               {clusters.map((cluster, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottom: idx === clusters.length - 1 ? 'none' : '1px dashed #e2e8f0' }}>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', textTransform: 'capitalize', display: 'flex', alignItems: 'center', flex: 1 }}>
+                <div key={idx} style={{ 
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                  padding: '16px 0', 
+                  borderBottom: idx === clusters.length - 1 ? 'none' : '1px solid #f8fafc' 
+                }}>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 500, color: '#334155', textTransform: 'capitalize' }}>
                     {cluster.topic.replace('_', ' ')}
-                    <span style={{ flex: 1, borderBottom: '2px dotted #e2e8f0', margin: '0 16px', opacity: 0.5 }}></span>
                   </div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ef4444' }}>
+                  <div style={{ 
+                    background: '#fef2f2', color: '#dc2626', 
+                    padding: '4px 12px', borderRadius: '9999px', 
+                    fontSize: '0.875rem', fontWeight: 600 
+                  }}>
                     {cluster.count} Complaints
                   </div>
                 </div>
