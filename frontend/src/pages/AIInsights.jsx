@@ -110,9 +110,15 @@ export default function AIInsights() {
                   <AlertTriangle size={14} color="#f59e0b" /> Top Complaint Signal
                 </div>
                 <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  {clusters && clusters.length > 0 
-                    ? `Top Issue: ${clusters[0].topic.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`
-                    : (briefing.top_complaint || "No major complaints detected")}
+                  {(() => {
+                    if (clusters && clusters.length > 0) {
+                      const validClusters = clusters.filter(c => c.topic.toLowerCase() !== 'uncategorized');
+                      if (validClusters.length > 0) {
+                        return `Top Issue: ${validClusters[0].topic.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
+                      }
+                    }
+                    return briefing.top_complaint || "No major complaints detected";
+                  })()}
                 </div>
               </div>
               <div style={{ background: 'var(--bg-hover)', borderRadius: 12, padding: 16, border: '1px solid var(--border)' }}>
@@ -148,7 +154,7 @@ export default function AIInsights() {
 
         {/* ── Trending Friction Points ──────────────────────────────────── */}
         {!loading && clusters.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] p-6" style={{ marginBottom: 20 }}>
+          <div style={{ background: '#ffffff', borderRadius: '1rem', boxShadow: '0 2px 10px -3px rgba(6,81,237,0.1)', border: 'none', padding: '24px', marginTop: '24px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <AlertTriangle size={18} color="#ef4444" />
               <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>Trending Friction Points</h2>
