@@ -87,8 +87,11 @@ export default function Tickets() {
             {['All', 'Open', 'In Progress', 'Resolved'].map(s => (
               <button
                 key={s}
-                className={`btn btn-sm ${filter === s ? 'bg-teal-50 text-teal-700 border border-teal-300 font-semibold shadow-sm' : 'filter-inactive'}`}
-                style={{ borderRadius: '9999px', padding: '4px 12px' }}
+                className={`btn btn-sm ${filter === s ? 'filter-active' : 'filter-inactive'}`}
+                style={{ 
+                  borderRadius: '9999px', padding: '4px 12px',
+                  ...(filter === s ? { background: '#f0fdfa', color: '#0f766e', border: '1px solid #5eead4', fontWeight: 600, boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' } : {})
+                }}
                 onClick={() => setFilter(s)}
               >
                 {s}
@@ -147,7 +150,16 @@ export default function Tickets() {
                           <select
                             value={t.ticket_status}
                             onChange={(e) => handleStatusChange(t.ticket_id, e.target.value)}
-                            className="bg-white border border-gray-300 text-slate-700 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                            style={{
+                              fontSize: '0.75rem', fontWeight: 700,
+                              background: statusMeta.bg,
+                              color: statusMeta.color,
+                              border: `1px solid ${statusMeta.border}`,
+                              padding: '5px 10px', borderRadius: 8,
+                              outline: 'none', cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                            }}
                           >
                             {STATUS_OPTIONS.map(opt => (
                               <option key={opt.value} value={opt.value}>{opt.value}</option>
@@ -160,29 +172,39 @@ export default function Tickets() {
                         <td className="td-text" style={{ maxWidth: 320 }}>
                           <p title={t.original_text}>{t.original_text}</p>
                           {t.draft_reply ? (
-                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-3 shadow-sm relative">
-                              <div className="text-teal-700 font-bold text-xs tracking-wide uppercase flex justify-between items-center mb-2">
-                                <div>AI Draft Reply</div>
+                            <div style={{ marginTop: 12, padding: '16px', background: 'rgba(13, 148, 136, 0.04)', border: '1px solid rgba(13, 148, 136, 0.15)', borderRadius: 12, position: 'relative', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#0f766e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>✨ AI Draft Reply</div>
                                 <div style={{ display: 'flex', gap: 8 }}>
                                   <button 
                                     onClick={() => handleDraftReply(t.id)}
                                     disabled={draftingId === t.id}
                                     title="Regenerate reply"
-                                    className="text-slate-400 hover:text-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-transparent border-none p-0 cursor-pointer"
+                                    style={{
+                                      background: 'none', border: 'none', cursor: draftingId === t.id ? 'not-allowed' : 'pointer', 
+                                      color: draftingId === t.id ? '#cbd5e1' : '#0f766e', padding: 0, display: 'flex', alignItems: 'center', transition: 'color 0.2s', opacity: 0.8
+                                    }}
+                                    onMouseEnter={e => { if(draftingId !== t.id) e.currentTarget.style.opacity = 1 }}
+                                    onMouseLeave={e => { if(draftingId !== t.id) e.currentTarget.style.opacity = 0.8 }}
                                   >
                                     <span style={{ fontSize: '1rem', lineHeight: 1 }}>⟳</span>
                                   </button>
                                   <button 
                                     onClick={() => handleClearDraft(t.id)}
                                     title="Hide reply"
-                                    className="text-slate-400 hover:text-teal-600 transition-colors bg-transparent border-none p-0 cursor-pointer flex items-center"
+                                    style={{
+                                      background: 'none', border: 'none', cursor: 'pointer', 
+                                      color: '#94a3b8', padding: 0, display: 'flex', alignItems: 'center', transition: 'color 0.2s'
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
                                   >
                                     <span style={{ fontSize: '1.4rem', lineHeight: 0.8 }}>×</span>
                                   </button>
                                 </div>
                               </div>
-                              <div className="text-slate-700 text-sm leading-relaxed">{draftingId === t.id ? 'Regenerating...' : t.draft_reply}</div>
-                              {draftError[t.id] && <div style={{ fontSize: '0.7rem', color: '#ef4444', marginTop: 4 }}>{draftError[t.id]}</div>}
+                              <div style={{ fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>{draftingId === t.id ? 'Regenerating...' : t.draft_reply}</div>
+                              {draftError[t.id] && <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: 6, fontWeight: 500 }}>{draftError[t.id]}</div>}
                             </div>
                           ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
