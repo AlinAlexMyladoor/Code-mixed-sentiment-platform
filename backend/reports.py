@@ -191,11 +191,15 @@ def generate_weekly_report():
         top_aspects = sorted(aspect_counts.items(), key=lambda x: x[1], reverse=True)[:3]
         
         if not top_aspects:
-            elements.append(Paragraph("• No major friction points detected this week.", body_style))
+            elements.append(Paragraph("• No major friction points detected this week.", bullet_style))
         else:
             for aspect, count in top_aspects:
-                bullet = f"• <b>{aspect.capitalize()}</b> - {count} complaints"
-                elements.append(Paragraph(bullet, body_style))
+                display_name = aspect.replace("_", " ").title()
+                if display_name.lower() == "uncategorized":
+                    display_name = "General Feedback"
+                
+                bullet = f"• <b>{display_name}</b> - {count} complaints"
+                elements.append(Paragraph(bullet, bullet_style))
 
         elements.append(Spacer(1, 20))
         elements.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e2e8f0"), spaceAfter=12))
