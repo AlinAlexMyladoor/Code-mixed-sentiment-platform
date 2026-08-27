@@ -1,22 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Bell, CheckCircle, Copy, ExternalLink, FileText, Shield, Zap, Lock, Users, Activity, RefreshCw } from 'lucide-react';
+import { Bell, CheckCircle, Copy, ExternalLink, FileText, Shield, Lock } from 'lucide-react';
 import TopBar from '../components/Layout/TopBar';
-import { API_BASE, api } from '../api/client';
-import { useAuth } from '../context/RBACContext';
+import { API_BASE } from '../api/client';
 
 export default function Settings() {
   const [copied, setCopied] = useState(false);
   const [alertsEnabled, setAlertsEnabled] = useState(true);
-  const { role } = useAuth();
-
-  // Queue health state (auto-refreshes every 30s)
-  const [queueHealth, setQueueHealth] = useState(null);
-  useEffect(() => {
-    const fetch = () => api.queueHealth().then(setQueueHealth).catch(() => {});
-    fetch();
-    const interval = setInterval(fetch, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   const copyWebhookUrl = () => {
     navigator.clipboard.writeText(`${API_BASE}/webhook`);
@@ -24,15 +13,13 @@ export default function Settings() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const roleLabel = { admin: 'Administrator', manager: 'Manager', agent: 'Agent', demo: 'Demo Mode' }[role] || 'Demo Mode';
-
   return (
     <>
       <TopBar title="Settings" />
       <div className="page-body">
 
         {/* Webhook */}
-        <div className="panel" style={{ marginBottom: 18 }}>
+        <div className="panel" style={{ marginBottom: 24, padding: 24 }}>
           <div className="panel-header">
             <span className="panel-title"><Shield size={16} strokeWidth={1.5} /> Webhook Callback URL</span>
           </div>
@@ -58,7 +45,7 @@ export default function Settings() {
         </div>
 
         {/* Telegram Alerting */}
-        <div className="panel" style={{ marginBottom: 18 }}>
+        <div className="panel" style={{ marginBottom: 24, padding: 24 }}>
           <div className="panel-header">
             <span className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bell size={16} color="#0284c7" strokeWidth={1.5} /> Telegram Alerting</span>
           </div>
@@ -121,7 +108,7 @@ export default function Settings() {
         </div>
 
         {/* Privacy & Compliance — Always-on PII Redaction Status */}
-        <div className="panel" style={{ marginBottom: 18 }}>
+        <div className="panel" style={{ marginBottom: 24, padding: 24 }}>
           <div className="panel-header">
             <span className="panel-title"><Lock size={16} strokeWidth={1.5} color="#4f46e5" /> Privacy & Compliance</span>
           </div>
@@ -156,65 +143,8 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Team & Roles */}
-        <div className="panel" style={{ marginBottom: 18 }}>
-          <div className="panel-header">
-            <span className="panel-title"><Users size={16} strokeWidth={1.5} /> Team & Roles</span>
-          </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: '#f8fafc', padding: '16px 20px', borderRadius: 12, border: '1px solid #f1f5f9'
-          }}>
-            <div>
-              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Your Role</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Administrator access</div>
-            </div>
-            <div style={{
-              background: 'rgba(79,70,229,0.1)', color: '#4f46e5',
-              padding: '4px 12px', borderRadius: 20, fontSize: '0.75rem', fontWeight: 700
-            }}>
-              Admin
-            </div>
-          </div>
-        </div>
-
-        {/* System Health — Simplified */}
-        <div className="panel" style={{ marginBottom: 18 }}>
-          <div className="panel-header">
-            <span className="panel-title"><Activity size={16} strokeWidth={1.5} /> System Health</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--positive)' }} />
-            <div style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>100% Operational (Webhooks listening)</div>
-          </div>
-        </div>
-
-        {/* Platform Info */}
-        <div className="panel" style={{ marginBottom: 18 }}>
-          <div className="panel-header">
-            <span className="panel-title"><Zap size={16} strokeWidth={1.5} /> Platform</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {[
-              ['Version',    '1.0.0'],
-              ['AI Engine',  'Heuristic · RoBERTa · Llama 3 LoRA'],
-              ['Languages',  'Tamil, Malayalam, Hindi, Bengali (Romanized code-mixed)'],
-              ['Real-time',  'Instant Live-Sync'],
-            ].map(([label, value]) => (
-              <div key={label} style={{
-                display: 'flex', gap: 16, padding: '10px 14px',
-                background: 'var(--bg-hover)', borderRadius: 10,
-                border: '1px solid var(--border-mid)', flexWrap: 'wrap',
-              }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', minWidth: 130, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', flex: 1, fontWeight: 500 }}>{value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Legal */}
-        <div className="panel">
+        <div className="panel" style={{ padding: 24 }}>
           <div className="panel-header">
             <span className="panel-title"><FileText size={16} strokeWidth={1.5} /> Legal</span>
           </div>
