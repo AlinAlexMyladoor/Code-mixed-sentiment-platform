@@ -69,61 +69,50 @@ def generate_weekly_report():
 
         # ── Custom Styles ──────────────────────────────────────────────────
         title_style = ParagraphStyle(
-            "TitleStyle",
-            parent=styles["Heading1"],
-            fontName="Helvetica-Bold",
-            fontSize=22,
-            spaceAfter=4,
-            textColor=colors.HexColor("#0f172a"),
+            'PremiumTitle',
+            parent=styles['Heading1'],
+            fontName='Helvetica-Bold',
+            fontSize=20,
+            textColor=colors.HexColor("#0f172a"), # Deep Slate
+            spaceAfter=10
         )
+        
         subtitle_style = ParagraphStyle(
-            "SubtitleStyle",
-            parent=styles["Normal"],
-            fontName="Helvetica",
+            'PremiumDate',
+            parent=styles['Normal'],
+            fontName='Helvetica',
             fontSize=10,
-            textColor=colors.HexColor("#64748b"),
-            spaceAfter=18,
+            textColor=colors.HexColor("#64748b"), # Muted Slate
+            spaceAfter=25
         )
+        
         h2_style = ParagraphStyle(
-            "H2Style",
-            parent=styles["Heading2"],
-            fontName="Helvetica-Bold",
-            fontSize=13,
-            spaceBefore=18,
-            spaceAfter=8,
+            'PremiumHeading',
+            parent=styles['Heading2'],
+            fontName='Helvetica-Bold',
+            fontSize=14,
             textColor=colors.HexColor("#1e293b"),
+            spaceAfter=10,
+            spaceBefore=15
         )
+        
         body_style = ParagraphStyle(
-            "BodyStyle",
-            parent=styles["Normal"],
-            fontName="Helvetica",
-            fontSize=10,
-            leading=16,
+            'PremiumBody',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=11,
             textColor=colors.HexColor("#334155"),
-        )
-        briefing_style = ParagraphStyle(
-            "BriefingStyle",
-            parent=styles["Normal"],
-            fontName="Helvetica",
-            fontSize=10,
             leading=16,
-            textColor=colors.HexColor("#475569"),
-            leftIndent=10,
-            borderPad=10,
-            backColor=colors.HexColor("#f8fafc"),
-            borderColor=colors.HexColor("#e2e8f0"),
-            borderWidth=1,
-            borderRadius=4,
-            spaceBefore=4,
-            spaceAfter=4,
+            spaceAfter=15
         )
+        
         bullet_style = ParagraphStyle(
             "BulletStyle",
             parent=styles["Normal"],
             fontName="Helvetica",
-            fontSize=10,
+            fontSize=11,
             leading=16,
-            textColor=colors.HexColor("#374151"),
+            textColor=colors.HexColor("#334155"),
             leftIndent=16,
             spaceBefore=3,
         )
@@ -133,19 +122,17 @@ def generate_weekly_report():
         # ── Title & Header ─────────────────────────────────────────────────
         elements.append(Paragraph("SwaraSense Weekly Executive Report", title_style))
         elements.append(Paragraph(
-            f"Generated: {now.strftime('%B %d, %Y')}  ·  Period: Last 7 days",
+            f"Generated on: {now.strftime('%B %d, %Y')} • Period: Last 7 days",
             subtitle_style,
         ))
-        elements.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#e2e8f0"), spaceAfter=16))
 
         # ── Executive Briefing ─────────────────────────────────────────────
         elements.append(Paragraph("Executive Briefing", h2_style))
         elements.append(Paragraph(
             f"This week's monitoring processed <b>{total_comments:,}</b> interactions. "
-            f"Review the top friction points below to identify emerging customer experience bottlenecks.",
+            f"Review the sentiment breakdown and top operational friction points below to identify emerging customer experience bottlenecks.",
             body_style,
         ))
-        elements.append(Spacer(1, 10))
 
         # ── Sentiment Breakdown Table ──────────────────────────────────────
         elements.append(Paragraph("Sentiment Breakdown", h2_style))
@@ -157,42 +144,38 @@ def generate_weekly_report():
             pct = f"{(count / total_for_pct * 100):.1f}%"
             data.append([sent.capitalize(), f"{count:,}", pct])
 
-        table = Table(data, colWidths=[200, 120, 100])
+        table = Table(data, colWidths=[150, 100, 100])
         table.setStyle(TableStyle([
-            # Header row
-            ("BACKGROUND",    (0, 0), (-1, 0), colors.HexColor("#f8fafc")),
-            ("TEXTCOLOR",     (0, 0), (-1, 0), colors.HexColor("#475569")),
-            ("FONTNAME",      (0, 0), (-1, 0), "Helvetica-Bold"),
-            ("FONTSIZE",      (0, 0), (-1, 0), 9),
-            ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
-            ("TOPPADDING",    (0, 0), (-1, 0), 10),
-            # Body rows
-            ("FONTNAME",      (0, 1), (-1, -1), "Helvetica"),
-            ("FONTSIZE",      (0, 1), (-1, -1), 10),
-            ("TOPPADDING",    (0, 1), (-1, -1), 9),
-            ("BOTTOMPADDING", (0, 1), (-1, -1), 9),
-            ("TEXTCOLOR",     (0, 1), (-1, -1), colors.HexColor("#1e293b")),
-            # Alignment
-            ("ALIGN",         (1, 0), (-1, -1), "CENTER"),
-            ("ALIGN",         (0, 0), (0, -1), "LEFT"),
-            ("LEFTPADDING",   (0, 0), (0, -1), 12),
-            # Horizontal lines only
-            ("LINEBELOW",     (0, 0), (-1, 0), 1, colors.HexColor("#e2e8f0")),
-            ("LINEBELOW",     (0, 1), (-1, -2), 0.5, colors.HexColor("#f1f5f9")),
-            # Outer border
-            ("BOX",           (0, 0), (-1, -1), 1, colors.HexColor("#e2e8f0")),
-            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#fafafa")]),
+            # Header row styling
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#f8fafc")), # Ultra light slate
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor("#475569")),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+            ('TOPPADDING', (0, 0), (-1, 0), 10),
+            
+            # Body row styling
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor("#334155")),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
+            ('TOPPADDING', (0, 1), (-1, -1), 8),
+            
+            # Grid lines (Very subtle)
+            ('LINEBELOW', (0, 0), (-1, 0), 1, colors.HexColor("#cbd5e1")), # Thicker header line
+            ('LINEBELOW', (0, 1), (-1, -1), 0.5, colors.HexColor("#e2e8f0")), # Thin body lines
+            
+            ('ALIGN', (1, 0), (-1, -1), 'CENTER'), # Center numbers
         ]))
         elements.append(table)
+        elements.append(Spacer(1, 20))
 
         # ── Top Friction Points ────────────────────────────────────────────
         elements.append(Paragraph("Top Operational Friction Points", h2_style))
         elements.append(Paragraph(
-            f"Based on {negative_count + sarcastic_count:,} negative and sarcastic signals this week, "
-            "the following areas represent the highest friction in customer experience:",
+            "Based on the negative and sarcastic signals this week, the following areas represent the highest friction in the customer experience:",
             body_style,
         ))
-        elements.append(Spacer(1, 8))
 
         aspect_counts = {}
         recent_negative_comments = db.query(ProcessedComment.aspect_sentiments).filter(
@@ -208,12 +191,11 @@ def generate_weekly_report():
         top_aspects = sorted(aspect_counts.items(), key=lambda x: x[1], reverse=True)[:3]
         
         if not top_aspects:
-            friction_points = ["No major friction points detected this week."]
+            elements.append(Paragraph("• No major friction points detected this week.", body_style))
         else:
-            friction_points = [f"{aspect.capitalize()} - {count} complaints" for aspect, count in top_aspects]
-
-        for point in friction_points:
-            elements.append(Paragraph(f"•  {point}", bullet_style))
+            for aspect, count in top_aspects:
+                bullet = f"• <b>{aspect.capitalize()}</b> - {count} complaints"
+                elements.append(Paragraph(bullet, body_style))
 
         elements.append(Spacer(1, 20))
         elements.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e2e8f0"), spaceAfter=12))
