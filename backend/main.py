@@ -464,19 +464,6 @@ async def list_comments(
     finally:
         db.close()
 
-@app.delete("/api/comments/{comment_id}")
-async def delete_comment(comment_id: int):
-    db = SessionLocal()
-    try:
-        c = db.query(ProcessedComment).filter(ProcessedComment.id == comment_id).first()
-        if not c:
-            raise HTTPException(status_code=404, detail="Comment not found")
-        db.delete(c)
-        db.commit()
-        return {"status": "success"}
-    finally:
-        db.close()
-
 from datetime import datetime, timedelta
 
 @app.delete("/api/comments/purge")
@@ -487,6 +474,19 @@ async def purge_comments(days: int = 30):
         result = db.query(ProcessedComment).filter(ProcessedComment.created_at < cutoff).delete()
         db.commit()
         return {"status": "success", "deleted_count": result}
+    finally:
+        db.close()
+
+@app.delete("/api/comments/{comment_id}")
+async def delete_comment(comment_id: int):
+    db = SessionLocal()
+    try:
+        c = db.query(ProcessedComment).filter(ProcessedComment.id == comment_id).first()
+        if not c:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        db.delete(c)
+        db.commit()
+        return {"status": "success"}
     finally:
         db.close()
 

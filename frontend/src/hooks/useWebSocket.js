@@ -49,6 +49,8 @@ export function useWebSocket(onMessage) {
       clearTimeout(reconnectRef.current);
       const ws = wsRef.current;
       if (ws) {
+        ws.onclose = null;
+        ws.onerror = null;
         if (ws.readyState === WebSocket.CONNECTING) {
           ws.onopen = () => ws.close();
         } else {
