@@ -1,4 +1,5 @@
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+export const API_BASE = import.meta.env.VITE_API_URL || 
+  (window.location.hostname.includes('localhost') ? 'http://localhost:8000' : 'https://swarasense-backend.onrender.com');
 
 const getToken = () => localStorage.getItem('access_token');
 

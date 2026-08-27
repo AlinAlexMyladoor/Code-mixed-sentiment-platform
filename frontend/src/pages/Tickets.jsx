@@ -15,6 +15,7 @@ export default function Tickets() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [draftingId, setDraftingId] = useState(null);
+  const [draftError, setDraftError] = useState({});
 
   const load = async () => {
     setLoading(true);
@@ -41,13 +42,14 @@ export default function Tickets() {
 
   const handleDraftReply = async (commentId) => {
     setDraftingId(commentId);
+    setDraftError(prev => ({ ...prev, [commentId]: null }));
     try {
       const res = await api.draftReply(commentId);
       if (res.status === 'success') {
         setTickets(tickets.map(t => t.id === commentId ? { ...t, draft_reply: res.draft_reply } : t));
       }
     } catch (err) {
-      alert("Failed to draft reply: " + err.message);
+      setDraftError(prev => ({ ...prev, [commentId]: "Network error: Unable to reach AI engine." }));
     } finally {
       setDraftingId(null);
     }
@@ -154,34 +156,41 @@ export default function Tickets() {
                               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t.draft_reply}</div>
                             </div>
                           ) : (
-                            <button
-                              onClick={() => handleDraftReply(t.id)}
-                              disabled={draftingId === t.id}
-                              style={{
-                                marginTop: 8,
-                                display: 'inline-flex', alignItems: 'center', gap: 6,
-                                fontSize: '0.875rem', fontWeight: 500,
-                                color: draftingId === t.id ? '#94a3b8' : '#047857',
-                                background: draftingId === t.id ? '#f1f5f9' : '#ecfdf5',
-                                border: `1px solid ${draftingId === t.id ? '#e2e8f0' : '#d1fae5'}`,
-                                padding: '6px 12px', borderRadius: '0.5rem',
-                                cursor: draftingId === t.id ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.15s ease',
-                              }}
-                              onMouseEnter={e => {
-                                if (draftingId !== t.id) {
-                                  e.currentTarget.style.background = '#d1fae5';
-                                }
-                              }}
-                              onMouseLeave={e => {
-                                if (draftingId !== t.id) {
-                                  e.currentTarget.style.background = '#ecfdf5';
-                                }
-                              }}
-                            >
-                              <Sparkles size={12} />
-                              {draftingId === t.id ? 'Drafting…' : 'Draft AI Reply'}
-                            </button>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                              <button
+                                onClick={() => handleDraftReply(t.id)}
+                                disabled={draftingId === t.id}
+                                style={{
+                                  marginTop: 8,
+                                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                                  fontSize: '0.875rem', fontWeight: 500,
+                                  color: draftingId === t.id ? '#94a3b8' : '#047857',
+                                  background: draftingId === t.id ? '#f1f5f9' : '#ecfdf5',
+                                  border: `1px solid ${draftingId === t.id ? '#e2e8f0' : '#d1fae5'}`,
+                                  padding: '6px 12px', borderRadius: '0.5rem',
+                                  cursor: draftingId === t.id ? 'not-allowed' : 'pointer',
+                                  transition: 'all 0.15s ease',
+                                }}
+                                onMouseEnter={e => {
+                                  if (draftingId !== t.id) {
+                                    e.currentTarget.style.background = '#d1fae5';
+                                  }
+                                }}
+                                onMouseLeave={e => {
+                                  if (draftingId !== t.id) {
+                                    e.currentTarget.style.background = '#ecfdf5';
+                                  }
+                                }}
+                              >
+                                <Sparkles size={12} />
+                                {draftingId === t.id ? 'Drafting…' : 'Draft AI Reply'}
+                              </button>
+                              {draftError[t.id] && (
+                                <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '6px', fontWeight: 500 }}>
+                                  {draftError[t.id]}
+                                </div>
+                              )}
+                            </div>
                           )}
                         </td>
 
