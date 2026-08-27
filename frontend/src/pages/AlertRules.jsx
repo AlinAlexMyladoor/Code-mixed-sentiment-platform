@@ -78,30 +78,30 @@ export default function AlertRules() {
           <div className="panel-header"><span className="panel-title">Create New Rule</span></div>
           <form onSubmit={handleCreate} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'flex-end' }}>
             <div>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Rule Name</label>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 8 }}>Rule Name</label>
               <input 
                 type="text" className="input" placeholder="e.g. Logistics Issues" 
                 value={name} onChange={e => setName(e.target.value)} required 
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                style={{ height: '42px', boxSizing: 'border-box', width: '100%', padding: '0 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#ffffff', color: '#1e293b', outline: 'none' }}
                 onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
                 onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Keyword <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span></label>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 8 }}>Keyword <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span></label>
               <input 
                 type="text" className="input" placeholder="e.g. delivery" 
                 value={keyword} onChange={e => setKeyword(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                style={{ height: '42px', boxSizing: 'border-box', width: '100%', padding: '0 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#ffffff', color: '#1e293b', outline: 'none' }}
                 onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
                 onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Intent</label>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 8 }}>Intent</label>
               <select 
                 className="input" value={intent} onChange={e => setIntent(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                style={{ height: '42px', boxSizing: 'border-box', width: '100%', padding: '0 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#ffffff', color: '#1e293b', outline: 'none' }}
                 onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
                 onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               >
@@ -112,10 +112,10 @@ export default function AlertRules() {
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Sentiment</label>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 8 }}>Sentiment</label>
               <select 
                 className="input" value={sentiment} onChange={e => setSentiment(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                style={{ height: '42px', boxSizing: 'border-box', width: '100%', padding: '0 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#ffffff', color: '#1e293b', outline: 'none' }}
                 onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
                 onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               >
@@ -126,10 +126,10 @@ export default function AlertRules() {
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Route To</label>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 8 }}>Route To</label>
               <select 
                 className="input" value={channel} onChange={e => setChannel(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                style={{ height: '42px', boxSizing: 'border-box', width: '100%', padding: '0 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#ffffff', color: '#1e293b', outline: 'none' }}
                 onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
                 onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               >
@@ -141,7 +141,7 @@ export default function AlertRules() {
             <button 
               type="submit" 
               style={{ 
-                padding: '10px 16px', background: 'linear-gradient(to right, #0d9488, #059669)', 
+                height: '42px', boxSizing: 'border-box', padding: '0 16px', background: 'linear-gradient(to right, #0d9488, #059669)', 
                 color: '#fff', fontWeight: 500, borderRadius: '12px', border: 'none', 
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.3s'
@@ -242,10 +242,10 @@ export default function AlertRules() {
                   {/* Channel */}
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
-                    fontSize: '0.8rem', fontWeight: 700, color: channelColor(r.channel),
-                    background: `${channelColor(r.channel)}10`,
-                    border: `1px solid ${channelColor(r.channel)}25`,
-                    padding: '4px 10px', borderRadius: 8, width: 'fit-content',
+                    fontSize: '0.85rem', fontWeight: 600, color: channelColor(r.channel),
+                    background: `${channelColor(r.channel)}0D`, // Very soft background
+                    border: `1px solid ${channelColor(r.channel)}1A`, // Very soft border
+                    padding: '4px 12px', borderRadius: '8px', width: 'fit-content',
                   }}>
                     <ChannelIcon c={r.channel} /> {r.channel}
                   </div>
@@ -255,16 +255,16 @@ export default function AlertRules() {
                     onClick={() => handleDelete(r.id)}
                     style={{
                       width: 32, height: 32, borderRadius: 8,
-                      border: '1px solid #fee2e2',
+                      border: 'none', // Removed harsh border
                       background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#f87171', transition: 'all 0.15s ease',
+                      color: '#94a3b8', transition: 'all 0.15s ease', // Soft slate color initially
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fca5a5'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#fee2e2'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#ef4444'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
                     title="Delete rule"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))}
