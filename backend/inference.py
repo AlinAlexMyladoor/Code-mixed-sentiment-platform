@@ -793,16 +793,18 @@ Key Friction Points: {intent}
                     headers={"Authorization": f"Bearer {api_key}"}
                 )
                 model_resp.raise_for_status()
-                models = model_resp.json().get("data", [])
-                if not models:
-                    raise Exception("Groq returned no active models for this API key.")
+                models_data = model_resp.json().get("data", [])
+                
+                # Filter out classification models (like Llama Guard)
+                valid_models = [m["id"] for m in models_data if "guard" not in m["id"].lower()]
+                if not valid_models:
+                    raise Exception("No valid generative models available for this API key on Groq.")
                 
                 # Default to the first available model, but prefer any active Llama chat model
-                target_model = models[0]["id"]
-                for m in models:
-                    model_id = m["id"].lower()
-                    if "llama" in model_id and "guard" not in model_id:
-                        target_model = m["id"]
+                target_model = valid_models[0]
+                for m_id in valid_models:
+                    if "llama" in m_id.lower():
+                        target_model = m_id
                         break
                         
                 resp = client.post(
@@ -841,6 +843,8 @@ Key Friction Points: {intent}
                 resp.raise_for_status()
                 return resp.json().get("text", "Error: No text generated").strip()
     except httpx.HTTPStatusError as e:
-        return f"[AI Generation Failed] HTTP {e.response.status_code}: {e.response.text}. Please check your configuration."
+        model_name = locals().get("target_model", "Unknown")
+        available = ", ".join(locals().get("valid_models", []))
+        return f"[Failed on {model_name}] Available: {available} | HTTP {e.response.status_code}: {e.response.text}"
     except Exception as e:
         return f"[AI Generation Failed] {str(e)}. Please check your API keys."
