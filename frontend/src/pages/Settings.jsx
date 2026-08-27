@@ -23,23 +23,32 @@ export default function Settings() {
           <div className="panel-header">
             <span className="panel-title"><Shield size={16} strokeWidth={1.5} /> Webhook Callback URL</span>
           </div>
-          <div style={{ display: 'flex', position: 'relative' }}>
-            <div className="input-group" style={{ flex: 1, paddingRight: 80 }}>
-              <span className="input-group-icon"><Shield size={14} strokeWidth={1.5} /></span>
-              <input className="input" readOnly value={`${API_BASE}/webhook`} style={{ width: '100%' }} />
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '12px' }}>
+            <input 
+              readOnly 
+              value={`${API_BASE}/webhook`} 
+              style={{ 
+                flex: 1, width: '100%', background: '#f8fafc', border: '1px solid #e2e8f0', 
+                color: '#334155', fontSize: '0.875rem', borderRadius: '0.75rem', 
+                padding: '10px 16px', outline: 'none', transition: 'all 0.2s', height: '42px', boxSizing: 'border-box'
+              }} 
+              onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
+              onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+            />
             <button
               style={{
-                position: 'absolute', right: 4, top: 4, bottom: 4,
-                display: 'flex', alignItems: 'center', gap: 6,
-                background: 'var(--bg-hover)', border: 'none', borderRadius: 8,
-                padding: '0 12px', fontSize: '0.75rem', fontWeight: 600,
-                color: copied ? 'var(--positive)' : 'var(--text-secondary)', cursor: 'pointer'
+                display: 'flex', alignItems: 'center', gap: '6px', height: '42px', boxSizing: 'border-box',
+                padding: '0 16px', background: '#ffffff', border: '1px solid #e2e8f0', 
+                color: '#334155', fontWeight: 500, fontSize: '0.875rem', borderRadius: '0.75rem',
+                cursor: 'pointer', transition: 'background 0.2s ease', flexShrink: 0,
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
               }}
+              onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+              onMouseLeave={e => e.currentTarget.style.background = '#ffffff'}
               onClick={copyWebhookUrl}
             >
-              {copied ? <CheckCircle size={13} strokeWidth={1.5} /> : <Copy size={13} strokeWidth={1.5} />}
-              {copied ? 'Copied' : 'Copy'}
+              {copied ? <CheckCircle size={14} strokeWidth={1.5} color="#059669" /> : <Copy size={14} strokeWidth={1.5} />}
+              {copied ? <span style={{ color: '#059669' }}>Copied</span> : 'Copy'}
             </button>
           </div>
         </div>
