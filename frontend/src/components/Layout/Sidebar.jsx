@@ -1,30 +1,41 @@
 import { NavLink } from 'react-router-dom';
 import {
-  BarChart2, Brain, Globe, Home, Link2, MessageSquare,
-  Settings, X, Ticket, Bell, BookOpen,
+  BarChart2, Brain, Globe, Home, MessageSquare,
+  Settings, Ticket, Bell, BookOpen,
 } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
 import { useAuth } from '../../context/RBACContext';
 
-/* Full nav definition with required permission per item */
-const NAV_FULL = [
-  { label: 'Dashboard',      icon: Home,          to: '/',            perm: 'view_dashboard' },
-  { label: 'Analytics',      icon: BarChart2,     to: '/analytics',   perm: 'view_analytics' },
-  { label: 'Comments',       icon: MessageSquare, to: '/comments',    perm: 'view_comments' },
-  { label: 'Tickets',        icon: Ticket,        to: '/tickets',     perm: 'view_tickets' },
-  { label: 'AI Insights',    icon: Brain,         to: '/ai-insights', perm: 'view_ai_insights' },
-  { label: 'Connect Pages',  icon: Link2,         to: '/connect',     perm: 'view_connect' },
-  { label: 'Alert Rules',    icon: Bell,          to: '/alert-rules', perm: 'view_alerts' },
-  { label: 'Vocabulary',     icon: BookOpen,      to: '/vocabulary',  perm: 'view_vocabulary' },
-  { label: 'Settings',       icon: Settings,      to: '/settings',    perm: 'view_settings' },
+/* Grouped nav definition with required permission per item */
+const NAV_GROUPS = [
+  {
+    title: 'Core',
+    items: [
+      { label: 'Dashboard',      icon: Home,          to: '/',            perm: 'view_dashboard' },
+      { label: 'Analytics',      icon: BarChart2,     to: '/analytics',   perm: 'view_analytics' },
+      { label: 'Comments',       icon: MessageSquare, to: '/comments',    perm: 'view_comments' },
+      { label: 'Tickets',        icon: Ticket,        to: '/tickets',     perm: 'view_tickets' },
+    ]
+  },
+  {
+    title: 'Intelligence',
+    items: [
+      { label: 'AI Insights',    icon: Brain,         to: '/ai-insights', perm: 'view_ai_insights' },
+      { label: 'Vocabulary',     icon: BookOpen,      to: '/vocabulary',  perm: 'view_vocabulary' },
+      { label: 'Alert Rules',    icon: Bell,          to: '/alert-rules', perm: 'view_alerts' },
+    ]
+  },
+  {
+    title: 'System',
+    items: [
+      { label: 'Settings',       icon: Settings,      to: '/settings',    perm: 'view_settings' },
+    ]
+  }
 ];
 
 export default function Sidebar({ wsStatus }) {
   const { isDemoMode, clearDemo } = useDemo();
   const { can, role } = useAuth();
-
-  /* Filter nav items by role permissions */
-  const visibleNav = NAV_FULL.filter(item => can(item.perm));
 
   /* Role badge styling */
   const roleMeta = {
@@ -37,30 +48,63 @@ export default function Sidebar({ wsStatus }) {
   return (
     <aside className="sidebar">
       {/* Logo */}
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '12px',
+        padding: '24px', borderBottom: '1px solid #f1f5f9',
+        marginBottom: '12px'
+      }}>
+        <div style={{ width: 28, height: 28, flexShrink: 0 }}>
           <img src="/logo.png" alt="SwaraSense" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
         </div>
-        <div className="sidebar-logo-text">
-          <div className="sidebar-logo-title" style={{ color: '#0f172a' }}>SwaraSense</div>
+        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+          SwaraSense
         </div>
       </div>
 
-
-
-      {/* Navigation — RBAC-filtered, consistent 1.5px strokes */}
-      <nav className="sidebar-nav">
-        {visibleNav.map(({ label, icon: Icon, to }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-          >
-            <Icon size={16} className="nav-icon" strokeWidth={1.5} />
-            <span className="nav-label">{label}</span>
-          </NavLink>
-        ))}
+      {/* Navigation — RBAC-filtered, Grouped */}
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '28px', padding: '0 16px', flex: 1, overflowY: 'auto' }}>
+        {NAV_GROUPS.map((group, gIdx) => {
+          const visibleItems = group.items.filter(item => can(item.perm));
+          if (visibleItems.length === 0) return null;
+          return (
+            <div key={gIdx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0 12px', marginBottom: '6px' }}>
+                {group.title}
+              </div>
+              {visibleItems.map(({ label, icon: Icon, to }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={to === '/'}
+                  className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                  style={({ isActive }) => ({
+                    display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
+                    borderRadius: '0.75rem', fontSize: '0.875rem', transition: 'all 0.2s ease',
+                    textDecoration: 'none', cursor: 'pointer',
+                    ...(isActive 
+                      ? { background: '#f0fdfa', color: '#0f766e', fontWeight: 600 }
+                      : { background: 'transparent', color: '#475569', fontWeight: 500 })
+                  })}
+                  onMouseEnter={e => {
+                    if (!e.currentTarget.className.includes('active')) {
+                      e.currentTarget.style.background = '#f8fafc';
+                      e.currentTarget.style.color = '#0f172a';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!e.currentTarget.className.includes('active')) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = '#475569';
+                    }
+                  }}
+                >
+                  <Icon size={18} strokeWidth={1.5} style={{ opacity: 0.9 }} />
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </div>
+          );
+        })}
       </nav>
 
 
