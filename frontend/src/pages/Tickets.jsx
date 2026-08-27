@@ -87,7 +87,7 @@ export default function Tickets() {
             {['All', 'Open', 'In Progress', 'Resolved'].map(s => (
               <button
                 key={s}
-                className={`btn btn-sm ${filter === s ? 'filter-active' : 'filter-inactive'}`}
+                className={`btn btn-sm ${filter === s ? 'bg-teal-50 text-teal-700 border border-teal-300 font-semibold shadow-sm' : 'filter-inactive'}`}
                 style={{ borderRadius: '9999px', padding: '4px 12px' }}
                 onClick={() => setFilter(s)}
               >
@@ -127,7 +127,7 @@ export default function Tickets() {
                   {filteredTickets.map((t) => {
                     const statusMeta = STATUS_OPTIONS.find(opt => opt.value === t.ticket_status) || STATUS_OPTIONS[0];
                     return (
-                      <tr key={t.id}>
+                      <tr key={t.id} className="hover:bg-slate-50/50 transition-colors duration-150">
                         {/* Ticket ID — deep slate blue, no emoji */}
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -147,14 +147,7 @@ export default function Tickets() {
                           <select
                             value={t.ticket_status}
                             onChange={(e) => handleStatusChange(t.ticket_id, e.target.value)}
-                            style={{
-                              fontSize: '0.75rem', fontWeight: 700,
-                              background: statusMeta.bg,
-                              color: statusMeta.color,
-                              border: `1px solid ${statusMeta.border}`,
-                              padding: '5px 10px', borderRadius: 8,
-                              outline: 'none', cursor: 'pointer',
-                            }}
+                            className="bg-white border border-gray-300 text-slate-700 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
                           >
                             {STATUS_OPTIONS.map(opt => (
                               <option key={opt.value} value={opt.value}>{opt.value}</option>
@@ -167,36 +160,28 @@ export default function Tickets() {
                         <td className="td-text" style={{ maxWidth: 320 }}>
                           <p title={t.original_text}>{t.original_text}</p>
                           {t.draft_reply ? (
-                            <div style={{ marginTop: 8, padding: 10, background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8, position: 'relative' }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                                <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Draft Reply</div>
-                                <div style={{ display: 'flex', gap: 4 }}>
+                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-3 shadow-sm relative">
+                              <div className="text-teal-700 font-bold text-xs tracking-wide uppercase flex justify-between items-center mb-2">
+                                <div>AI Draft Reply</div>
+                                <div style={{ display: 'flex', gap: 8 }}>
                                   <button 
                                     onClick={() => handleDraftReply(t.id)}
                                     disabled={draftingId === t.id}
                                     title="Regenerate reply"
-                                    style={{
-                                      background: 'none', border: 'none', cursor: draftingId === t.id ? 'not-allowed' : 'pointer', 
-                                      color: draftingId === t.id ? '#94a3b8' : '#6366f1', padding: 2, display: 'flex', alignItems: 'center'
-                                    }}
+                                    className="text-slate-400 hover:text-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-transparent border-none p-0 cursor-pointer"
                                   >
-                                    <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>⟳</span>
+                                    <span style={{ fontSize: '1rem', lineHeight: 1 }}>⟳</span>
                                   </button>
                                   <button 
                                     onClick={() => handleClearDraft(t.id)}
                                     title="Hide reply"
-                                    style={{
-                                      background: 'none', border: 'none', cursor: 'pointer', 
-                                      color: '#94a3b8', padding: 2, display: 'flex', alignItems: 'center', transition: 'color 0.2s'
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                                    onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                    className="text-slate-400 hover:text-teal-600 transition-colors bg-transparent border-none p-0 cursor-pointer flex items-center"
                                   >
-                                    <span style={{ fontSize: '1.2rem', lineHeight: 0.8 }}>×</span>
+                                    <span style={{ fontSize: '1.4rem', lineHeight: 0.8 }}>×</span>
                                   </button>
                                 </div>
                               </div>
-                              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{draftingId === t.id ? 'Regenerating...' : t.draft_reply}</div>
+                              <div className="text-slate-700 text-sm leading-relaxed">{draftingId === t.id ? 'Regenerating...' : t.draft_reply}</div>
                               {draftError[t.id] && <div style={{ fontSize: '0.7rem', color: '#ef4444', marginTop: 4 }}>{draftError[t.id]}</div>}
                             </div>
                           ) : (

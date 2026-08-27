@@ -829,7 +829,7 @@ Key Friction Points: {intent}
                             {"role": "user", "content": system_prompt}
                         ],
                         "temperature": 0.8,
-                        "max_tokens": 150
+                        "max_tokens": 1024
                     }
                 )
                 resp.raise_for_status()
