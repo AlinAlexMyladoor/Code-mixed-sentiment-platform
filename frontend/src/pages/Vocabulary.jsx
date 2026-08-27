@@ -75,16 +75,10 @@ export default function Vocabulary() {
       <div className="page-body">
 
         {/* Header row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 12, flexWrap: 'wrap' }}>
-          <div>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
-              Teach SwaraSense your brand's unique slang and keywords.
-            </p>
-          </div>
-          <button className="btn btn-primary" onClick={() => setAdding(v => !v)}>
-            <Plus size={14} strokeWidth={1.5} />
-            {adding ? 'Cancel' : 'Add Term'}
-          </button>
+        <div style={{ marginBottom: 12 }}>
+          <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
+            Teach SwaraSense your brand's unique slang and keywords.
+          </p>
         </div>
 
         {/* Add Term Form */}
@@ -165,25 +159,49 @@ export default function Vocabulary() {
           </motion.form>
         )}
 
-        {/* Search */}
-        <div className="search-wrapper" style={{ maxWidth: 340, marginBottom: 16 }}>
-          <Search size={16} strokeWidth={1.5} />
-          <input className="search-input" placeholder="Search terms…" value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
+        <div style={{ background: '#ffffff', borderRadius: '1rem', boxShadow: '0 2px 10px -3px rgba(6,81,237,0.1)', border: 'none', padding: '32px', marginTop: '16px' }}>
+          {/* Toolbar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+            <div className="search-wrapper" style={{ flex: '1', maxWidth: '448px' }}>
+              <Search size={16} strokeWidth={1.5} />
+              <input className="search-input" placeholder="Search terms…" value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+            
+            <button 
+              onClick={() => setAdding(v => !v)}
+              style={{ 
+                padding: '10px 20px', background: 'linear-gradient(to right, #0d9488, #059669)', 
+                color: '#fff', fontWeight: 500, borderRadius: '12px', border: 'none', 
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.3s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(20, 184, 166, 0.3), 0 4px 6px -2px rgba(20, 184, 166, 0.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'; }}
+            >
+              <Plus size={16} strokeWidth={1.5} />
+              {adding ? 'Cancel' : 'Add Term'}
+            </button>
+          </div>
 
-        {/* Table */}
-        {loading ? (
-          <Skeleton height={220} />
-        ) : filtered.length === 0 ? (
-          <EmptyState
-            icon={BookOpen}
-            title={terms.length === 0 ? 'No vocabulary terms yet' : 'No matching terms'}
-            desc={terms.length === 0
-              ? 'Add brand-specific slang to override AI model sentiment detection.'
-              : 'Try a different search query.'}
-          />
-        ) : (
-          <div className="panel" style={{ padding: 0, overflow: 'hidden' }}>
+          {/* Table / Empty State */}
+          {loading ? (
+            <Skeleton height={220} />
+          ) : filtered.length === 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 20px' }}>
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '50%', color: '#94a3b8', marginBottom: '16px' }}>
+                <BookOpen size={32} strokeWidth={1.5} />
+              </div>
+              <h3 style={{ margin: 0, color: '#1e293b', fontWeight: 600, fontSize: '1.125rem' }}>
+                {terms.length === 0 ? 'No vocabulary terms yet' : 'No matching terms'}
+              </h3>
+              <p style={{ marginTop: '8px', color: '#64748b', fontSize: '0.9rem' }}>
+                {terms.length === 0
+                  ? 'Add brand-specific slang to override AI model sentiment detection.'
+                  : 'Try a different search query.'}
+              </p>
+            </div>
+          ) : (
+            <div className="panel" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: 'none' }}>
             <motion.table className="data-table" variants={gridVariants} initial="hidden" animate="show">
               <thead>
                 <tr>
@@ -249,7 +267,7 @@ export default function Vocabulary() {
             </motion.table>
           </div>
         )}
-
+        </div>
 
       </div>
     </>
