@@ -32,10 +32,15 @@ export default function Tickets() {
   useEffect(() => { load(); }, []);
 
   const handleStatusChange = async (ticketId, newStatus) => {
+    // Optimistic UI update
+    const previousTickets = [...tickets];
+    setTickets(tickets.map(t => t.ticket_id === ticketId ? { ...t, ticket_status: newStatus } : t));
+    
     try {
       await api.updateTicketStatus(ticketId, newStatus);
-      setTickets(tickets.map(t => t.ticket_id === ticketId ? { ...t, ticket_status: newStatus } : t));
     } catch (err) {
+      // Revert if API fails
+      setTickets(previousTickets);
       alert("Failed to update status: " + err.message);
     }
   };
@@ -151,9 +156,23 @@ export default function Tickets() {
                         <td className="td-text" style={{ maxWidth: 320 }}>
                           <p title={t.original_text}>{t.original_text}</p>
                           {t.draft_reply ? (
-                            <div style={{ marginTop: 8, padding: 10, background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8 }}>
-                              <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#6366f1', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Draft Reply</div>
-                              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t.draft_reply}</div>
+                            <div style={{ marginTop: 8, padding: 10, background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8, position: 'relative' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                                <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Draft Reply</div>
+                                <button 
+                                  onClick={() => handleDraftReply(t.id)}
+                                  disabled={draftingId === t.id}
+                                  title="Regenerate reply"
+                                  style={{
+                                    background: 'none', border: 'none', cursor: draftingId === t.id ? 'not-allowed' : 'pointer', 
+                                    color: draftingId === t.id ? '#94a3b8' : '#6366f1', padding: 2, display: 'flex', alignItems: 'center'
+                                  }}
+                                >
+                                  <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>⟳</span>
+                                </button>
+                              </div>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{draftingId === t.id ? 'Regenerating...' : t.draft_reply}</div>
+                              {draftError[t.id] && <div style={{ fontSize: '0.7rem', color: '#ef4444', marginTop: 4 }}>{draftError[t.id]}</div>}
                             </div>
                           ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>

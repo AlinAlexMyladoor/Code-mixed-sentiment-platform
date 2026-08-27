@@ -763,16 +763,55 @@ def analyze_comment(text: str) -> AnalysisResult:
     )
 
 def generate_draft_reply(text: str, sentiment: str, intent: str, lang_ratio: float) -> str:
-    """Generates a contextual draft reply based on sentiment and intent."""
-    if intent in ["support_request", "complaint"]:
+    """Generates a contextual draft reply based on sentiment and intent using an LLM."""
+    
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        if intent in ["support_request", "complaint"]:
+            if sentiment in ["negative", "sarcastic"]:
+                return "We sincerely apologize for the inconvenience you've faced. Could you please share your order details or account email via DM so our support team can investigate this immediately?"
+            return "Thank you for reaching out! Please share your details via DM and our support team will assist you shortly."
+            
+        if sentiment == "positive":
+            return "Thank you so much for your wonderful feedback! We're thrilled to hear you had a great experience."
+            
         if sentiment in ["negative", "sarcastic"]:
-            return "We sincerely apologize for the inconvenience you've faced. Could you please share your order details or account email via DM so our support team can investigate this immediately?"
-        return "Thank you for reaching out! Please share your details via DM and our support team will assist you shortly."
-        
-    if sentiment == "positive":
-        return "Thank you so much for your wonderful feedback! We're thrilled to hear you had a great experience."
-        
-    if sentiment in ["negative", "sarcastic"]:
-        return "We're really sorry to hear about your experience. Your feedback has been noted and we are working hard to improve."
-        
-    return "Thank you for your comment. We appreciate you taking the time to share your thoughts."
+            return "We're really sorry to hear about your experience. Your feedback has been noted and we are working hard to improve."
+            
+        return "Thank you for your comment. We appreciate you taking the time to share your thoughts."
+
+    system_prompt = f"""
+You are a professional, empathetic customer support agent for a premium brand. 
+Write a short, single-paragraph reply to the customer's comment. 
+
+RULES:
+- If the sentiment is POSITIVE, be warm, appreciative, and match their energy.
+- If the sentiment is NEGATIVE, apologize for the specific issue mentioned, be empathetic, and offer to resolve it.
+- If the comment is SARCASTIC, keep the tone strictly professional and de-escalate without acknowledging the sarcasm directly.
+- Keep it under 3 sentences. Do not use generic corporate jargon.
+
+CONTEXT:
+Customer Comment: "{text}"
+Detected Sentiment: {sentiment}
+Key Friction Points: {intent}
+"""
+    try:
+        import httpx
+        with httpx.Client(timeout=10.0) as client:
+            resp = client.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "llama3-8b-8192",
+                    "messages": [{"role": "system", "content": system_prompt}],
+                    "temperature": 0.7,
+                    "max_tokens": 150
+                }
+            )
+            resp.raise_for_status()
+            return resp.json()["choices"][0]["message"]["content"].strip()
+    except Exception:
+        return "Thank you for your comment. We have noted your feedback."
