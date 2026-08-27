@@ -190,8 +190,8 @@ export default function AlertRules() {
               {/* Header row */}
               <div style={{
                 display: 'grid', gridTemplateColumns: '1fr 2fr 140px 44px',
-                padding: '0 20px 12px 20px', borderBottom: '1px solid #f1f5f9',
-                gap: 12,
+                padding: '16px 20px', borderBottom: '1px solid #f1f5f9',
+                gap: 12, alignItems: 'center'
               }}>
                 {['Rule Name', 'Conditions', 'Route To', ''].map((h) => (
                   <div key={h} style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</div>
@@ -202,7 +202,7 @@ export default function AlertRules() {
                   key={r.id}
                   style={{
                     display: 'grid', gridTemplateColumns: '1fr 2fr 140px 44px',
-                    padding: '14px 20px', gap: 12, alignItems: 'center',
+                    padding: '16px 20px', gap: 12, alignItems: 'center',
                     borderBottom: idx < rules.length - 1 ? '1px solid rgba(0,0,0,0.04)' : 'none',
                     background: '#fff',
                     transition: 'background 0.15s ease',

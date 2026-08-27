@@ -153,7 +153,17 @@ export default function Vocabulary() {
             )}
 
             <div style={{ marginTop: 14, display: 'flex', gap: 8 }}>
-              <button type="submit" className="btn btn-primary btn-sm">Save Term</button>
+              <button 
+                type="submit" 
+                style={{ 
+                  padding: '8px 16px', background: 'linear-gradient(to right, #0d9488, #059669)', 
+                  color: '#fff', fontWeight: 500, borderRadius: '8px', border: 'none', 
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                  cursor: 'pointer', transition: 'all 0.3s'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(20, 184, 166, 0.3), 0 4px 6px -2px rgba(20, 184, 166, 0.15)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'; }}
+              >Save Term</button>
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => setAdding(false)}>Cancel</button>
             </div>
           </motion.form>
