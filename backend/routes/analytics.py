@@ -371,6 +371,7 @@ async def business_briefing(db: Session = Depends(get_db)):
         for t in (c.regional_tokens_found or []):
             token_freq[t] = token_freq.get(t, 0) + 1
     top_token = max(token_freq, key=token_freq.get) if token_freq else None
+    token_pct = (token_freq[top_token] / len(neg_comments) * 100) if (top_token and len(neg_comments) > 0) else 0
 
     avg_en  = round(sum(float(c.english_ratio or 0) for c in this_week) / total_this, 3) if total_this else None
     top_source = {}
@@ -396,7 +397,7 @@ async def business_briefing(db: Session = Depends(get_db)):
         "period_days":    7,
         "total_comments": total_this,
         "sentiment_delta": sentiment_delta,
-        "top_complaint":   f"Regional signal '{top_token}' in {neg_pct:.0f}% negative comments" if top_token else None,
+        "top_complaint":   f"Regional signal '{top_token}' in {token_pct:.0f}% of negative comments" if top_token else None,
         "high_risk_pct":   high_risk_pct,
         "avg_en_ratio":    avg_en,
         "briefing_bullets": bullets,

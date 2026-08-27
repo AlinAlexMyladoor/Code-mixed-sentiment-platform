@@ -185,8 +185,9 @@ def generate_weekly_report():
 
         for (aspects,) in recent_negative_comments:
             if aspects and isinstance(aspects, dict):
-                for aspect in aspects.keys():
-                    aspect_counts[aspect] = aspect_counts.get(aspect, 0) + 1
+                for aspect, sent in aspects.items():
+                    if sent in ("negative", "sarcastic"):
+                        aspect_counts[aspect] = aspect_counts.get(aspect, 0) + 1
 
         top_aspects = sorted(aspect_counts.items(), key=lambda x: x[1], reverse=True)[:3]
         
