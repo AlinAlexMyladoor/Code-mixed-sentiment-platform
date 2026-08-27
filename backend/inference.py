@@ -795,7 +795,10 @@ Key Friction Points: {intent}
                     },
                     json={
                         "model": "llama3-8b-8192",
-                        "messages": [{"role": "system", "content": system_prompt}],
+                        "messages": [
+                            {"role": "system", "content": "You are a professional, empathetic customer support agent for a premium brand."},
+                            {"role": "user", "content": system_prompt}
+                        ],
                         "temperature": 0.8,
                         "max_tokens": 150
                     }
