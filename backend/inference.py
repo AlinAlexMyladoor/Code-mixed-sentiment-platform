@@ -782,7 +782,7 @@ Key Friction Points: {intent}
 """
     
     import httpx
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY", "").strip().strip('"').strip("'")
     
     try:
         if api_key:
@@ -822,5 +822,7 @@ Key Friction Points: {intent}
                 )
                 resp.raise_for_status()
                 return resp.json().get("text", "Error: No text generated").strip()
+    except httpx.HTTPStatusError as e:
+        return f"[AI Generation Failed] HTTP {e.response.status_code}: {e.response.text}. Please check your configuration."
     except Exception as e:
         return f"[AI Generation Failed] {str(e)}. Please check your API keys."
