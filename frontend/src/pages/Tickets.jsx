@@ -60,6 +60,17 @@ export default function Tickets() {
     }
   };
 
+  const handleClearDraft = async (commentId) => {
+    const previousTickets = [...tickets];
+    setTickets(tickets.map(t => t.id === commentId ? { ...t, draft_reply: null } : t));
+    try {
+      await api.clearDraftReply(commentId);
+    } catch (err) {
+      setTickets(previousTickets);
+      alert("Failed to clear draft: " + err.message);
+    }
+  };
+
   const filteredTickets = filter === 'All' ? tickets : tickets.filter(t => t.ticket_status === filter);
 
   return (
@@ -159,17 +170,31 @@ export default function Tickets() {
                             <div style={{ marginTop: 8, padding: 10, background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8, position: 'relative' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                                 <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Draft Reply</div>
-                                <button 
-                                  onClick={() => handleDraftReply(t.id)}
-                                  disabled={draftingId === t.id}
-                                  title="Regenerate reply"
-                                  style={{
-                                    background: 'none', border: 'none', cursor: draftingId === t.id ? 'not-allowed' : 'pointer', 
-                                    color: draftingId === t.id ? '#94a3b8' : '#6366f1', padding: 2, display: 'flex', alignItems: 'center'
-                                  }}
-                                >
-                                  <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>⟳</span>
-                                </button>
+                                <div style={{ display: 'flex', gap: 4 }}>
+                                  <button 
+                                    onClick={() => handleDraftReply(t.id)}
+                                    disabled={draftingId === t.id}
+                                    title="Regenerate reply"
+                                    style={{
+                                      background: 'none', border: 'none', cursor: draftingId === t.id ? 'not-allowed' : 'pointer', 
+                                      color: draftingId === t.id ? '#94a3b8' : '#6366f1', padding: 2, display: 'flex', alignItems: 'center'
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>⟳</span>
+                                  </button>
+                                  <button 
+                                    onClick={() => handleClearDraft(t.id)}
+                                    title="Hide reply"
+                                    style={{
+                                      background: 'none', border: 'none', cursor: 'pointer', 
+                                      color: '#94a3b8', padding: 2, display: 'flex', alignItems: 'center', transition: 'color 0.2s'
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                  >
+                                    <span style={{ fontSize: '1.2rem', lineHeight: 0.8 }}>×</span>
+                                  </button>
+                                </div>
                               </div>
                               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{draftingId === t.id ? 'Regenerating...' : t.draft_reply}</div>
                               {draftError[t.id] && <div style={{ fontSize: '0.7rem', color: '#ef4444', marginTop: 4 }}>{draftError[t.id]}</div>}

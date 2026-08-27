@@ -767,18 +767,19 @@ def generate_draft_reply(text: str, sentiment: str, intent: str, lang_ratio: flo
     
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
+        snippet = text[:30] + "..." if len(text) > 30 else text
         if intent in ["support_request", "complaint"]:
             if sentiment in ["negative", "sarcastic"]:
-                return "We sincerely apologize for the inconvenience you've faced. Could you please share your order details or account email via DM so our support team can investigate this immediately?"
-            return "Thank you for reaching out! Please share your details via DM and our support team will assist you shortly."
+                return f"We sincerely apologize for the inconvenience regarding '{snippet}'. Could you please share your order details via DM so we can investigate?"
+            return f"Thank you for reaching out about '{snippet}'. Please share your details via DM and our support team will assist you."
             
         if sentiment == "positive":
-            return "Thank you so much for your wonderful feedback! We're thrilled to hear you had a great experience."
+            return f"Thank you so much! We're thrilled to hear you had a great experience with '{snippet}'."
             
         if sentiment in ["negative", "sarcastic"]:
-            return "We're really sorry to hear about your experience. Your feedback has been noted and we are working hard to improve."
+            return f"We're really sorry to hear this. Your feedback ('{snippet}') has been noted and we are working hard to improve."
             
-        return "Thank you for your comment. We appreciate you taking the time to share your thoughts."
+        return f"Thank you for your comment: '{snippet}'. We appreciate you taking the time to share your thoughts."
 
     system_prompt = f"""
 You are a professional, empathetic customer support agent for a premium brand. 

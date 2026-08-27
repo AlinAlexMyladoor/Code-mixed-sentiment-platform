@@ -51,6 +51,7 @@ export const api = {
   purgeComments: (days = 30) => request('DELETE', `/api/comments/purge?days=${days}`),
   createTicket: (commentId) => request('POST', `/api/comments/${commentId}/ticket`),
   draftReply: (commentId) => request('POST', `/api/comments/${commentId}/draft-reply`),
+  clearDraftReply: (commentId) => request('DELETE', `/api/comments/${commentId}/draft-reply`),
   getTickets: () => request('GET', '/api/tickets'),
   updateTicketStatus: (ticketId, status) => request('PATCH', `/api/tickets/${ticketId}`, { status }),
 

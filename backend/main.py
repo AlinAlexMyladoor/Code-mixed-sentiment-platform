@@ -923,3 +923,17 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+@app.delete("/api/comments/{comment_id}/draft-reply")
+async def clear_draft_reply(comment_id: int):
+    """Clears the AI draft reply for a comment."""
+    db = SessionLocal()
+    try:
+        comment = db.query(ProcessedComment).filter(ProcessedComment.id == comment_id).first()
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        comment.draft_reply = None
+        db.commit()
+        return {"status": "success"}
+    finally:
+        db.close()
