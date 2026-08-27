@@ -787,6 +787,23 @@ Key Friction Points: {intent}
     try:
         if api_key:
             with httpx.Client(timeout=15.0) as client:
+                # Dynamically fetch available models to prevent decommissioned/restricted errors
+                model_resp = client.get(
+                    "https://api.groq.com/openai/v1/models",
+                    headers={"Authorization": f"Bearer {api_key}"}
+                )
+                model_resp.raise_for_status()
+                models = model_resp.json().get("data", [])
+                if not models:
+                    raise Exception("Groq returned no active models for this API key.")
+                
+                # Default to the first available model, but prefer any active Llama model
+                target_model = models[0]["id"]
+                for m in models:
+                    if "llama" in m["id"].lower():
+                        target_model = m["id"]
+                        break
+                        
                 resp = client.post(
                     "https://api.groq.com/openai/v1/chat/completions",
                     headers={
@@ -794,7 +811,7 @@ Key Friction Points: {intent}
                         "Content-Type": "application/json"
                     },
                     json={
-                        "model": "llama-3.3-70b-versatile",
+                        "model": target_model,
                         "messages": [
                             {"role": "system", "content": "You are a professional, empathetic customer support agent for a premium brand."},
                             {"role": "user", "content": system_prompt}
