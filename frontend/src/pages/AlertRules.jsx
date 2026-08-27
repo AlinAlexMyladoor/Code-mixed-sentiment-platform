@@ -76,28 +76,34 @@ export default function AlertRules() {
         {/* Create Rule Form */}
         <div className="panel" style={{ marginBottom: 20 }}>
           <div className="panel-header"><span className="panel-title">Create New Rule</span></div>
-          <form onSubmit={handleCreate} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <div style={{ flex: '1 1 200px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Rule Name</label>
+          <form onSubmit={handleCreate} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', alignItems: 'flex-end' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Rule Name</label>
               <input 
                 type="text" className="input" placeholder="e.g. Logistics Issues" 
                 value={name} onChange={e => setName(e.target.value)} required 
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-mid)', background: 'var(--bg-glass)', color: 'var(--text-primary)' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
+                onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               />
             </div>
-            <div style={{ flex: '1 1 150px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Keyword <span style={{ color: 'var(--text-muted)', fontWeight: 400, textTransform: 'none' }}>(optional)</span></label>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Keyword <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span></label>
               <input 
                 type="text" className="input" placeholder="e.g. delivery" 
                 value={keyword} onChange={e => setKeyword(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-mid)', background: 'var(--bg-glass)', color: 'var(--text-primary)' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
+                onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               />
             </div>
-            <div style={{ flex: '1 1 120px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Intent</label>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Intent</label>
               <select 
                 className="input" value={intent} onChange={e => setIntent(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-mid)', background: 'var(--bg-glass)', color: 'var(--text-primary)' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
+                onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               >
                 <option value="">Any Intent</option>
                 <option value="complaint">Complaint</option>
@@ -105,11 +111,13 @@ export default function AlertRules() {
                 <option value="buying_intent">Buying Intent</option>
               </select>
             </div>
-            <div style={{ flex: '1 1 120px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Sentiment</label>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Sentiment</label>
               <select 
                 className="input" value={sentiment} onChange={e => setSentiment(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-mid)', background: 'var(--bg-glass)', color: 'var(--text-primary)' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
+                onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               >
                 <option value="">Any Sentiment</option>
                 <option value="negative">Negative</option>
@@ -117,18 +125,32 @@ export default function AlertRules() {
                 <option value="positive">Positive</option>
               </select>
             </div>
-            <div style={{ flex: '1 1 120px' }}>
-              <label style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6 }}>Route To</label>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>Route To</label>
               <select 
                 className="input" value={channel} onChange={e => setChannel(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-mid)', background: 'var(--bg-glass)', color: 'var(--text-primary)' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#1e293b', outline: 'none' }}
+                onFocus={e => { e.target.style.borderColor = '#0d9488'; e.target.style.boxShadow = '0 0 0 3px rgba(13, 148, 136, 0.1)'; }}
+                onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
               >
                 <option value="Telegram">Telegram</option>
                 <option value="Slack">Slack</option>
                 <option value="Email">Email</option>
               </select>
             </div>
-            <button type="submit" className="btn btn-primary" style={{ padding: '9px 16px' }}><Plus size={16} /> Add Rule</button>
+            <button 
+              type="submit" 
+              style={{ 
+                padding: '10px 16px', background: 'linear-gradient(to right, #0d9488, #059669)', 
+                color: '#fff', fontWeight: 500, borderRadius: '12px', border: 'none', 
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.3s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(20, 184, 166, 0.3), 0 4px 6px -2px rgba(20, 184, 166, 0.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'; }}
+            >
+              <Plus size={16} /> Add Rule
+            </button>
           </form>
         </div>
 
@@ -168,11 +190,11 @@ export default function AlertRules() {
               {/* Header row */}
               <div style={{
                 display: 'grid', gridTemplateColumns: '1fr 2fr 140px 44px',
-                padding: '10px 20px', borderBottom: '1px solid var(--border-mid)',
+                padding: '0 20px 12px 20px', borderBottom: '1px solid #f1f5f9',
                 gap: 12,
               }}>
                 {['Rule Name', 'Conditions', 'Route To', ''].map((h) => (
-                  <div key={h} style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</div>
+                  <div key={h} style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</div>
                 ))}
               </div>
               {rules.map((r, idx) => (
@@ -195,23 +217,20 @@ export default function AlertRules() {
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
                     {r.keyword && (
                       <span style={{
-                        background: '#f1f5f9', color: '#475569',
-                        border: '1px solid #e2e8f0',
-                        padding: '2px 8px', borderRadius: 6, fontSize: '0.72rem', fontWeight: 600,
+                        background: '#f8fafc', color: '#334155', border: '1px solid #e2e8f0',
+                        padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 500,
                       }}>Keyword: {r.keyword}</span>
                     )}
                     {r.intent && (
                       <span style={{
-                        background: 'rgba(99,102,241,0.08)', color: '#6366f1',
-                        border: '1px solid rgba(99,102,241,0.2)',
-                        padding: '2px 8px', borderRadius: 6, fontSize: '0.72rem', fontWeight: 600,
+                        background: '#faf5ff', color: '#7e22ce', border: '1px solid #f3e8ff',
+                        padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 500,
                       }}>Intent: {r.intent}</span>
                     )}
                     {r.sentiment && (
                       <span style={{
-                        background: 'rgba(244,63,94,0.08)', color: '#e11d48',
-                        border: '1px solid rgba(244,63,94,0.2)',
-                        padding: '2px 8px', borderRadius: 6, fontSize: '0.72rem', fontWeight: 600,
+                        background: '#fef2f2', color: '#b91c1c', border: '1px solid #fee2e2',
+                        padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 500,
                         textTransform: 'capitalize',
                       }}>Sentiment: {r.sentiment}</span>
                     )}
