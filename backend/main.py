@@ -282,9 +282,19 @@ async def receive_webhook(request: Request, background_tasks: BackgroundTasks):
                 raise HTTPException(status_code=401, detail="Signature mismatch")
 
         # 2. PII Masking
+        payload = json.loads(raw_body.decode("utf-8", errors="ignore"))
         from security import mask_pii
-        redacted_body = mask_pii(raw_body.decode("utf-8", errors="ignore"))
-        payload = json.loads(redacted_body)
+        
+        def redact_dict(d):
+            if isinstance(d, dict):
+                return {k: redact_dict(v) for k, v in d.items()}
+            elif isinstance(d, list):
+                return [redact_dict(i) for i in d]
+            elif isinstance(d, str):
+                return mask_pii(d)
+            return d
+            
+        payload = redact_dict(payload)
         logger.info(f"Webhook POST received. Payload (first 200 chars): {json.dumps(payload)[:200]}")
         background_tasks.add_task(store_raw_webhook, payload)
         background_tasks.add_task(push_to_queue, payload)

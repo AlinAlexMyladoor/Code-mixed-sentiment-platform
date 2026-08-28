@@ -466,7 +466,7 @@ def _pattern_sarcasm_score(text: str) -> tuple[float, list[str]]:
         signals.append(f"sarcasm-cues({cue_hits})")
     if emoji_hits > 0:
         signals.append(f"sarcasm-emoji({emoji_hits})")
-    score = min(0.7, cue_hits * 0.20 + emoji_hits * 0.25)
+    score = min(0.7, cue_hits * 0.40 + emoji_hits * 0.35)
     return score, signals
 
 
