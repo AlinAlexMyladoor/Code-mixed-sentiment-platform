@@ -1,8 +1,23 @@
 # Code-Mixed Sentiment Intelligence Platform — SentinelAI
 
-> **Affordable social listening for mid-market brands**, focused on **Romanized code-mixed** comments (English blended with Tamil, Malayalam, Hindi, Bengali). Built from the *Sentinel Sync Project Feasibility* blueprint (rebranded — "Sentinel Sync" has trademark conflicts).
+> **Affordable social listening for mid-market brands**, focused on **Romanized code-mixed** comments (English blended with Tamil, Malayalam, Hindi, Bengali).
 
 [![CI](https://github.com/your-org/sentiment-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/sentiment-platform/actions/workflows/ci.yml)
+
+<div align="center">
+  <!-- Replace with actual screenshot path once added to the repository -->
+  <img src="docs/dashboard-preview.png" alt="SentinelAI Dashboard Preview" width="800" />
+</div>
+
+## Key Highlights
+
+- **Multilingual Code-Mixed NLP:** Natively processes Romanized text blending English with 4 regional languages (Tamil, Malayalam, Hindi, Bengali).
+- **3-Tier Hybrid AI Architecture:** Automatically scales from a lightning-fast `<1ms` Heuristic engine to RoBERTa CPU and a fine-tuned Llama 3 8B LoRA model.
+- **Custom Slang Override & ABSA:** Dynamic vocabulary dictionaries for domain-specific slang, paired with Aspect-Based Sentiment Analysis (ABSA).
+- **Proactive Alert Routing:** Real-time Telegram alerts triggered by customizable rule engines targeting urgent friction points.
+- **Executive Reporting:** Cron-driven, fully automated weekly PDF business briefings generated directly from the live PostgreSQL database.
+
+---
 
 ---
 
