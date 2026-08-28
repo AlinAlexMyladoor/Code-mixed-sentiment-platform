@@ -569,15 +569,12 @@ from fastapi.responses import FileResponse
 
 @app.get("/api/reports/latest")
 async def get_latest_report():
-    """Returns the most recently generated weekly PDF report."""
+    """Generates and returns a fresh weekly PDF report dynamically."""
     import os
-    reports_dir = "reports"
-    if not os.path.exists(reports_dir):
-        raise HTTPException(status_code=404, detail="No reports available yet.")
-    files = sorted([f for f in os.listdir(reports_dir) if f.endswith(".pdf")], reverse=True)
-    if not files:
-        raise HTTPException(status_code=404, detail="No reports available yet.")
-    return FileResponse(path=os.path.join(reports_dir, files[0]), filename=files[0], media_type="application/pdf")
+    filename = generate_weekly_report()
+    if not filename or not os.path.exists(filename):
+        raise HTTPException(status_code=500, detail="Failed to generate report.")
+    return FileResponse(path=filename, filename=os.path.basename(filename), media_type="application/pdf")
 
 # ─── Alert Rules ───────────────────────────────────────────────────────────
 from schemas import AlertRuleOut, AlertRuleCreate
