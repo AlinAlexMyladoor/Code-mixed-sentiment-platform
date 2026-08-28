@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import bcrypt as _bcrypt
+import uuid
+import redis.asyncio as aioredis
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from limiter import limiter
@@ -17,6 +19,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import User
 from schemas import Token, TokenData, UserCreate, UserOut
+from config import get_settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -54,7 +57,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 def _create_token(data: dict, expires_delta: timedelta) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "jti": uuid.uuid4().hex})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
@@ -77,7 +80,8 @@ def decode_token(token: str) -> TokenData:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: Optional[int] = int(payload.get("sub")) if payload.get("sub") else None
         email: Optional[str]   = payload.get("email")
-        return TokenData(user_id=user_id, email=email)
+        jti: Optional[str]     = payload.get("jti")
+        return TokenData(user_id=user_id, email=email, jti=jti)
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -94,10 +98,37 @@ async def get_current_user(
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     token_data = decode_token(token)
+    
+    if token_data.jti:
+        r = aioredis.from_url(get_settings().redis_url, decode_responses=True)
+        is_blacklisted = await r.get(f"blacklist:{token_data.jti}")
+        await r.aclose()
+        if is_blacklisted:
+            raise HTTPException(status_code=401, detail="Token has been logged out")
+            
     user = db.query(User).filter(User.id == token_data.user_id).first()
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="User not found or inactive")
     return user
+
+@router.post("/logout")
+async def logout(token: Optional[str] = Depends(oauth2_scheme)):
+    if not token:
+        return {"status": "success"}
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        jti = payload.get("jti")
+        exp = payload.get("exp")
+        if jti and exp:
+            now = datetime.now(timezone.utc).timestamp()
+            ttl = int(exp - now)
+            if ttl > 0:
+                r = aioredis.from_url(get_settings().redis_url, decode_responses=True)
+                await r.setex(f"blacklist:{jti}", ttl, "true")
+                await r.aclose()
+    except JWTError:
+        pass
+    return {"status": "success", "message": "Logged out successfully"}
 
 
 # ─── Routes ────────────────────────────────────────────────────────────────

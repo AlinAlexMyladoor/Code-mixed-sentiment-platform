@@ -198,12 +198,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "https://swarasense-ui.onrender.com",
-        "https://swarasense.onrender.com"
-    ],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -274,7 +269,7 @@ async def receive_webhook(request: Request, background_tasks: BackgroundTasks):
         if settings.meta_app_secret:
             signature = request.headers.get("X-Hub-Signature-256", "")
             if not signature.startswith("sha256="):
-                raise HTTPException(status_code=403, detail="Invalid or missing signature")
+                raise HTTPException(status_code=401, detail="Invalid or missing signature")
             
             expected_sig = "sha256=" + hmac.new(
                 settings.meta_app_secret.encode("utf-8"),
@@ -284,9 +279,12 @@ async def receive_webhook(request: Request, background_tasks: BackgroundTasks):
             
             if not hmac.compare_digest(signature, expected_sig):
                 logger.warning("Webhook HMAC signature mismatch!")
-                raise HTTPException(status_code=403, detail="Signature mismatch")
+                raise HTTPException(status_code=401, detail="Signature mismatch")
 
-        payload = json.loads(raw_body)
+        # 2. PII Masking
+        from security import mask_pii
+        redacted_body = mask_pii(raw_body.decode("utf-8", errors="ignore"))
+        payload = json.loads(redacted_body)
         logger.info(f"Webhook POST received. Payload (first 200 chars): {json.dumps(payload)[:200]}")
         background_tasks.add_task(store_raw_webhook, payload)
         background_tasks.add_task(push_to_queue, payload)

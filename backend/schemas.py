@@ -82,6 +82,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     user_id: Optional[int] = None
     email:   Optional[str] = None
+    jti:     Optional[str] = None
 
 
 # ─── Connected Page Schemas ───────────────────────────────────────────────────
