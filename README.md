@@ -2,8 +2,6 @@
 
 > **Affordable social listening for mid-market brands**, focused on **Romanized code-mixed** comments (English blended with Tamil, Malayalam, Hindi, Bengali).
 
-[![CI](https://github.com/AlinAlexMyladoor/Code-mixed-sentiment-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/AlinAlexMyladoor/Code-mixed-sentiment-platform/actions/workflows/ci.yml)
-
 <div align="center">
   <!-- Replace with actual screenshot path once added to the repository -->
   <img src="docs/dashboard-preview-v2.png" alt="SentinelAI Dashboard Preview" width="800" />
