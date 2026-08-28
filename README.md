@@ -6,7 +6,7 @@
 
 <div align="center">
   <!-- Replace with actual screenshot path once added to the repository -->
-  <img src="docs/dashboard-preview.png" alt="SentinelAI Dashboard Preview" width="800" />
+  <img src="docs/dashboard-preview-v2.png" alt="SentinelAI Dashboard Preview" width="800" />
 </div>
 
 ## Key Highlights
